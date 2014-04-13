@@ -1,0 +1,35 @@
+apply plugin: 'android'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://repository-achartengine.forge.cloudbees.com/snapshot/"
+    }
+}
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.0.1"
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 19
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:+'
+    compile 'com.google.android.gms:play-services:4.3.23'
+    compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
+    compile fileTree(dir: 'libs', include: '*.jar')
+    compile group: 'org.achartengine', name: 'achartengine', version: '1.2.0'
+    compile 'com.github.gabrielemariotti.cards:library:1.5.0'
+}

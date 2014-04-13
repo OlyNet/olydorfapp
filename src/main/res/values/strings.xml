@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OlydorfApp</string>
+    <string name="drawer_open">Open drawer</string>
+    <string name="drawer_close">Close drawer</string>
+    <string name="drawer_title">Menu</string>
+    <string name="laundry_title">Usage</string>
+
+    <string-array name="tab_names">
+        <item>@string/start</item>
+        <item>@string/bierstube</item>
+        <item>@string/disco</item>
+        <item>@string/lounge</item>
+        <item>@string/laundry</item>
+    </string-array>
+
+    <string-array name="drawer_items">
+        <item>@string/home</item>
+        <item>@string/report</item>
+        <item>@string/buy</item>
+        <item>@string/support</item>
+        <item>@string/about</item>
+    </string-array>
+
+    <!-- Navigation drawer items -->
+    <string name="home">Home</string>
+    <string name="report">Report error</string>
+    <string name="buy">Buy items</string>
+    <string name="support">Support us</string>
+    <string name="about">About OlyNet e.V.</string>
+
+    <!-- Category names -->
+    <string name="start">Home</string>
+    <string name="bierstube">Bierstube</string>
+    <string name="disco">OlyDisco</string>
+    <string name="lounge">The O(n)ly</string>
+    <string name="laundry">Laundry</string>
+
+    <!-- Bierstube -->
+    <string name="food">Food</string>
+    <string name="drinks">Drinks</string>
+    <string name="food_of_the_day">Food of the day</string>
+    <string name="drink_of_the_day">Shot of the day</string>
+    <string name="cook">Cook</string>
+</resources>

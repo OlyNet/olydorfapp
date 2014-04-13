@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background_window">#FFE5E5E5</color>
+
+    <!-- Olympia colors -->
+    <color name="OlympiaYellow">#FCE830</color>
+    <color name="OlympiaOrange">#FF9900</color>
+    <color name="OlympiaGrey">#A6ABB5</color>
+    <color name="OlympiaBlue">#29B3D2</color>
+    <color name="OlympiaGreen">#7EFB49</color> <!-- 82cb4c -->
+    <color name="OlympiaDarkGreen">#008f44</color> <!--4FF03D  -->
+    <color name="OlympiaDarkBlue">#5979AD</color>
+</resources>
