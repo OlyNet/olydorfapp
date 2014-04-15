@@ -4,17 +4,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.ExpandableListView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import de.olynet.olydorfapp.R;
 import de.olynet.olydorfapp.cards.BierstubeDailyOfferCard;
-import de.olynet.olydorfapp.cards.BierstubeDrinksExpandCard;
-import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
-import it.gmariotti.cardslib.library.internal.CardHeader;
-import it.gmariotti.cardslib.library.view.CardListView;
+import de.olynet.olydorfapp.ui.list.StaticOfferExpandableListAdapter;
+import de.olynet.olydorfapp.ui.list.StaticOfferHeader;
+import de.olynet.olydorfapp.ui.list.StaticOfferItem;
 import it.gmariotti.cardslib.library.view.CardView;
 
 /**
@@ -44,6 +44,8 @@ public class BierstubeFragment extends BaseFragment
 
     private void init()
     {
+        // TODO: fix content and add all sections plus content
+
         // first get the view for our header
         View dailyOffers = getLayoutInflater(getArguments()).inflate(R.layout.bs_daily_offers, null);
 
@@ -52,6 +54,7 @@ public class BierstubeFragment extends BaseFragment
 
         fotdCard.setHeaderTitle(getString(R.string.food_of_the_day));
         dotdCard.setHeaderTitle(getString(R.string.drink_of_the_day));
+        dotdCard.disableRowCook();
 
         fotdCard.init();
         dotdCard.init();
@@ -59,46 +62,30 @@ public class BierstubeFragment extends BaseFragment
         ((CardView) dailyOffers.findViewById(R.id.bs_card_fotd)).setCard(fotdCard);
         ((CardView) dailyOffers.findViewById(R.id.bs_card_dotd)).setCard(dotdCard);
 
+        // and then deal with the regular, static offers
+        List<StaticOfferHeader> models = new ArrayList<StaticOfferHeader>();
+        StaticOfferHeader drinks = new StaticOfferHeader("Drinks", R.drawable.mug);
+        drinks.setChildren(Arrays.asList(new StaticOfferItem[]{
+                new StaticOfferItem("Helles", "3,60€"),
+                new StaticOfferItem("Spezi", "5,20€"),
+                new StaticOfferItem("Cola", "8,20€"),
+                new StaticOfferItem("Apfelschorle", "17,33€")
+        }));
+        models.add(drinks);
+        StaticOfferHeader snacks = new StaticOfferHeader("Snacks", -1);
+        snacks.setChildren(Arrays.asList(new StaticOfferItem[]{
+                new StaticOfferItem("Kleine Pommes", "3,30€"),
+                new StaticOfferItem("Wiener", "1,20€"),
+                new StaticOfferItem("Breze", "5,00€"),
+                new StaticOfferItem("O'batzdn", "10,00€")
+        }));
+        models.add(snacks);
 
-        Card drinks = new Card(getActivity());
-        CardHeader drinksHeader = new CardHeader(getActivity());
-        drinksHeader.setTitle("Drinks");
-        drinksHeader.setButtonExpandVisible(true);
-        drinks.addCardHeader(drinksHeader);
-        BierstubeDrinksExpandCard drinksExpand = new BierstubeDrinksExpandCard(getActivity());
-        drinks.addCardExpand(drinksExpand);
-        drinks.setExpanded(true);
-        //Animator listener
-        drinks.setOnExpandAnimatorEndListener(new Card.OnExpandAnimatorEndListener() {
-            @Override
-            public void onExpandEnd(Card card) {
-                Toast.makeText(getActivity(), "Expand " + card.getCardHeader().getTitle(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        drinks.setOnCollapseAnimatorEndListener(new Card.OnCollapseAnimatorEndListener() {
-            @Override
-            public void onCollapseEnd(Card card) {
-                Toast.makeText(getActivity(),"Collpase " +card.getCardHeader().getTitle(),Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        Card snacks = new Card(getActivity());
-        CardHeader snacksHeader = new CardHeader(getActivity());
-        snacksHeader.setTitle("Snacks");
-        snacksHeader.setButtonExpandVisible(true);
-        snacks.addCardHeader(snacksHeader);
-        snacks.setExpanded(true);
-
-        ArrayList<Card> cards = new ArrayList<Card>();
-        cards.add(drinks);
-        cards.add(snacks);
-        CardArrayAdapter mCardArrayAdapter = new CardArrayAdapter(getActivity(),cards);
-
-        CardListView listView = (CardListView) getActivity().findViewById(R.id.bs_static_items_list);
-        if (listView != null){
-            listView.addHeaderView(dailyOffers);
-            listView.setAdapter(mCardArrayAdapter);
+        final ExpandableListView listView = (ExpandableListView) getActivity().findViewById(R.id.bs_items_list);
+        if(listView != null){
+            listView.setGroupIndicator(null);
+            listView.addHeaderView(dailyOffers, null, false);
+            listView.setAdapter(new StaticOfferExpandableListAdapter(getActivity(), models));
         }
     }
 }

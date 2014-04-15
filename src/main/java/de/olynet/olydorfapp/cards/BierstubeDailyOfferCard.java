@@ -18,24 +18,13 @@ import it.gmariotti.cardslib.library.internal.CardThumbnail;
  */
 public class BierstubeDailyOfferCard extends Card
 {
-    protected TextView mTitle;
-    protected TextView mSecondaryTitle;
-    protected RatingBar mRatingBar;
-    protected int resourceIdThumbnail = -1;
-    protected int count;
-
     protected String headerTitle;
     protected String secondaryTitle;
     protected float rating;
+    private boolean isDrinkOfTheDayCard = false;
 
     public BierstubeDailyOfferCard(Context context) {
-        super(context, R.layout.bs_daily_offer_inner);
-        init();
-    }
-
-    public BierstubeDailyOfferCard(Context context, int innerLayout)
-    {
-        super(context, innerLayout);
+        super(context, R.layout.bs_card_daily_offer_inner);
         init();
     }
 
@@ -52,7 +41,11 @@ public class BierstubeDailyOfferCard extends Card
         TextView cook = (TextView) view.findViewById(R.id.bs_daily_offer_cook);
         cook.setText("Rongo");
 
-        //view.findViewById(R.id.bs_daily_offer_cook_row).setVisibility(View.INVISIBLE);
+        if(isDrinkOfTheDayCard){
+            // only hide the cook row, otherwise we have to differently looking cards
+            view.findViewById(R.id.bs_daily_offer_tag_cook).setVisibility(View.INVISIBLE);
+            view.findViewById(R.id.bs_daily_offer_cook).setVisibility(View.INVISIBLE);
+        }
 
         RatingBar mRatingBar = (RatingBar) parent.findViewById(R.id.bs_daily_offer_ratingbar);
 
@@ -65,7 +58,6 @@ public class BierstubeDailyOfferCard extends Card
 
     public void init() {
         CardHeader header = new CardHeader(getContext());
-        header.setButtonOverflowVisible(true);
         header.setTitle(headerTitle);
 
         addCardHeader(header);
@@ -80,6 +72,11 @@ public class BierstubeDailyOfferCard extends Card
 
     public void setHeaderTitle(String headerTitle) {
         this.headerTitle = headerTitle;
+    }
+
+    public void disableRowCook()
+    {
+        this.isDrinkOfTheDayCard = true;
     }
 
     public void setSecondaryTitle(String secondaryTitle) {

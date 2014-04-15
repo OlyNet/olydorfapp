@@ -15,7 +15,7 @@ public class StartFragment extends BaseFragment
 {
     @Override
     public int getTitleResourceId() {
-        return R.string.start;
+        return R.string.home;
     }
 
     @Override

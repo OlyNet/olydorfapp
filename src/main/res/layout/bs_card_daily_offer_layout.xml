@@ -25,7 +25,7 @@
             android:id="@+id/card_thumbnail_layout"
             android:layout_marginTop="8dp"
             android:layout_width="match_parent"
-            card:card_thumbnail_layout_resourceID="@layout/bs_daily_offer_thumbnail_layout"
+            card:card_thumbnail_layout_resourceID="@layout/bs_card_daily_offer_thumbnail_layout"
             android:layout_height="wrap_content"
             android:layout_weight="1"/>
 

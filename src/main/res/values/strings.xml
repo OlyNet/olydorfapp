@@ -7,7 +7,7 @@
     <string name="laundry_title">Usage</string>
 
     <string-array name="tab_names">
-        <item>@string/start</item>
+        <item>@string/news</item>
         <item>@string/bierstube</item>
         <item>@string/disco</item>
         <item>@string/lounge</item>
@@ -22,6 +22,9 @@
         <item>@string/about</item>
     </string-array>
 
+    <!-- Action bar strings -->
+    <string name="search">Search</string>
+
     <!-- Navigation drawer items -->
     <string name="home">Home</string>
     <string name="report">Report error</string>
@@ -30,7 +33,7 @@
     <string name="about">About OlyNet e.V.</string>
 
     <!-- Category names -->
-    <string name="start">Home</string>
+    <string name="news">News</string>
     <string name="bierstube">Bierstube</string>
     <string name="disco">OlyDisco</string>
     <string name="lounge">The O(n)ly</string>

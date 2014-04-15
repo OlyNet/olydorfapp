@@ -12,7 +12,8 @@ import de.olynet.olydorfapp.fragments.LoungeFragment;
 import de.olynet.olydorfapp.fragments.StartFragment;
 
 /**
- * Created by Simon on 26.02.14.
+ * @author Simon Domke &lt;simon.domke@olydorf.mhn.de&gt;
+ * @version $Id$
  */
 public class TabPageAdapter extends FragmentPagerAdapter {
     private String[] tabNames;

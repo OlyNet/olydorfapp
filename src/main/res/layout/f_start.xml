@@ -1,15 +1,18 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/OlympiaGrey"
+    android:orientation="vertical">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:id="@+id/static_offer_list_header_holder"
+        android:background="@drawable/explist_item_bg">
 
+    </RelativeLayout>
 
-    <TextView
-        android:layout_alignParentBottom="true"
-        style="@style/Theme.AppCompat.Light"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Foo"/>
-
-</RelativeLayout>
+</LinearLayout>

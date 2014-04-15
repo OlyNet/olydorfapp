@@ -104,6 +104,7 @@ public class TabbedFragment extends android.support.v4.app.Fragment
 
     private void openFragment(BaseFragment fragment, boolean addToBackStack) {
         if (fragment != null) {
+            // Notice that we are using ChildFragmentManager here
             FragmentManager fragmentManager = getChildFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 

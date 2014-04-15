@@ -2,6 +2,9 @@
 <resources>
     <string name="laundry_title">Auslastung</string>
 
+    <!-- Action bar strings -->
+    <string name="search">Suche</string>
+
     <!-- Navigation drawer items -->
     <string name="home">Home</string>
     <string name="report">Fehler melden</string>
@@ -17,7 +20,7 @@
     <string name="cook">Koch</string>
 
     <!-- Category names -->
-    <string name="start">Start</string>
+    <string name="news">Neuigkeiten</string>
     <string name="bierstube">Bierstube</string>
     <string name="disco">OlyDisco</string>
     <string name="lounge">The O(n)ly</string>

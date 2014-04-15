@@ -10,4 +10,6 @@
     <color name="OlympiaGreen">#7EFB49</color> <!-- 82cb4c -->
     <color name="OlympiaDarkGreen">#008f44</color> <!--4FF03D  -->
     <color name="OlympiaDarkBlue">#5979AD</color>
+
+    <color name="ExpandableListItemBackground">#F3F3F3</color>
 </resources>
