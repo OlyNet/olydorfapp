@@ -1,16 +1,12 @@
 package eu.olynet.olydorfapp;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -25,44 +21,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-class MenuItem{
-    String date;
-    String price;
-    String cook;
-    String meal;
-}
-
 public class BierstubeFragment extends ListFragment {
-
-    class MyArrayAdapter extends ArrayAdapter<MenuItem> {
-        private final Context context;
-        private final MenuItem[] values;
-
-        public MyArrayAdapter(Context context, MenuItem[] values) {
-            super(context, R.layout.menuitem, values);
-            this.context = context;
-            this.values = values;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater =(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            View rowView = inflater.inflate(R.layout.menuitem,parent,false);
-
-            TextView date = (TextView) rowView.findViewById(R.id.date);
-            TextView meal = (TextView) rowView.findViewById(R.id.meal);
-            TextView price = (TextView) rowView.findViewById(R.id.price);
-            TextView cook = (TextView) rowView.findViewById(R.id.cook);
-
-            date.setText(values[position].date);
-            meal.setText(values[position].meal);
-            price.setText(values[position].price);
-            cook.setText(values[position].cook);
-
-            return rowView;
-        }
-    }
 
     class RequestTask extends AsyncTask<String, String, String> {
 
@@ -73,68 +32,43 @@ public class BierstubeFragment extends ListFragment {
             String responseString = null;
             HttpGet httpget = new HttpGet(uri[0]);
             httpget.setHeader("Content-type","application/json");
+
             try {
                 response = httpclient.execute(httpget);
                 StatusLine statusLine = response.getStatusLine();
-                if(statusLine.getStatusCode() == HttpStatus.SC_OK){
+
+                if(statusLine.getStatusCode() == HttpStatus.SC_OK) {
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     response.getEntity().writeTo(out);
                     responseString = out.toString();
                     out.close();
-                } else{
+                } else {
                     //Closes the connection.
                     response.getEntity().getContent().close();
                     throw new IOException(statusLine.getReasonPhrase());
                 }
             } catch (Exception e) {
-                //TODO Handle problems..
+                Log.e("HTTP Connection", e.toString());
             }
             return responseString;
         }
 
         @Override
         protected void onPostExecute(String result) {
-            if(result != null){
-                Log.v("result",result);
-                try {
-                    JSONObject obj = new JSONObject(result);
-                    JSONArray menuItems = obj.getJSONArray("items");
+            Log.v("result", result != null ? result : "null");
 
-                    MenuItem[] items = new MenuItem[menuItems.length()];
+            /* this should not happen */
+            if(result == null)
+                return;
 
+            try {
+                JSONArray menuItems = new JSONObject(result).getJSONArray("items");
 
-                    for (int i = 0; i < menuItems.length(); i++) {
-                        try {
-                            JSONObject oneObject = menuItems.getJSONObject(i);
-
-
-                            MenuItem item = new MenuItem();
-                            item.date = oneObject.getString("date");
-                            item.cook = oneObject.getString("cook");
-                            item.meal = oneObject.getString("meal");
-                            item.price = oneObject.getString("price") + " "
-                                    + getString(R.string.euro_sign);
-
-                            items[i]=item;
-
-                        } catch (JSONException e) {
-                            Log.e("jsonerror",e.toString());
-                        }
-                    }
-
-                    MyArrayAdapter adapter = new MyArrayAdapter(getActivity(), items);
-                    setListAdapter(adapter);
-                    adapter.notifyDataSetChanged();
-
-
-                }catch(JSONException e){
-                    Log.e("jsonerror",e.toString());
-                }
-
-
-
-            }else{
-                Log.v("result","null");
+                BaseAdapter adapter = new MealListAdapter(getActivity(), menuItems);
+                setListAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            } catch(JSONException e){
+                Log.e("HTTP Response", e.toString());
             }
 
             //super.onPostExecute(result);
@@ -142,17 +76,14 @@ public class BierstubeFragment extends ListFragment {
         }
     }
 
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        new RequestTask().execute("http://wstest.olynet.eu/meals.json");
-
+        new RequestTask().execute(getString(R.string.web_url));
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        // do something with the data
+        // TODO: for future versions
     }
 }
