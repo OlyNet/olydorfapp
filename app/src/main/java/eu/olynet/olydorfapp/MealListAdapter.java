@@ -10,6 +10,17 @@ import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Martin Herrmann <martin.herrmann@olynet.eu>
@@ -17,32 +28,67 @@ import org.json.JSONException;
 public class MealListAdapter extends BaseAdapter {
 
     private final Context context;
-    private final JSONArray mealItems;
+    private final List<MealOfTheDay> meals = new ArrayList<MealOfTheDay>();
+
+    private DateFormat df;
+    private NumberFormat nf;
+
 
     public MealListAdapter(Context context, JSONArray mealItems) {
         super();
         this.context = context;
-        this.mealItems = mealItems;
-    }
 
-    @Override
-    public int getCount() {
-        return mealItems.length();
-    }
+        /* set the date format */
+        df = new SimpleDateFormat("dd.MM.yyyy");
 
-    @Override
-    public Object getItem(int position) {
+        /* set the number format */
+        nf = NumberFormat.getCurrencyInstance(Locale.getDefault());
+        nf.setCurrency(Currency.getInstance("EUR"));
+        nf.setMaximumFractionDigits(2);
+        nf.setMinimumFractionDigits(2);
+
         try {
-            return mealItems.get(position);
+            for (int i = 0; i < mealItems.length(); i++) {
+                JSONObject cur = mealItems.getJSONObject(i);
+                /* get trivial fields */
+                String name = cur.getString("meal");
+                String cook = cur.getString("cook");
+
+                /* get the date */
+                Date date = df.parse(cur.getString("date"));
+                if(MealOfTheDay.normalizeDate(date).before(
+                        MealOfTheDay.normalizeDate(new Date()))) { // if the date is before 'today'
+                    continue;
+                }
+
+                /* get the price */
+                float price = Float.parseFloat(cur.getString("price"));
+
+                /* append it to our list */
+                meals.add(new MealOfTheDay(name, cook, date, price));
+            }
         } catch (JSONException e) {
             Log.e("JSON Exception", e.toString());
-            return null;
+        } catch (ParseException e) {
+            Log.e("Date-Parse Exception", e.toString());
+        } catch (NumberFormatException e) {
+            Log.e("Float NFE", e.toString());
         }
     }
 
     @Override
+    public int getCount() {
+        return meals.size();
+    }
+
+    @Override
+    public Object getItem(int position) {
+        return meals.get(position);
+    }
+
+    @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
@@ -57,18 +103,13 @@ public class MealListAdapter extends BaseAdapter {
         TextView price = (TextView) rowView.findViewById(R.id.price);
         TextView cook = (TextView) rowView.findViewById(R.id.cook);
 
-        try {
-            date.setText(mealItems.getJSONObject(position).getString("date"));
-            meal.setText(mealItems.getJSONObject(position).getString("meal"));
-            price.setText(mealItems.getJSONObject(position).getString("price"));
-            cook.setText(mealItems.getJSONObject(position).getString("cook"));
-        } catch (JSONException e) {
-            date.setText("");
-            meal.setText("ERROR");
-            price.setText("");
-            cook.setText("");
-            Log.e("JSON Error", e.toString());
-        }
+
+        MealOfTheDay cur = meals.get(position);
+
+        meal.setText(cur.name);
+        cook.setText(cur.cook);
+        date.setText(df.format(cur.date));
+        price.setText(nf.format(cur.price));
 
         return rowView;
     }
