@@ -106,14 +106,14 @@ public class BierstubeFragment extends ListFragment {
                     for (int i = 0; i < menuItems.length(); i++) {
                         try {
                             JSONObject oneObject = menuItems.getJSONObject(i);
-                            // Pulling items from the array
 
 
                             MenuItem item = new MenuItem();
                             item.date = oneObject.getString("date");
                             item.cook = oneObject.getString("cook");
                             item.meal = oneObject.getString("meal");
-                            item.price = oneObject.getString("price");
+                            item.price = oneObject.getString("price") + " "
+                                    + getString(R.string.euro_sign);
 
                             items[i]=item;
 
@@ -147,13 +147,8 @@ public class BierstubeFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        new RequestTask().execute("http://192.168.0.3/menu");
+        new RequestTask().execute("http://wstest.olynet.eu/meals.json");
 
-//        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-//                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-//                "Linux", "OS/2" };
-//        MyArrayAdapter adapter = new MyArrayAdapter(getActivity(), values);
-//        setListAdapter(adapter);
     }
 
     @Override
