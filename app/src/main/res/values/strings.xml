@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">OlydorfApp</string>
+
+
+    <string name="title_section1">Olynet</string>
+    <string name="title_section2">Bierstube</string>
+    <string name="title_section3">Waschraum</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
