@@ -8,5 +8,6 @@
     <string name="hello_world">Hello world!</string>
 
     <string name="action_settings">Settings</string>
-    <string name="euro_sign">Euro</string>
+
+    <string name="cook">Max</string>
 </resources>

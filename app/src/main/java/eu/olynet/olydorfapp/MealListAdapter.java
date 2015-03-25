@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import eu.olynet.olydorfapp.util.DateUtils;
+
 /**
  * @author Martin Herrmann <martin.herrmann@olynet.eu>
  */
@@ -56,8 +58,8 @@ public class MealListAdapter extends BaseAdapter {
 
                 /* get the date */
                 Date date = df.parse(cur.getString("date"));
-                if(MealOfTheDay.normalizeDate(date).before(
-                        MealOfTheDay.normalizeDate(new Date()))) { // if the date is before 'today'
+                if(DateUtils.normalizedDate(date).before(
+                        DateUtils.normalizedDate(new Date()))) { // if the date is before 'today'
                     continue;
                 }
 

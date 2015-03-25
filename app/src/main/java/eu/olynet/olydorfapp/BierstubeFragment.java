@@ -19,9 +19,44 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 
 public class BierstubeFragment extends ListFragment {
+
+    class CacheTask extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... url) {
+            File mealList = new File(getActivity().getCacheDir(), "meals.json");
+
+            if(!mealList.exists() || mealList.lastModified() > 1) { // TODO
+                new RequestTask().execute(url[0]);
+            }
+
+            // TODO: grab file content and return it
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.v("result", result != null ? result : "null");
+
+            /* this should not happen */
+            if(result == null)
+                return;
+
+            try {
+                JSONArray menuItems = new JSONObject(result).getJSONArray("items");
+
+                BaseAdapter adapter = new MealListAdapter(getActivity(), menuItems);
+                setListAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            } catch(JSONException e){
+                Log.e("HTTP Response", e.toString());
+            }
+        }
+    }
 
     class RequestTask extends AsyncTask<String, String, String> {
 
@@ -44,6 +79,7 @@ public class BierstubeFragment extends ListFragment {
                     out.close();
                 } else {
                     //Closes the connection.
+                    Log.e("StatusCode", statusLine.getStatusCode() + "");
                     response.getEntity().getContent().close();
                     throw new IOException(statusLine.getReasonPhrase());
                 }
