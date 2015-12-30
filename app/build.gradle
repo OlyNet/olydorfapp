@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         applicationId "eu.olynet.olydorfapp"
-        minSdkVersion 15
-        targetSdkVersion 21
+        minSdkVersion 16
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -21,30 +21,17 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.0.0'
-
-
-    compile "javax.ws.rs:jsr311-api:1.1.1"
-
-    //compile 'com.sun.jersey:jersey-server:1.13'
-    //compile 'com.sun.jersey:jersey-core:1.13'
-    //compile 'com.sun.jersey:jersey-client:1.13'
-    //compile 'com.sun.jersey:jersey-servlet:1.13'
-
-    compile 'org.glassfish.jersey.core:jersey-client:2.5.1'
-
-    //Core
-    compile 'com.github.gabrielemariotti.cards:cardslib-core:2.0.1'
-
-    //Optional for built-in cards
-    compile 'com.github.gabrielemariotti.cards:cardslib-cards:2.0.1'
-
-    //Optional for RecyclerView
-    compile 'com.github.gabrielemariotti.cards:cardslib-recyclerview:2.0.1'
-
-    //Optional for staggered grid view
-    compile 'com.github.gabrielemariotti.cards:cardslib-extra-staggeredgrid:2.0.1'
-
-    //Optional for drag and drop
-    compile 'com.github.gabrielemariotti.cards:cardslib-extra-dragdrop:2.0.1'
+    testCompile 'junit:junit:4.12'
+    // For cloud messaging!
+    compile "com.google.android.gms:play-services:8.3.0"
+    // For design components (nav drawer, actionbar, cards, ...)
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:cardview-v7:23.1.1'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
+    // For QR-code scanning
+    compile 'me.dm7.barcodescanner:zxing:1.8.3'
+    // Came with sample :-P
+    compile 'de.hdodenhof:circleimageview:1.2.2'
+    compile 'com.mcxiaoke.volley:library:1.0.15'
 }

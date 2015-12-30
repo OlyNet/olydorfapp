@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/OlydorfApp.iml" filepath="$PROJECT_DIR$/OlydorfApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/olydorfapp.iml" filepath="$PROJECT_DIR$/olydorfapp.iml" />
     </modules>
   </component>
 </project>
-
