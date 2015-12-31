@@ -1,7 +1,7 @@
-package eu.olynet.olydorfapp;
+package eu.olynet.olydorfapp.activities;
 
 import android.content.Context;
-import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -15,8 +15,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.ScrollView;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
+import eu.olynet.olydorfapp.R;
+import eu.olynet.olydorfapp.adapters.NavigationDrawerItemsAdapter;
 import eu.olynet.olydorfapp.customViews.ScrimInsetsFrameLayout;
 import eu.olynet.olydorfapp.sliding.SlidingTabLayout;
 import eu.olynet.olydorfapp.tabs.ViewPagerAdapter;
@@ -25,17 +34,16 @@ import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
 /**
- * @author Simon Domke <a href="mailto:simon.domke@olynet.eu>simon.domke@olynet.eu</a>
+ * @author <a href="mailto:simon.domke@olynet.eu>Simon Domke</a>
  */
-public class MainActivity extends AppCompatActivity
-{
+public class MainActivity extends AppCompatActivity {
     // Declaring Your View and Variables
 
     Toolbar toolbar;
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
-    final CharSequence Titles[]={"News","Veranstaltungen","Bierstube","OlyDisco","The O(n)ly","Waschraum"};
+    final CharSequence Titles[] = {"News", "Veranstaltungen", "Bierstube", "OlyDisco", "The O(n)ly", "Waschraum"};
     final int Numboftabs = Titles.length;
     private Menu optionsMenu;
 
@@ -66,10 +74,10 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if(id == R.id.action_refresh){
+        if (id == R.id.action_refresh) {
             // Do animation start
-            LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            ImageView iv = (ImageView)inflater.inflate(R.layout.ic_refresh, null);
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            ImageView iv = (ImageView) inflater.inflate(R.layout.ic_refresh, null);
             Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate_refresh);
             rotation.setRepeatCount(Animation.INFINITE);
             iv.startAnimation(rotation);
@@ -82,7 +90,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
     private void init_slider() {
         // Creating The Toolbar and setting it as the Toolbar for the activity
 
@@ -91,7 +98,7 @@ public class MainActivity extends AppCompatActivity
 
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
-        adapter =  new ViewPagerAdapter(getSupportFragmentManager(),Titles,Numboftabs);
+        adapter = new ViewPagerAdapter(getSupportFragmentManager(), Titles, Numboftabs);
 
         // Assigning ViewPager View and setting the adapter
         pager = (ViewPager) findViewById(R.id.pager);
@@ -117,12 +124,28 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private ScrimInsetsFrameLayout mScrimInsetsFrameLayout;
+    private ListView mDrawerList;
 
-    private void init_navigator(){
+    private void init_navigator() {
         // Navigation Drawer
         mDrawerLayout = (DrawerLayout) findViewById(R.id.main_activity_DrawerLayout);
         mDrawerLayout.setStatusBarBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.primaryDark));
         mScrimInsetsFrameLayout = (ScrimInsetsFrameLayout) findViewById(R.id.main_activity_navigation_drawer_rootLayout);
+
+        // Fill nav bar with items (list is initialized in the adapter, I was lazy
+        mDrawerList = (ListView) findViewById(R.id.navDrawerItemsListView);
+        mDrawerList.setAdapter(new NavigationDrawerItemsAdapter(this));
+
+        // Add a click listener to the list view
+        mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+
+                mDrawerLayout.closeDrawer(mDrawerList);
+            }
+        });
 
         mActionBarDrawerToggle = new ActionBarDrawerToggle
                 (
@@ -131,11 +154,9 @@ public class MainActivity extends AppCompatActivity
                         toolbar,
                         R.string.navigation_drawer_opened,
                         R.string.navigation_drawer_closed
-                )
-        {
+                ) {
             @Override
-            public void onDrawerSlide(View drawerView, float slideOffset)
-            {
+            public void onDrawerSlide(View drawerView, float slideOffset) {
                 // Disables the burger/arrow animation by default
                 super.onDrawerSlide(drawerView, 0);
             }
@@ -143,8 +164,7 @@ public class MainActivity extends AppCompatActivity
 
         mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
 
-        if (getSupportActionBar() != null)
-        {
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setHomeButtonEnabled(true);
@@ -161,27 +181,25 @@ public class MainActivity extends AppCompatActivity
         // Set the first item as selected for the first time
         getSupportActionBar().setTitle(R.string.toolbar_title_home);
 
-
     }
 
-    public void resetUpdating()
-    {
+    public void resetUpdating() {
         // Get our refresh item from the menu
         MenuItem m = optionsMenu.findItem(R.id.action_refresh);
-        if(m.getActionView()!=null)
-        {
+        if (m.getActionView() != null) {
             // Remove the animation.
             m.getActionView().clearAnimation();
             m.setActionView(null);
         }
     }
 
-    /*
-     * Required for passing calls to sub-activities by startActivityForResult() from fragments
-     * back to the handlers in the fragments, see http://stackoverflow.com/a/17085889
-     */
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//    }
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
 }

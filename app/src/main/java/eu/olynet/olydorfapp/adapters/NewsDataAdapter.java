@@ -25,14 +25,12 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
         // each data item is just a string in this case
         protected TextView vName;
         protected TextView vSurname;
-        protected TextView vEmail;
         protected TextView vTitle;
         public ViewHolder(View v) {
             super(v);
-            vName = (TextView) v.findViewById(R.id.txtName);
-            vSurname = (TextView) v.findViewById(R.id.txtSurname);
-            vEmail = (TextView) v.findViewById(R.id.txtEmail);
-            vTitle = (TextView) v.findViewById(R.id.title);
+            vName = (TextView) v.findViewById(R.id.newsCardName);
+            vSurname = (TextView) v.findViewById(R.id.newsCardDate);
+            vTitle = (TextView) v.findViewById(R.id.newsCardTitle);
         }
     }
 
@@ -58,7 +56,6 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, int position) {
         News n = items.get(position);
         holder.vTitle.setText(n.title);
-        holder.vEmail.setText(n.text);
     }
 
     // Return the size of your dataset (invoked by the layout manager)

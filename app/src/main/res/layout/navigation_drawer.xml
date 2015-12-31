@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_activity_navigation_drawer_rootLayout"
     style="@style/ScrimInsetsLayout"
-    tools:context=".MainActivity">
+    tools:context=".activities.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -72,100 +72,78 @@
         </FrameLayout>
 
         <!-- Drawer items -->
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/navigation_drawer_background"
-            android:clipToPadding="false"
-            android:paddingBottom="@dimen/nav_drawer_vertical_spacing_listing"
-            android:paddingTop="@dimen/nav_drawer_vertical_spacing_listing">
-
-            <LinearLayout
-                android:id="@+id/navigation_drawer_linearLayout_entries_root_view"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:background="@color/navigation_drawer_background"
+                android:clipToPadding="false"
+                android:paddingBottom="@dimen/nav_drawer_vertical_spacing_listing"
+                android:paddingTop="@dimen/nav_drawer_vertical_spacing_listing"
+                android:orientation="vertical"
+                android:gravity="start">
 
-                <FrameLayout
-                    android:id="@+id/navigation_drawer_items_list_linearLayout_home"
-                    style="@style/NavDrawerRowLayout.Main">
+                <ListView
+                    android:id="@+id/navDrawerItemsListView"
+                    android:layout_gravity="start"
+                    android:choiceMode="singleChoice"
+                    android:divider="@android:color/transparent"
+                    android:dividerHeight="@dimen/nav_drawer_vertical_spacing_listing_listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/nav_drawer_vertical_spacing_listing">
 
-                    <eu.olynet.olydorfapp.customViews.TintOnStateImageView
-                        android:id="@+id/navigation_drawer_items_list_icon_home"
-                        style="@style/NavDrawerRowItemIcon"
-                        android:src="@drawable/ic_home_white_24dp"
-                        tools:ignore="ContentDescription"
-                        tools:tint="@color/nav_drawer_item_icon_selected" />
+                </ListView>
 
-                    <TextView
-                        android:id="@+id/navigation_drawer_items_textView_home"
-                        style="@style/NavDrawerRowItemText"
-                        android:text="First Menu"
-                        tools:fontFamily="sans-serif-medium"
-                        tools:textColor="@color/nav_drawer_item_text_selected"/>
+                <LinearLayout
+                    android:id="@+id/navDrawerStaticItemsHolder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_below="@id/navDrawerItemsListView">
 
-                </FrameLayout>
+                    <include layout="@layout/navigation_drawer_divider"/>
 
-                <FrameLayout
-                    android:id="@+id/navigation_drawer_items_list_linearLayout_explore"
-                    style="@style/NavDrawerRowLayout.Main" >
+                    <FrameLayout
+                        android:id="@+id/navigation_drawer_items_list_linearLayout_help_and_feedback"
+                        style="@style/NavDrawerRowLayout.Secondary"
+                        android:clickable="false">
 
-                    <eu.olynet.olydorfapp.customViews.TintOnStateImageView
-                        android:id="@+id/navigation_drawer_items_list_icon_explore"
-                        style="@style/NavDrawerRowItemIcon"
-                        android:src="@drawable/ic_explore_white_24dp"
-                        tools:ignore="ContentDescription" />
+                        <eu.olynet.olydorfapp.customViews.TintOnStateImageView
+                            android:id="@+id/navigation_drawer_items_list_icon_help_and_feedback"
+                            style="@style/NavDrawerRowItemIcon"
+                            android:src="@drawable/ic_help_white_24dp"
+                            tools:ignore="ContentDescription" />
 
-                    <TextView
-                        android:id="@+id/navigation_drawer_items_textView_explore"
-                        style="@style/NavDrawerRowItemText"
-                        android:text="Second Menu"
-                        tools:fontFamily="sans-serif-medium"/>
+                        <TextView
+                            android:id="@+id/navigation_drawer_items_textView_help_and_feedback"
+                            style="@style/NavDrawerRowItemText"
+                            android:text="Help"
+                            tools:fontFamily="sans-serif-medium" />
 
-                </FrameLayout>
+                    </FrameLayout>
 
-                <include
-                    layout="@layout/navigation_drawer_divider"/>
+                    <FrameLayout
+                        android:id="@+id/navigation_drawer_items_list_linearLayout_about"
+                        style="@style/NavDrawerRowLayout.Secondary"
+                        android:clickable="false">
 
-                <FrameLayout
-                    android:id="@+id/navigation_drawer_items_list_linearLayout_help_and_feedback"
-                    style="@style/NavDrawerRowLayout.Secondary">
+                        <eu.olynet.olydorfapp.customViews.TintOnStateImageView
+                            android:id="@+id/navigation_drawer_items_list_icon_about"
+                            style="@style/NavDrawerRowItemIcon"
+                            android:src="@drawable/ic_info_white_24dp"
+                            tools:ignore="ContentDescription" />
 
-                    <eu.olynet.olydorfapp.customViews.TintOnStateImageView
-                        android:id="@+id/navigation_drawer_items_list_icon_help_and_feedback"
-                        style="@style/NavDrawerRowItemIcon"
-                        android:src="@drawable/ic_help_white_24dp"
-                        tools:ignore="ContentDescription" />
+                        <TextView
+                            android:id="@+id/navigation_drawer_items_textView_about"
+                            style="@style/NavDrawerRowItemText"
+                            android:text="About"
+                            tools:fontFamily="sans-serif-medium" />
 
-                    <TextView
-                        android:id="@+id/navigation_drawer_items_textView_help_and_feedback"
-                        style="@style/NavDrawerRowItemText"
-                        android:text="Help"
-                        tools:fontFamily="sans-serif-medium" />
+                    </FrameLayout>
 
-                </FrameLayout>
+                </LinearLayout>
 
-                <FrameLayout
-                    android:id="@+id/navigation_drawer_items_list_linearLayout_about"
-                    style="@style/NavDrawerRowLayout.Secondary">
-
-                    <eu.olynet.olydorfapp.customViews.TintOnStateImageView
-                        android:id="@+id/navigation_drawer_items_list_icon_about"
-                        style="@style/NavDrawerRowItemIcon"
-                        android:src="@drawable/ic_info_white_24dp"
-                        tools:ignore="ContentDescription" />
-
-                    <TextView
-                        android:id="@+id/navigation_drawer_items_textView_about"
-                        style="@style/NavDrawerRowItemText"
-                        android:text="Abouts"
-                        tools:fontFamily="sans-serif-medium" />
-
-                </FrameLayout>
-
-            </LinearLayout>
-
-        </ScrollView>
+            </RelativeLayout>
 
     </LinearLayout>
 

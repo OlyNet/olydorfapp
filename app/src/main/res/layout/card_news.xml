@@ -16,8 +16,8 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/imageView"
-            android:layout_alignParentLeft="true"
+            android:id="@+id/newsCardImageView"
+            android:layout_alignParentLeft="false"
             android:layout_marginLeft="0dp"
             android:layout_alignParentTop="true"
             android:layout_marginTop="0dp" />
@@ -26,19 +26,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="12.02."
-            android:id="@+id/newsCardDate" />
+            android:id="@+id/newsCardDate"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="New Text"
-            android:id="@+id/textView3" />
+            android:id="@+id/newsCardTitle" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="New Text"
-            android:id="@+id/textView4" />
+            android:id="@+id/newsCardName" />
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>

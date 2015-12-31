@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import eu.olynet.olydorfapp.MainActivity;
+import eu.olynet.olydorfapp.activities.MainActivity;
 
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
