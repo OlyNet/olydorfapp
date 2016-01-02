@@ -94,7 +94,13 @@ public class ResourceManager {
 
 
             this.initialized = true;
+        } else {
+            Log.w("ResourceManager.init", "Duplicate init");
         }
+    }
+
+    public void cleanup() {
+        checkInitialized();
     }
 
     public AbstractMetaItem<?> getSingleItem(Class clazz, long id) {

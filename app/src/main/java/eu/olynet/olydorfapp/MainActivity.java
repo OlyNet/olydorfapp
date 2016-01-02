@@ -1,7 +1,12 @@
 package eu.olynet.olydorfapp;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.SystemClock;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -21,9 +26,13 @@ import android.widget.ImageView;
 import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheContextUtils;
 import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheLogUtils;
 
+import java.util.Calendar;
+
 import javax.annotation.Resource;
 
 import eu.olynet.olydorfapp.customViews.ScrimInsetsFrameLayout;
+import eu.olynet.olydorfapp.resources.BootReceiver;
+import eu.olynet.olydorfapp.resources.ResourceAlarm;
 import eu.olynet.olydorfapp.resources.ResourceManager;
 import eu.olynet.olydorfapp.sliding.SlidingTabLayout;
 import eu.olynet.olydorfapp.tabs.ViewPagerAdapter;
@@ -57,6 +66,14 @@ public class MainActivity extends AppCompatActivity
 
         // setup the ResourceManager
         ResourceManager.getInstance().init(this);
+
+        // enable AlarmManager
+        ComponentName receiver = new ComponentName(this, BootReceiver.class);
+        PackageManager pm = this.getPackageManager();
+
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
     }
 
 
