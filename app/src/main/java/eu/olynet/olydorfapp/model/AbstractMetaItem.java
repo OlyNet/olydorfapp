@@ -32,10 +32,18 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.lastUsed = lastUsed;
     }
 
+    public AbstractMetaItem(long id) {
+        this.id = id;
+        this.date = null;
+        this.lastUpdated = null;
+        this.lastUsed = null;
+    }
+
     protected AbstractMetaItem(long id, Date date, Date updated) {
         this.id = id;
         this.date = date;
         this.lastUpdated = updated;
+        this.lastUsed = null;
     }
 
     public long getId() {

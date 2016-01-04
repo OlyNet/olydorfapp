@@ -1,12 +1,8 @@
 package eu.olynet.olydorfapp;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.SystemClock;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -14,7 +10,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,16 +18,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
-import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheContextUtils;
-import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheLogUtils;
-
-import java.util.Calendar;
-
-import javax.annotation.Resource;
-
 import eu.olynet.olydorfapp.customViews.ScrimInsetsFrameLayout;
 import eu.olynet.olydorfapp.resources.BootReceiver;
-import eu.olynet.olydorfapp.resources.ResourceAlarm;
 import eu.olynet.olydorfapp.resources.ResourceManager;
 import eu.olynet.olydorfapp.sliding.SlidingTabLayout;
 import eu.olynet.olydorfapp.tabs.ViewPagerAdapter;

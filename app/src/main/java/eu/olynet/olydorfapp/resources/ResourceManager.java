@@ -16,6 +16,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.security.KeyStore;
 import java.util.Calendar;
 import java.util.Collections;
@@ -29,6 +30,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.NewsItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
 
 /**
@@ -123,6 +125,8 @@ public class ResourceManager {
 
     private AbstractMetaItem<?> fetchItem(Class clazz, long id) {
         // TODO: implement fetching items from the server
+        Log.i("ResourceManager", "fetchItem(" + clazz + ", " + id + ");");
+
         return null;
     }
 
@@ -177,7 +181,7 @@ public class ResourceManager {
     }
 
     @SuppressWarnings("unchecked")
-    public void performTest() {
+    public void performCleanupTest() {
         checkInitialized();
         TreeSet<NewsMetaItem> tree = null;
 
@@ -263,16 +267,137 @@ public class ResourceManager {
         }
     }
 
-    public AbstractMetaItem<?> getItem(Class clazz, long id) {
+    @SuppressWarnings("unchecked")
+    public void performTest() {
+        checkInitialized();
+        TreeSet<NewsMetaItem> tree = null;
+        NewsItem news = null;
+        String resIdent = null;
+        Date d = new Date();
+
+
+        metaTreeCache.put(treeCaches.get(NewsMetaItem.class), null);
+
+        Calendar calendar = Calendar.getInstance();
+
+        tree = new TreeSet<>();
+        tree.add(new NewsMetaItem(1, new Date(), new Date(), "test1 - should be gone (null)", "Test", null));
+
+        calendar.add(Calendar.SECOND, -1);
+        NewsMetaItem item = new NewsMetaItem(2, new Date(), new Date(), "test2 - should stay", "Test", null);
+        item.setLastUsed(calendar.getTime());
+        tree.add(item);
+
+        calendar.add(Calendar.MONTH, -1);
+        item = new NewsMetaItem(3, d, d, "test3 - should be gone", "Test", null);
+        resIdent = treeCaches.get(NewsMetaItem.class) + "_" + 3;
+        news = new NewsItem(3, d, d, "test3 - should be gone", "Test", null, "asdfasdfasdfadsfgkjlahsdfkljh");
+        itemCache.put(resIdent, news);
+        item.setLastUsed(calendar.getTime());
+        tree.add(item);
+
+        calendar.add(Calendar.MINUTE, -1);
+        item = new NewsMetaItem(4, d, d, "test4 - should be gone", "Test", null);
+        news = new NewsItem(4, d, d, "test4 - should be gone", "Test", null, "asdfasdfasdf");
+        resIdent = treeCaches.get(NewsMetaItem.class) + "_" + 4;
+        itemCache.put(resIdent, news);
+        item.setLastUsed(calendar.getTime());
+        tree.add(item);
+
+        metaTreeCache.put(treeCaches.get(NewsMetaItem.class), tree);
+        tree = null;
+
+        Log.e("Debug", "---------------------------------------------");
+        Log.e("Debug", "- Tree                                      -");
+        Log.e("Debug", "---------------------------------------------");
+
+        tree = metaTreeCache.get(treeCaches.get(NewsMetaItem.class));
+        for (NewsMetaItem nm : tree) {
+            Log.e("Debug", nm + "");
+        }
+        tree = null;
+
+
+        Log.e("Debug", "---------------------------------------------");
+        Log.e("Debug", "- Items that should exist                    -");
+        Log.e("Debug", "---------------------------------------------");
+        news = null;
+        resIdent = treeCaches.get(NewsMetaItem.class) + "_" + 4;
+        news = (NewsItem) getItem(NewsMetaItem.class, 4);
+        Log.e("Debug", news + "");
+        news = null;
+        resIdent = treeCaches.get(NewsMetaItem.class) + "_" + 3;
+        news = (NewsItem) getItem(NewsMetaItem.class, 3);
+        Log.e("Debug", news + "");
+
+
+        Log.e("Debug", "---------------------------------------------");
+        Log.e("Debug", "- Items that should not exist               -");
+        Log.e("Debug", "---------------------------------------------");
+        news = null;
+        resIdent = treeCaches.get(NewsMetaItem.class) + "_" + 5;
+        news = (NewsItem) getItem(NewsMetaItem.class, 5);
+        Log.e("Debug", news + "");
+        resIdent = treeCaches.get(NewsMetaItem.class) + "_" + -1;
+        news = (NewsItem) getItem(NewsMetaItem.class, -1);
+        Log.e("Debug", news + "");
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public AbstractMetaItem<?> getItem(Class<?> clazz, long id) {
         checkInitialized();
 
-        /* check cache and query server if necessary */
-        AbstractMetaItem<?> result = (AbstractMetaItem<?>) itemCache.get(treeCaches.get(clazz) + "_" + id);
-        if (result == null) {
-            result = fetchItem(clazz, id);
+        /* get the corresponding meta-data tree */
+        String type = treeCaches.get(clazz);
+        if (type == null) {
+            Log.e("ResourceManager", "meta-data tree for " + clazz + " not found");
+            return null;
+        }
+        TreeSet<AbstractMetaItem> tree = metaTreeCache.get(type);
+        if (tree == null) {
+            Log.e("ResourceManager", "meta-data tree for " + clazz + " not found");
+            return null;
         }
 
-        return result;
+
+        try {
+            /* create a dummy item with the same id */
+            Constructor<?> cons = clazz.getConstructor(long.class);
+            AbstractMetaItem<?> dummyItem = (AbstractMetaItem<?>) cons.newInstance(id);
+
+            /* use the dummy item to search for the real item within the tree */
+            AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
+            if (metaItem == null || metaItem.getId() != id || metaItem.getLastUpdated() == null) {
+                Log.e("ResourceManager", "meta-data tree " + clazz
+                        + " does not contain the requested element " + id);
+                return null;
+            }
+
+            /* check cache and query server on miss or date mismatch */
+            String resIdent = treeCaches.get(clazz) + "_" + id;
+            AbstractMetaItem<?> item = (AbstractMetaItem<?>) itemCache.get(resIdent);
+            if (item == null || !item.getLastUpdated().equals(metaItem.getLastUpdated())) {
+                AbstractMetaItem<?> webItem = fetchItem(clazz, id);
+
+                /* update local cache if fetch was successful */
+                if (webItem != null) {
+                    Method updateItem = clazz.getMethod("updateItem", clazz);
+                    updateItem.invoke(clazz.cast(metaItem), clazz.cast(webItem));
+
+                    itemCache.put(resIdent, webItem);
+                    metaTreeCache.put(type, tree);
+
+                    return webItem;
+                }
+            }
+
+            return item;
+        } catch (Exception e) {
+            /* lord have mercy */
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public List<AbstractMetaItem<?>> getListOfMetaItems(Class clazz, AbstractMetaItem<?> first,

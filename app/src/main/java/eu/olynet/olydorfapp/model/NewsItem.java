@@ -9,6 +9,10 @@ public class NewsItem extends NewsMetaItem {
 
     private String content;
 
+    public NewsItem() {
+
+    }
+
     public NewsItem(long id, Date date, Date lastUpdated, String title, String author,
                     Organization organization, String content) {
         super(id, date, lastUpdated, title, author, organization);

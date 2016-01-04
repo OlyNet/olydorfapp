@@ -22,6 +22,13 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
         this.organization = null;
     }
 
+    public NewsMetaItem(long id) {
+        super(id);
+        this.title = null;
+        this.author = null;
+        this.organization = null;
+    }
+
     public NewsMetaItem(long id, Date date, Date lastUpdated, String title, String author,
                         Organization organization) {
         super(id, date, lastUpdated);
