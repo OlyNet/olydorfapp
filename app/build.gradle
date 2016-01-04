@@ -36,10 +36,10 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    // Multidex support library (neededfor <5.0)
-    compile 'com.android.support:multidex:1.0.0'
+    // Multidex support library (needed for Android <5.0)
+    compile 'com.android.support:multidex:1.0.1'
     // For cloud messaging!
-    compile "com.google.android.gms:play-services:8.3.0"
+    compile "com.google.android.gms:play-services:8.4.0"
     // For design components (nav drawer, actionbar, cards, ...)
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
@@ -50,15 +50,12 @@ dependencies {
     // Came with sample :-P
     compile 'de.hdodenhof:circleimageview:1.2.2'
     compile 'com.mcxiaoke.volley:library:1.0.15'
-    // ORMLite database
-    compile 'com.j256.ormlite:ormlite-core:4.48'
-    compile 'com.j256.ormlite:ormlite-android:4.48'
     // RESTEasy support
     compile 'org.jboss.resteasy:resteasy-jaxrs:3.0.10.Final'
     compile 'org.jboss.resteasy:resteasy-jackson2-provider:3.0.10.Final'
     compile 'org.jboss.resteasy:resteasy-client:3.0.10.Final'
     // GSON
-    compile 'com.google.code.gson:gson:2.5'
+//    compile 'com.google.code.gson:gson:2.5'
     // Caching
     compile ('com.vincentbrison.openlibraries.android:dualcache:2.2.2@jar') {
         transitive = true

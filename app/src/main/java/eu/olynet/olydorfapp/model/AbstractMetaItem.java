@@ -1,5 +1,8 @@
 package eu.olynet.olydorfapp.model;
 
+import android.accounts.AbstractAccountAuthenticator;
+
+import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -9,10 +12,25 @@ import java.util.Date;
  */
 public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements Comparable<T> {
 
-    private final long id;
+    private long id;
     protected Date date;
     protected Date lastUpdated;
     protected Date lastUsed = null;
+
+    protected AbstractMetaItem() {
+
+    }
+
+    /**
+     * Dummy-constructor for filtering by lastUsed
+     * @param lastUsed the Date this item was last used.
+     */
+    public AbstractMetaItem(Date lastUsed) {
+        this.id = -1;
+        this.date = null;
+        this.lastUpdated = null;
+        this.lastUsed = lastUsed;
+    }
 
     protected AbstractMetaItem(long id, Date date, Date updated) {
         this.id = id;
@@ -44,7 +62,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         return lastUsed;
     }
 
-    protected void setLastUsed(Date lastUsed) {
+    public void setLastUsed(Date lastUsed) {
         this.lastUsed = lastUsed;
     }
 
@@ -82,5 +100,29 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
             return 0;
         else
             return 1;
+    }
+
+    /**
+     * Comparator used to order items by their lastUsed date. Needed for periodic cache cleanup.
+     */
+    public static class LastUsedComparator implements Comparator<AbstractMetaItem> {
+        @Override
+        public int compare(AbstractMetaItem lhs, AbstractMetaItem rhs) {
+            if (lhs == null && rhs == null) {
+                return 0;
+            } else if (lhs == null && rhs != null) {
+                return -1;
+            } else if (lhs != null && rhs == null) {
+                return 1;
+            } else if (lhs.lastUsed == null && rhs.lastUsed == null) {
+                return 0;
+            } else if (lhs.lastUsed != null && rhs.lastUsed == null) {
+                return 1;
+            } else if (lhs.lastUsed == null && rhs.lastUsed != null) {
+                return -1;
+            } else {
+                return lhs.lastUsed.compareTo(rhs.lastUsed);
+            }
+        }
     }
 }

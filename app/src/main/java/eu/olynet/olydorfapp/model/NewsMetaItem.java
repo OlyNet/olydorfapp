@@ -9,7 +9,18 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
 
     protected String title;
     protected String author;
-    protected final Organization organization;
+    protected Organization organization;
+
+    public NewsMetaItem() {
+        super();
+    }
+
+    public NewsMetaItem(Date lastUsed) {
+        super(lastUsed);
+        this.title = null;
+        this.author = null;
+        this.organization = null;
+    }
 
     public NewsMetaItem(long id, Date date, Date lastUpdated, String title, String author,
                         Organization organization) {
