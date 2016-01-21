@@ -27,7 +27,7 @@ public class NewsItem extends NewsMetaItem {
     public void setContent(String content) {
         this.content = content;
     }
-
+    
     public void updateItem(NewsItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
         this.content = updatedItem.content;

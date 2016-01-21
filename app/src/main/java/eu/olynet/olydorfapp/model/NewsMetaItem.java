@@ -8,7 +8,7 @@ import java.util.Date;
 public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
 
     protected String title;
-    protected String author;
+    protected String author = null;
     protected Organization organization;
 
     public NewsMetaItem() {
