@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
 
         // setup the ResourceManager
         ResourceManager.getInstance().init(this);
-//        ResourceManager.getInstance().performTest();
 
         // enable BootReceiver
         ComponentName receiver = new ComponentName(this, BootReceiver.class);

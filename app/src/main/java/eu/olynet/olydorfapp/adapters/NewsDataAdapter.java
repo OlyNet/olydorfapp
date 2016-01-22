@@ -6,46 +6,45 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import eu.olynet.olydorfapp.R;
-import eu.olynet.olydorfapp.model.News;
+import eu.olynet.olydorfapp.model.NewsMetaItem;
+import eu.olynet.olydorfapp.model.Organization;
 
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */
-public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHolder>
-{
-    private List<News> items;
+public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHolder> {
+    private List<NewsMetaItem> items;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        protected TextView vName;
-        protected TextView vSurname;
-        protected TextView vEmail;
+        protected TextView vDate;
         protected TextView vTitle;
+        protected TextView vOrganization;
+
         public ViewHolder(View v) {
             super(v);
-            vName = (TextView) v.findViewById(R.id.txtName);
-            vSurname = (TextView) v.findViewById(R.id.txtSurname);
-            vEmail = (TextView) v.findViewById(R.id.txtEmail);
-            vTitle = (TextView) v.findViewById(R.id.title);
+            vOrganization = (TextView) v.findViewById(R.id.newsCardOrganization);
+            vDate = (TextView) v.findViewById(R.id.newsCardDate);
+            vTitle = (TextView) v.findViewById(R.id.newsCardTitle);
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public NewsDataAdapter(List<News> myDataset)
-    {
+    public NewsDataAdapter(List<NewsMetaItem> myDataset) {
         items = myDataset;
     }
 
     // Create new views (invoked by the layout manager)
     @Override
     public NewsDataAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
+                                                         int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.card_news, parent, false);
@@ -56,15 +55,15 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        News n = items.get(position);
-//        holder.vTitle.setText(n.title);
-        holder.vEmail.setText(n.text);
+        NewsMetaItem newsMetaItem = items.get(position);
+        holder.vDate.setText(new SimpleDateFormat("dd.MM.yyyy").format(newsMetaItem.getDate()));
+        holder.vTitle.setText(newsMetaItem.getTitle());
+        holder.vOrganization.setText(Organization.organizations.get(newsMetaItem.getOrganization()).getName());
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
-    public int getItemCount()
-    {
+    public int getItemCount() {
         return items.size();
     }
 }

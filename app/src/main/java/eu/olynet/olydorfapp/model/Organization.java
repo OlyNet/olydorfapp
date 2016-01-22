@@ -13,21 +13,25 @@ public class Organization {
 
     static {
         Map<Integer, Organization> initMap = new LinkedHashMap<>();
-        initMap.put(0, new Organization(0, "N/A"));
-        initMap.put(1, new Organization(1, "OlyNet"));
-        initMap.put(2, new Organization(2, "Bierstube"));
-        initMap.put(3, new Organization(3, "OlyDisco"));
-        initMap.put(4, new Organization(4, "OlyLounge"));
+        initMap.put(0, new Organization(0, "N/A", "https://olydorf.mhn.de", new byte[0], "unknown"));
+        initMap.put(1, new Organization(1, "OlyNet e.V.", "https://www.olynet.eu", new byte[0], "olynet"));
+        initMap.put(2, new Organization(2, "Die Bierstube", "https://www.facebook.com/bierstube/", new byte[0], "bierstube"));
 
         organizations = Collections.unmodifiableMap(initMap);
     }
 
     private final int id;
     private final String name;
+    private final String website;
+    private final byte[] image;
+    private final String shortName;
 
-    public Organization(int id, String name) {
+    public Organization(int id, String name, String website, byte[] image, String shortName) {
         this.id = id;
         this.name = name;
+        this.website = website;
+        this.image = image;
+        this.shortName = shortName;
     }
 
     public int getId() {

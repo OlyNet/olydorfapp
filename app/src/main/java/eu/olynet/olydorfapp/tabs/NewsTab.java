@@ -1,5 +1,6 @@
 package eu.olynet.olydorfapp.tabs;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,11 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.NewsDataAdapter;
-import eu.olynet.olydorfapp.model.News;
+import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.NewsMetaItem;
+import eu.olynet.olydorfapp.resources.ResourceManager;
 
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
@@ -36,14 +41,38 @@ public class NewsTab extends Fragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mAdapter = new NewsDataAdapter(Arrays.asList(new News[]{new News(){{
-            title = "TestTitle";
-            text = "Foo";
-        }}}));
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        (new AsyncTask<Void, Void, List<NewsMetaItem>>() {
+            @Override
+            protected List<NewsMetaItem> doInBackground(Void... params) {
+                TreeSet<AbstractMetaItem<?>> tree = ResourceManager.getInstance()
+                        .getTreeOfMetaItems(NewsMetaItem.class);
+
+                List<NewsMetaItem> result = new ArrayList<>();
+                if(tree == null) {
+                    return result;
+                }
+
+                TreeSet<NewsMetaItem> tmpTree = new TreeSet<>(NewsMetaItem.getDateDescComparator());
+                for(AbstractMetaItem<?> item : tree) {
+                    tmpTree.add((NewsMetaItem) item);
+                }
+
+                result.addAll(tmpTree);
+                return result;
+            }
+
+            @Override
+            protected void onPostExecute(List<NewsMetaItem> result) {
+                super.onPostExecute(result);
+
+                mAdapter = new NewsDataAdapter(result);
+
+                mLayoutManager = new LinearLayoutManager(getActivity());
+                mRecyclerView.setHasFixedSize(true);
+                mRecyclerView.setAdapter(mAdapter);
+                mRecyclerView.setLayoutManager(mLayoutManager);
+                mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+            }
+        }).execute();
     }
 }

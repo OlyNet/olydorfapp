@@ -1,5 +1,6 @@
 package eu.olynet.olydorfapp.model;
 
+import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -83,5 +84,14 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
         result += "organization = " + this.organization;
 
         return result;
+    }
+
+    public static Comparator<NewsMetaItem> getDateDescComparator() {
+        return new Comparator<NewsMetaItem>() {
+            @Override
+            public int compare(NewsMetaItem lhs, NewsMetaItem rhs) {
+                return -lhs.getDate().compareTo(rhs.getDate());
+            }
+        };
     }
 }
