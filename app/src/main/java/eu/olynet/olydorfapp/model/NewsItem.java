@@ -7,36 +7,48 @@ import java.util.Date;
  */
 public class NewsItem extends NewsMetaItem {
 
-    private String content;
+    private String text;
+    private byte[] image;
 
     public NewsItem() {
-
+        super();
     }
 
-    public NewsItem(long id, Date date, Date lastUpdated, String title, String author,
-                    Organization organization, String content) {
+    public NewsItem(int id, Date date, Date lastUpdated, String title, String author,
+                    int organization, String content, byte[] image) {
         super(id, date, lastUpdated, title, author, organization);
-        this.content = content;
+        this.text = content;
+        this.image = image;
     }
 
-    public String getContent() {
+    public String getText() {
         this.setLastUsed();
-        return content;
+        return text;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setText(String content) {
+        this.text = content;
+    }
+
+    public byte[] getImage() {
+        this.setLastUsed();
+        return this.image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
     
     public void updateItem(NewsItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
-        this.content = updatedItem.content;
+        this.text = updatedItem.text;
     }
 
     @Override
     public String toString() {
         String result = super.toString() + "\n";
-        result += "content = " + this.content;
+        result += "text = " + this.text + "\n";
+        result += "image = " + image.length + " Byte";
 
         return result;
     }

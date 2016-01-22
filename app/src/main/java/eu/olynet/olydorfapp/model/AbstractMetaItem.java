@@ -12,12 +12,12 @@ import java.util.Date;
  */
 public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements Comparable<T> {
 
-    private long id;
+    private int id;
     protected Date date;
     protected Date lastUpdated;
     protected Date lastUsed = null;
 
-    protected AbstractMetaItem() {
+    public AbstractMetaItem() {
 
     }
 
@@ -32,21 +32,21 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.lastUsed = lastUsed;
     }
 
-    public AbstractMetaItem(long id) {
+    public AbstractMetaItem(int id) {
         this.id = id;
         this.date = null;
         this.lastUpdated = null;
         this.lastUsed = null;
     }
 
-    protected AbstractMetaItem(long id, Date date, Date updated) {
+    protected AbstractMetaItem(int id, Date date, Date updated) {
         this.id = id;
         this.date = date;
         this.lastUpdated = updated;
         this.lastUsed = null;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 

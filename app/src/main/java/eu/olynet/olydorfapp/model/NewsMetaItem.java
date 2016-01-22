@@ -9,7 +9,7 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
 
     protected String title;
     protected String author = null;
-    protected Organization organization;
+    protected int organization;
 
     public NewsMetaItem() {
         super();
@@ -19,18 +19,18 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
         super(lastUsed);
         this.title = null;
         this.author = null;
-        this.organization = null;
+        this.organization = 0;
     }
 
-    public NewsMetaItem(long id) {
+    public NewsMetaItem(int id) {
         super(id);
         this.title = null;
         this.author = null;
-        this.organization = null;
+        this.organization = 0;
     }
 
-    public NewsMetaItem(long id, Date date, Date lastUpdated, String title, String author,
-                        Organization organization) {
+    public NewsMetaItem(int id, Date date, Date lastUpdated, String title, String author,
+                        int organization) {
         super(id, date, lastUpdated);
         this.title = title;
         this.author = author;
@@ -71,7 +71,7 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
         this.author = author;
     }
 
-    public Organization getOrganization() {
+    public int getOrganization() {
         return organization;
     }
 
