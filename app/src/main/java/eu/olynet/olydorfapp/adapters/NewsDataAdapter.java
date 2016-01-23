@@ -56,7 +56,6 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, int position) {
         News n = items.get(position);
 //        holder.vTitle.setText(n.title);
-        holder.vEmail.setText(n.text);
     }
 
     // Return the size of your dataset (invoked by the layout manager)

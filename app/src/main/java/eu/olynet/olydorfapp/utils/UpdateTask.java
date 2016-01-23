@@ -7,7 +7,7 @@ import android.widget.Toast;
 
 import java.util.TreeSet;
 
-import eu.olynet.olydorfapp.MainActivity;
+import eu.olynet.olydorfapp.activities.MainActivity;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
