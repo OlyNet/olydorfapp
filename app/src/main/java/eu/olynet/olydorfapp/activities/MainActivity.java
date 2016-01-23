@@ -1,7 +1,8 @@
 package eu.olynet.olydorfapp.activities;
 
+import android.content.ComponentName;
 import android.content.Context;
-import android.net.Uri;
+import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -27,6 +28,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.NavigationDrawerItemsAdapter;
 import eu.olynet.olydorfapp.customViews.ScrimInsetsFrameLayout;
+import eu.olynet.olydorfapp.resources.BootReceiver;
+import eu.olynet.olydorfapp.resources.ResourceManager;
 import eu.olynet.olydorfapp.sliding.SlidingTabLayout;
 import eu.olynet.olydorfapp.tabs.ViewPagerAdapter;
 import eu.olynet.olydorfapp.utils.UpdateTask;
@@ -55,6 +58,17 @@ public class MainActivity extends AppCompatActivity {
         init_slider();
 
         init_navigator();
+
+        // setup the ResourceManager
+        ResourceManager.getInstance().init(this);
+//        ResourceManager.getInstance().performTest();
+
+        // enable BootReceiver
+        ComponentName receiver = new ComponentName(this, BootReceiver.class);
+        PackageManager pm = this.getPackageManager();
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
     }
 
 

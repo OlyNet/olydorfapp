@@ -43,5 +43,23 @@
             android:text="New Text"
             android:id="@+id/newsCardName" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="max.mustermann@olynet.eu"
+            android:id="@+id/txtEmail" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Max"
+            android:id="@+id/txtName" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mustermann"
+            android:id="@+id/txtSurname" />
+
     </RelativeLayout>
 </android.support.v7.widget.CardView>
