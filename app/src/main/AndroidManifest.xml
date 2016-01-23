@@ -50,7 +50,7 @@
         -->
 
         <activity
-            android:name="eu.olynet.olydorfapp.MainActivity"
+            android:name="eu.olynet.olydorfapp.activities.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -72,7 +72,7 @@
         </receiver>
 
         <activity
-            android:name="eu.olynet.olydorfapp.LaundryQRScannerActivity"
+            android:name="eu.olynet.olydorfapp.activities.LaundryQRScannerActivity"
             android:label="@string/app_qr_scanner"></activity>
     </application>
 

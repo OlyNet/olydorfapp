@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import eu.olynet.olydorfapp.LaundryQRScannerActivity;
+import eu.olynet.olydorfapp.activities.LaundryQRScannerActivity;
 import eu.olynet.olydorfapp.R;
 
 /**

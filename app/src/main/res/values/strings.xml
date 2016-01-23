@@ -14,7 +14,13 @@
     <string name="other_activity">Other Activity</string>
 
     <!-- Navigation Drawer -->
-    <string name="nav_drawer_item_home">Home</string>
+    <string name="navDrawerHomeEntry">Home</string>
+    <string name="navDrawerEventsEntry">Events</string>
+    <string name="navDrawerBierstubeEntry">Die Bierstube</string>
+    <string name="navDrawerDiscoEntry">OlyDisco</string>
+    <string name="navDrawerLoungeEntry">The O(n)ly</string>
+    <string name="navDrawerLaundryEntry">Laundry room</string>
+
     <string name="nav_drawer_item_explore">Explore</string>
     <string name="nav_drawer_help_and_feedback"><![CDATA[Help & feedback]]></string>
     <string name="nav_drawer_about">About</string>
@@ -28,5 +34,8 @@
     <!-- Typeface names -->
     <string name="typeface_roboto_regular">Roboto-Regular</string>
     <string name="typeface_roboto_medium">Roboto-Medium</string>
+
+    <!-- Laundry strings -->
+    <string name="laundryCameraScanMessage">Scan the QR code attached to the machines</string>
 
 </resources>

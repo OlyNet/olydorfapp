@@ -15,6 +15,7 @@
     <dimen name="nav_drawer_item_row_height">48dp</dimen>
     <dimen name="nav_drawer_item_row_icon_size">24dp</dimen>
     <dimen name="nav_drawer_vertical_spacing_listing">8dp</dimen>
+    <dimen name="nav_drawer_vertical_spacing_listing_listview">16dp</dimen>
     <dimen name="nav_drawer_vertical_spacing_listing_divider_top">7dp</dimen>
     <dimen name="nav_drawer_vertical_spacing_listing_divider_bottom">8dp</dimen>
     <dimen name="nav_drawer_subheader_height">48dp</dimen>
