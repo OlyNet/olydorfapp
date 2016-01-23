@@ -3,6 +3,7 @@ package eu.olynet.olydorfapp.resources;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.util.Log;
 
 import com.vincentbrison.openlibraries.android.dualcache.lib.DualCache;
@@ -34,6 +35,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.ProcessingException;
 
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsItem;
@@ -94,7 +96,7 @@ public class ResourceManager {
             }
 
             /* setup DualCache */
-            DualCacheLogUtils.enableLog();
+//            DualCacheLogUtils.enableLog();
             DualCacheContextUtils.setContext(this.context);
             metaTreeCache = new DualCacheBuilder<>("MetaTrees", pInfo.versionCode, TreeSet.class)
                     .useDefaultSerializerInRam(5 * 1024 * 1024)
@@ -104,7 +106,10 @@ public class ResourceManager {
                     .useDefaultSerializerInDisk(50 * 1024 * 1024, true);
             Log.i("ResourceManager.init", "DualCache setup complete.");
 
-            /* setup ResteasyClient */
+            /*
+             * setup ResteasyClient
+             * ONLY MESS WITH THIS IF YOU KNOW EXACTLY WHAT YOU ARE DOING!
+             */
             try {
                 /* create a KeyStore that contains our client certificate */
                 //InputStream certificate = this.context.getAssets().open(CERTIFICATE_FILE);
@@ -136,8 +141,25 @@ public class ResourceManager {
         }
     }
 
+    /**
+     * @return <b>true</b> if there is a connection to the internet available, <b>false</b> otherwise.
+     */
+    private boolean isOnline() {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            return cm.getActiveNetworkInfo().isConnectedOrConnecting();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private AbstractMetaItem<?> fetchItem(Class clazz, int id) {
+//        if(!isOnline()) {
+//            Log.w("ResourceManager", "there does not seem to be an internet connection");
+//            throw new NoConnectionException("there does not seem to be an internet connection");
+//        }
+
         AbstractMetaItem<?> result = null;
 
         /* check if a valid type has been requested */
@@ -171,7 +193,12 @@ public class ResourceManager {
     }
 
     @SuppressWarnings("unchecked")
-    private List<AbstractMetaItem<?>> fetchMetaItems(Class clazz) {
+    private List<AbstractMetaItem<?>> fetchMetaItems(Class clazz) throws NoConnectionException {
+        if (!isOnline()) {
+            Log.w("ResourceManager", "there does not seem to be an internet connection");
+            throw new NoConnectionException("there does not seem to be an internet connection");
+        }
+
         List<AbstractMetaItem<?>> result = new ArrayList<>();
 
         /* check if a valid type has been requested */
@@ -195,8 +222,9 @@ public class ResourceManager {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
-            if (e.getCause() instanceof NotFoundException) {
+            if (e.getCause() instanceof ProcessingException) {
                 // TODO: inform the user of this somehow
+                result = null;
             }
         }
 
@@ -463,7 +491,7 @@ public class ResourceManager {
             }
 
             /* check if we have some valid item (up-to-date or not) */
-            if(item != null) {
+            if (item != null) {
                 /* update last used */
                 item.setLastUsed();
 
@@ -472,6 +500,8 @@ public class ResourceManager {
                 updateItem.invoke(clazz.cast(metaItem), clazz.cast(item));
 
                 /* write cache */
+                Log.i("ResourceManager", "Updating cache for item '" + resIdent
+                        + "' and meta-data tree '" + type + "'");
                 itemCache.put(resIdent, item);
                 metaTreeCache.put(type, tree);
             }
@@ -485,7 +515,7 @@ public class ResourceManager {
     }
 
     @SuppressWarnings("unchecked")
-    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class clazz) {
+    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class clazz) throws NoConnectionException {
         checkInitialized();
 
         /* get the corresponding meta-data tree */
@@ -498,13 +528,23 @@ public class ResourceManager {
 
         /* fetch meta-data from server */
         TreeSet<AbstractMetaItem<?>> result = new TreeSet<>();
-        List<AbstractMetaItem<?>> items = fetchMetaItems(clazz);
-        if(items != null) {
+        List<AbstractMetaItem<?>> items = null;
+        NoConnectionException preparedException = null;
+        try {
+            items = fetchMetaItems(clazz);
+        } catch (NoConnectionException nce) {
+            preparedException = new NoConnectionException(nce.getMessage());
+            preparedException.initCause(nce);
+        }
+
+        if (items != null) {
+            Log.i("ResourceManager", "Received " + items.size() + " meta-data items from server");
+
             /* add all items to the result to be returned */
             result.addAll(items);
 
             /* insert and update all entries in cached metaDataTree */
-            if(cachedTree == null) {
+            if (cachedTree == null) {
                 cachedTree = new TreeSet<>();
             } else {
                 cachedTree.removeAll(result);
@@ -514,15 +554,23 @@ public class ResourceManager {
             /* write cache */
             metaTreeCache.put(type, cachedTree);
         } else {
+            /* return cached data instead */
+            Log.w("ResourceManager", "Could not fetch meta-data from server, using cached data");
+            Log.i("ResourceManager", "Cached metaTree size: " + cachedTree.size());
             result.addAll(cachedTree);
+        }
+
+        if (preparedException != null) {
+            preparedException.setCachedResult(result);
+            throw preparedException;
         }
 
         return result;
     }
 
     public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class clazz, AbstractMetaItem<?> first,
-                                                        AbstractMetaItem<?> last,
-                                                        Comparator<AbstractMetaItem<?>> comparator) {
+                                                           AbstractMetaItem<?> last,
+                                                           Comparator<AbstractMetaItem<?>> comparator) {
         checkInitialized();
 
         TreeSet<AbstractMetaItem<?>> result = new TreeSet<>(comparator);

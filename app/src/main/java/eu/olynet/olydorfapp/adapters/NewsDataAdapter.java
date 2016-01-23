@@ -56,9 +56,22 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         NewsMetaItem newsMetaItem = items.get(position);
+
+        /* Date */
         holder.vDate.setText(new SimpleDateFormat("dd.MM.yyyy").format(newsMetaItem.getDate()));
+
+        /* Title */
         holder.vTitle.setText(newsMetaItem.getTitle());
-        holder.vOrganization.setText(Organization.organizations.get(newsMetaItem.getOrganization()).getName());
+
+        /* Organization */
+        Organization organization = Organization.organizations.get(newsMetaItem.getOrganization());
+        String orgName;
+        if(organization != null) {
+            orgName = organization.getName();
+        } else {
+            orgName = "";
+        }
+        holder.vOrganization.setText(orgName);
     }
 
     // Return the size of your dataset (invoked by the layout manager)
