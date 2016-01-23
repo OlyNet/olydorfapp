@@ -14,8 +14,8 @@
         android:orientation="vertical">
 
         <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/newsCardImageView"
             android:layout_alignParentLeft="false"
             android:layout_marginLeft="0dp"
@@ -25,41 +25,31 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="12.02."
+            android:text="01.01.1970"
             android:id="@+id/newsCardDate"
-            android:layout_alignParentEnd="false"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true" />
+            android:layout_toRightOf="@+id/imageView"
+            android:layout_below="@+id/newsCardTitle" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/newsCardTitle" />
+            android:text="Are your titles too lame?"
+            android:id="@+id/newsCardTitle"
+            android:layout_gravity="center|left"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/imageView"
+            android:layout_toEndOf="@+id/imageView" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/newsCardName" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="max.mustermann@olynet.eu"
-            android:id="@+id/txtEmail" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Max"
-            android:id="@+id/txtName" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mustermann"
-            android:id="@+id/txtSurname" />
+            android:text="Organization"
+            android:id="@+id/newsCardOrganization"
+            android:layout_alignTop="@+id/newsCardDate"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>

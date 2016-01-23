@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.vincentbrison.openlibraries.android.dualcache.lib.DualCache;
 import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheBuilder;
@@ -17,7 +16,6 @@ import org.jboss.resteasy.client.jaxrs.engines.URLConnectionEngine;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.plugins.providers.jackson.ResteasyJacksonProvider;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -34,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.NotFoundException;
 
@@ -99,10 +96,10 @@ public class ResourceManager {
             /* setup DualCache */
             DualCacheLogUtils.enableLog();
             DualCacheContextUtils.setContext(this.context);
-            metaTreeCache = new DualCacheBuilder<TreeSet>("MetaTrees", pInfo.versionCode, TreeSet.class)
+            metaTreeCache = new DualCacheBuilder<>("MetaTrees", pInfo.versionCode, TreeSet.class)
                     .useDefaultSerializerInRam(5 * 1024 * 1024)
                     .useDefaultSerializerInDisk(10 * 1024 * 1024, true);
-            itemCache = new DualCacheBuilder<AbstractMetaItem>("Items", pInfo.versionCode, AbstractMetaItem.class)
+            itemCache = new DualCacheBuilder<>("Items", pInfo.versionCode, AbstractMetaItem.class)
                     .useDefaultSerializerInRam(5 * 1024 * 1024)
                     .useDefaultSerializerInDisk(50 * 1024 * 1024, true);
             Log.i("ResourceManager.init", "DualCache setup complete.");
@@ -139,6 +136,7 @@ public class ResourceManager {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private AbstractMetaItem<?> fetchItem(Class clazz, int id) {
         AbstractMetaItem<?> result = null;
 
@@ -172,6 +170,7 @@ public class ResourceManager {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     private List<AbstractMetaItem<?>> fetchMetaItems(Class clazz) {
         List<AbstractMetaItem<?>> result = new ArrayList<>();
 
@@ -258,7 +257,7 @@ public class ResourceManager {
     @SuppressWarnings("unchecked")
     public void performCleanupTest() {
         checkInitialized();
-        TreeSet<NewsMetaItem> tree = null;
+        TreeSet<NewsMetaItem> tree;
 
         Log.e("Debug", "---------------------------------------------");
         Log.e("Debug", "- Old cache content                         -");
