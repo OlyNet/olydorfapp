@@ -3,6 +3,7 @@ package eu.olynet.olydorfapp;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.support.multidex.MultiDex;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -180,6 +181,12 @@ public class MainActivity extends AppCompatActivity {
             m.getActionView().clearAnimation();
             m.setActionView(null);
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     /*

@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
+    useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "eu.olynet.olydorfapp"
@@ -40,7 +41,8 @@ dependencies {
     // Multidex support library (needed for Android <5.0)
     compile 'com.android.support:multidex:1.0.1'
     // For cloud messaging!
-    compile "com.google.android.gms:play-services:8.4.0"
+//    compile "com.google.android.gms:play-services:8.4.0"
+    compile 'com.google.android.gms:play-services-gcm:8.4.0'
     // For design components (nav drawer, actionbar, cards, ...)
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
