@@ -17,6 +17,7 @@ import org.jboss.resteasy.client.jaxrs.engines.URLConnectionEngine;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ProcessingException;
@@ -120,10 +122,12 @@ public class ResourceManager {
                 ClientHttpEngine engine = new URLConnectionEngine();
                 ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine)
                         .keyStore(keyStore, new char[0])
+                        .establishConnectionTimeout(5, TimeUnit.SECONDS)
+                        .connectionCheckoutTimeout(5, TimeUnit.SECONDS)
+                        .socketTimeout(5, TimeUnit.SECONDS)
                         .build();
 
                 client.register(JacksonJsonProvider.class);
-
 
                 ResteasyWebTarget target = client.target("http://web1.olydorf.mhn.de:8230/dorfapp-rest/api");
                 onc = target.proxy(OlyNetClient.class);
