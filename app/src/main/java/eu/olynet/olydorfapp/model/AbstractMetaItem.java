@@ -13,16 +13,20 @@ import java.util.Date;
 public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements Comparable<T> {
 
     private int id;
-    protected Date date;
-    protected Date lastUpdated;
+    protected Date date = null;
+    protected Date lastUpdated = null;
     protected Date lastUsed = null;
 
+    /**
+     * Dummy-constructor for (de-)serialization. <b>Do not use!</b>
+     */
     public AbstractMetaItem() {
 
     }
 
     /**
      * Dummy-constructor for filtering by lastUsed
+     *
      * @param lastUsed the Date this item was last used.
      */
     public AbstractMetaItem(Date lastUsed) {
@@ -32,6 +36,11 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.lastUsed = lastUsed;
     }
 
+    /**
+     * Dummy-constructor for filtering by id
+     *
+     * @param id
+     */
     public AbstractMetaItem(int id) {
         this.id = id;
         this.date = null;
