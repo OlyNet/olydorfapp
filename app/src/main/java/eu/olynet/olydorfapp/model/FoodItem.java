@@ -5,29 +5,18 @@ import java.util.Date;
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
  */
-public class NewsItem extends NewsMetaItem {
+public class FoodItem extends FoodMetaItem {
 
-    protected String text;
     protected byte[] image;
 
-    public NewsItem() {
+    public FoodItem() {
         super();
     }
 
-    public NewsItem(int id, Date date, Date lastUpdated, String title, String author,
-                    int organization, String content, byte[] image) {
-        super(id, date, lastUpdated, title, author, organization);
-        this.text = content;
+    public FoodItem(int id, Date date, Date lastUpdated, String name, float price,
+                        boolean vegetarian, int organization, byte[] image) {
+        super(id, date, lastUpdated, name, price, vegetarian, organization);
         this.image = image;
-    }
-
-    public String getText() {
-        this.setLastUsed();
-        return text;
-    }
-
-    public void setText(String content) {
-        this.text = content;
     }
 
     public byte[] getImage() {
@@ -38,17 +27,15 @@ public class NewsItem extends NewsMetaItem {
     public void setImage(byte[] image) {
         this.image = image;
     }
-    
-    public void updateItem(NewsItem updatedItem) throws ItemMismatchException {
+
+    public void updateItem(FoodItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
-        this.text = updatedItem.text;
         this.image = updatedItem.image;
     }
 
     @Override
     public String toString() {
         String result = super.toString() + "\n";
-        result += "text = " + this.text + "\n";
         result += "image = " + image.length + " Byte";
 
         return result;

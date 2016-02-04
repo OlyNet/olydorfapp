@@ -38,24 +38,6 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
         this.organization = organization;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (!(obj instanceof NewsMetaItem))
-            return false;
-        NewsMetaItem item = (NewsMetaItem) obj;
-
-        return this.getId() == item.getId();
-    }
-
-    @Override
-    public void updateItem(NewsMetaItem updatedItem) throws ItemMismatchException{
-        super.updateItem(updatedItem);
-        this.title = updatedItem.title;
-        this.author = updatedItem.author;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -84,6 +66,24 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
         result += "organization = " + this.organization;
 
         return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (!(obj instanceof NewsMetaItem))
+            return false;
+        NewsMetaItem item = (NewsMetaItem) obj;
+
+        return this.getId() == item.getId();
+    }
+
+    @Override
+    public void updateItem(NewsMetaItem updatedItem) throws ItemMismatchException{
+        super.updateItem(updatedItem);
+        this.title = updatedItem.title;
+        this.author = updatedItem.author;
     }
 
     public static Comparator<NewsMetaItem> getDateDescComparator() {
