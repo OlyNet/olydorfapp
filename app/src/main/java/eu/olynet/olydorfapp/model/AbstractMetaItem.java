@@ -1,7 +1,5 @@
 package eu.olynet.olydorfapp.model;
 
-import android.accounts.AbstractAccountAuthenticator;
-
 import java.util.Comparator;
 import java.util.Date;
 
