@@ -11,7 +11,6 @@ import android.widget.Toast;
 import com.vincentbrison.openlibraries.android.dualcache.lib.DualCache;
 import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheBuilder;
 import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheContextUtils;
-import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheLogUtils;
 
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -19,7 +18,6 @@ import org.jboss.resteasy.client.jaxrs.engines.URLConnectionEngine;
 import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.internal.ClientConfiguration;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -40,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.ProcessingException;
+import javax.ws.rs.core.Configuration;
 
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsItem;
@@ -100,7 +99,6 @@ public class ResourceManager {
             }
 
             /* setup DualCache */
-//            DualCacheLogUtils.enableLog();
             DualCacheContextUtils.setContext(this.context);
             metaTreeCache = new DualCacheBuilder<>("MetaTrees", pInfo.versionCode, TreeSet.class)
                     .useDefaultSerializerInRam(5 * 1024 * 1024)
@@ -108,7 +106,7 @@ public class ResourceManager {
             itemCache = new DualCacheBuilder<>("Items", pInfo.versionCode, AbstractMetaItem.class)
                     .useDefaultSerializerInRam(5 * 1024 * 1024)
                     .useDefaultSerializerInDisk(50 * 1024 * 1024, true);
-            Log.i("ResourceManager.init", "DualCache setup complete.");
+            Log.d("ResourceManager.init", "DualCache setup complete.");
 
             /*
              * setup ResteasyClient
@@ -121,12 +119,15 @@ public class ResourceManager {
                 keyStore.load(null);
                 //keyStore.load(certificate, CERTIFICATE_KEY);
 
-                ClientHttpEngine engine = new URLConnectionEngine();
-                ResteasyClient client = new ResteasyClientBuilder().httpEngine(engine)
+
+                /* instantiate the HttpEngine we are going to use */
+                HackedURLConnectionEngine engine = new HackedURLConnectionEngine();
+                engine.setConnectionTimeout(5000);
+
+                /* instantiate the ResteasyClient */
+                ResteasyClient client = new ResteasyClientBuilder()
+                        .httpEngine(engine)
                         .keyStore(keyStore, new char[0])
-                        .establishConnectionTimeout(5, TimeUnit.SECONDS)
-                        .connectionCheckoutTimeout(5, TimeUnit.SECONDS)
-                        .socketTimeout(5, TimeUnit.SECONDS)
                         .build();
 
                 client.register(JacksonJsonProvider.class);
@@ -134,7 +135,7 @@ public class ResourceManager {
                 ResteasyWebTarget target = client.target("http://web1.olydorf.mhn.de:8230/dorfapp-rest/api");
                 onc = target.proxy(OlyNetClient.class);
 
-                Log.i("ResourceManager.init", "ResteasyClient setup complete.");
+                Log.d("ResourceManager.init", "ResteasyClient setup complete.");
             } catch (Exception e) {
                 e.printStackTrace();
                 return;
@@ -219,7 +220,7 @@ public class ResourceManager {
 
         /* generate function name from type String */
         String methodName = "get" + type.substring(0, 1).toUpperCase() + type.substring(1);
-        Log.i("fetchItem", methodName);
+        Log.d("fetchItem", methodName);
 
         /* dynamically invoke the correct Method */
         AbstractMetaItem<?> result = null;
@@ -255,7 +256,7 @@ public class ResourceManager {
 
         /* generate function name from type String */
         String methodName = "get" + "Meta" + type.substring(0, 1).toUpperCase() + type.substring(1);
-        Log.i("fetchItem", methodName);
+        Log.d("fetchMetaItems", methodName);
 
         /* dynamically invoke the correct Method */
         List<AbstractMetaItem<?>> result = new ArrayList<>();
@@ -295,7 +296,7 @@ public class ResourceManager {
             String type = entry.getValue();
             Class<?> clazz = entry.getKey();
 
-            Log.i("ResourceManager", "[cleanup] '" + type + "' started");
+            Log.d("ResourceManager", "[cleanup] '" + type + "' started");
             try {
                 /* get the TreeSet from the cache */
                 cachedTree = metaTreeCache.get(type);
@@ -325,7 +326,7 @@ public class ResourceManager {
                 /* lord have mercy */
                 e.printStackTrace();
             }
-            Log.i("ResourceManager", "[cleanup] '" + type + "' finished");
+            Log.d("ResourceManager", "[cleanup] '" + type + "' finished");
         }
     }
 
@@ -528,9 +529,11 @@ public class ResourceManager {
                 /* return webItem instead of the cached item if successful */
                 if (webItem != null) {
                     item = webItem;
+                } else {
+                    Log.w("ResourceManager", "Fetch failed for some reason");
                 }
             } else {
-                Log.i("ResourceManager", "Cached item was up-to-date, no fetch necessary");
+                Log.d("ResourceManager", "Cached item was up-to-date, no fetch necessary");
             }
 
             /* check if we have some valid item (up-to-date or not) */
@@ -543,7 +546,7 @@ public class ResourceManager {
                 updateItem.invoke(clazz.cast(metaItem), clazz.cast(item));
 
                 /* write cache */
-                Log.i("ResourceManager", "Updating cache for item '" + resIdentifier
+                Log.d("ResourceManager", "Updating cache for item '" + resIdentifier
                         + "' and meta-data tree '" + type + "'");
                 itemCache.put(resIdentifier, item);
                 metaTreeCache.put(type, tree);
@@ -570,7 +573,7 @@ public class ResourceManager {
         List<AbstractMetaItem<?>> items = fetchMetaItems(clazz);
 
         if (items != null) {
-            Log.i("ResourceManager", "Received " + items.size() + " meta-data items from server");
+            Log.d("ResourceManager", "Received " + items.size() + " meta-data items from server");
 
             /* add all items to the result to be returned */
             result.addAll(items);
