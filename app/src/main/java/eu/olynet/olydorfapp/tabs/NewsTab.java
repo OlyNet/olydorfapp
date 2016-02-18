@@ -3,7 +3,6 @@ package eu.olynet.olydorfapp.tabs;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -12,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +20,6 @@ import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.NewsDataAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
-import eu.olynet.olydorfapp.resources.NoConnectionException;
 import eu.olynet.olydorfapp.resources.ResourceManager;
 
 /**
@@ -49,33 +46,23 @@ public class NewsTab extends Fragment {
 
             @Override
             protected List<NewsMetaItem> doInBackground(Void... params) {
-                TreeSet<AbstractMetaItem<?>> tree = null;
-                try {
-                    tree = ResourceManager.getInstance().getTreeOfMetaItems(NewsMetaItem.class);
-                } catch (NoConnectionException nce) {
-                    /* inform the user */
-                    Handler handler =  new Handler(context.getMainLooper());
-                    handler.post(new Runnable() {
-                        public void run() {
-                            Toast.makeText(context, "No connection available, displaying cached data instead.",
-                                    Toast.LENGTH_LONG).show();
-                        }
-                    });
+                /* querying the ResourceManager for the needed data */
+                TreeSet<AbstractMetaItem<?>> tree = ResourceManager.getInstance()
+                        .getTreeOfMetaItems(NewsMetaItem.class);
 
-                    /* get the cached data from the Exception */
-                    tree = nce.getCachedResult();
-                }
-
+                /* creating the result ArrayList */
                 List<NewsMetaItem> result = new ArrayList<>();
                 if (tree == null) {
                     return result;
                 }
 
+                /* create a new TreeSet with the correct ordering */
                 TreeSet<NewsMetaItem> tmpTree = new TreeSet<>(NewsMetaItem.getDateDescComparator());
                 for (AbstractMetaItem<?> item : tree) {
                     tmpTree.add((NewsMetaItem) item);
                 }
 
+                /* copying the elements of the TreeSet into the result ArrayList and return it */
                 result.addAll(tmpTree);
                 return result;
             }

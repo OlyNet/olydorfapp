@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.vincentbrison.openlibraries.android.dualcache.lib.DualCache;
 import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheBuilder;
@@ -146,37 +148,81 @@ public class ResourceManager {
     }
 
     /**
+     * Displays a Toast to inform the user of something.
+     *
+     * @param msg the message to be displayed
+     */
+    private void informUser(final String msg) {
+        Log.w("ResourceManager", msg);
+
+        /* inform the user */
+        Handler handler = new Handler(context.getMainLooper());
+        handler.post(new Runnable() {
+            public void run() {
+                Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    /**
      * @return <b>true</b> if there is a connection to the internet available, <b>false</b> otherwise.
      */
     private boolean isOnline() {
         try {
             ConnectivityManager cm = (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            return cm.getActiveNetworkInfo().isConnectedOrConnecting();
+            if (cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
+                return true;
+            } else {
+                informUser("No internet connection detected.");
+                return false;
+            }
         } catch (Exception e) {
+            informUser("No internet connection detected.");
             return false;
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private AbstractMetaItem<?> fetchItem(Class clazz, int id) {
-//        if(!isOnline()) {
-//            Log.w("ResourceManager", "there does not seem to be an internet connection");
-//            throw new NoConnectionException("there does not seem to be an internet connection");
-//        }
-
-        AbstractMetaItem<?> result = null;
-
-        /* check if a valid type has been requested */
+    /**
+     * Returns the String identifying an Object that can be handled by the ResourceManager.
+     *
+     * @param clazz the Class Object.
+     * @return the identifying String.
+     * @throws RuntimeException if clazz is not a valid Object for this operation.
+     */
+    private String getResourceString(Class clazz) {
         String type = treeCaches.get(clazz);
         if (type == null || type.equals("")) {
+            throw new RuntimeException("Class '" + clazz + "' is not a valid request Object");
+        }
+
+        return type;
+    }
+
+    /**
+     * @param type the String identifying a meta-data TreeSet in the cache.
+     * @return the meta-data TreeSet (can be <b>null</b>)
+     */
+    @SuppressWarnings("unchecked")
+    private TreeSet<AbstractMetaItem<?>> getCachedMetaDataTree(String type) {
+        return metaTreeCache.get(type);
+    }
+
+    @SuppressWarnings("unchecked")
+    private AbstractMetaItem<?> fetchItem(Class clazz, int id) {
+        /* terminate if we do not have an internet connection */
+        if (!isOnline()) {
             return null;
         }
+
+        /* check if a valid type has been requested */
+        String type = getResourceString(clazz);
 
         /* generate function name from type String */
         String methodName = "get" + type.substring(0, 1).toUpperCase() + type.substring(1);
         Log.i("fetchItem", methodName);
 
         /* dynamically invoke the correct Method */
+        AbstractMetaItem<?> result = null;
         try {
             Class proxyClass = this.onc.getClass();
             Method getResource = proxyClass.getMethod(methodName, int.class);
@@ -189,6 +235,7 @@ public class ResourceManager {
             e.printStackTrace();
             if (e.getCause() instanceof NotFoundException) {
                 // TODO: inform the user of this somehow
+                result = null;
             }
         }
 
@@ -197,25 +244,21 @@ public class ResourceManager {
     }
 
     @SuppressWarnings("unchecked")
-    private List<AbstractMetaItem<?>> fetchMetaItems(Class clazz) throws NoConnectionException {
+    private List<AbstractMetaItem<?>> fetchMetaItems(Class clazz) {
+        /* terminate if we do not have an internet connection */
         if (!isOnline()) {
-            Log.w("ResourceManager", "there does not seem to be an internet connection");
-            throw new NoConnectionException("there does not seem to be an internet connection");
-        }
-
-        List<AbstractMetaItem<?>> result = new ArrayList<>();
-
-        /* check if a valid type has been requested */
-        String type = treeCaches.get(clazz);
-        if (type == null || type.equals("")) {
             return null;
         }
+
+        /* check if a valid type has been requested */
+        String type = getResourceString(clazz);
 
         /* generate function name from type String */
         String methodName = "get" + "Meta" + type.substring(0, 1).toUpperCase() + type.substring(1);
         Log.i("fetchItem", methodName);
 
         /* dynamically invoke the correct Method */
+        List<AbstractMetaItem<?>> result = new ArrayList<>();
         try {
             Class proxyClass = this.onc.getClass();
             Method getMetaResources = proxyClass.getMethod(methodName);
@@ -252,7 +295,7 @@ public class ResourceManager {
             String type = entry.getValue();
             Class<?> clazz = entry.getKey();
 
-            Log.i("ResourceManager", "[cleanup] " + type + " started");
+            Log.i("ResourceManager", "[cleanup] '" + type + "' started");
             try {
                 /* get the TreeSet from the cache */
                 cachedTree = metaTreeCache.get(type);
@@ -282,7 +325,7 @@ public class ResourceManager {
                 /* lord have mercy */
                 e.printStackTrace();
             }
-            Log.i("ResourceManager", "[cleanup] " + type + " finished");
+            Log.i("ResourceManager", "[cleanup] '" + type + "' finished");
         }
     }
 
@@ -455,12 +498,8 @@ public class ResourceManager {
         checkInitialized();
 
         /* get the corresponding meta-data tree */
-        String type = treeCaches.get(clazz);
-        if (type == null) {
-            Log.e("ResourceManager", clazz + "is not a valid type");
-            return null;
-        }
-        TreeSet<AbstractMetaItem<?>> tree = metaTreeCache.get(type);
+        String type = getResourceString(clazz);
+        TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(type);
         if (tree == null) {
             Log.e("ResourceManager", "meta-data tree for " + clazz + " not found");
             return null;
@@ -480,8 +519,8 @@ public class ResourceManager {
             }
 
             /* check cache and query server on miss or date mismatch */
-            String resIdent = treeCaches.get(clazz) + "_" + id;
-            AbstractMetaItem<?> item = (AbstractMetaItem<?>) itemCache.get(resIdent);
+            String resIdentifier = treeCaches.get(clazz) + "_" + id;
+            AbstractMetaItem<?> item = (AbstractMetaItem<?>) itemCache.get(resIdentifier);
             if (item == null || !item.getLastUpdated().equals(metaItem.getLastUpdated())) {
                 Log.i("ResourceManager", "Cached item is outdated, fetch necessary");
                 AbstractMetaItem<?> webItem = fetchItem(clazz, id);
@@ -504,9 +543,9 @@ public class ResourceManager {
                 updateItem.invoke(clazz.cast(metaItem), clazz.cast(item));
 
                 /* write cache */
-                Log.i("ResourceManager", "Updating cache for item '" + resIdent
+                Log.i("ResourceManager", "Updating cache for item '" + resIdentifier
                         + "' and meta-data tree '" + type + "'");
-                itemCache.put(resIdent, item);
+                itemCache.put(resIdentifier, item);
                 metaTreeCache.put(type, tree);
             }
 
@@ -519,27 +558,16 @@ public class ResourceManager {
     }
 
     @SuppressWarnings("unchecked")
-    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class clazz) throws NoConnectionException {
+    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class clazz) {
         checkInitialized();
 
         /* get the corresponding meta-data tree */
-        String type = treeCaches.get(clazz);
-        if (type == null) {
-            Log.e("ResourceManager", clazz + "is not a valid type");
-            return null;
-        }
-        TreeSet<AbstractMetaItem<?>> cachedTree = metaTreeCache.get(type);
+        String type = getResourceString(clazz);
+        TreeSet<AbstractMetaItem<?>> cachedTree = getCachedMetaDataTree(type);
 
         /* fetch meta-data from server */
         TreeSet<AbstractMetaItem<?>> result = new TreeSet<>();
-        List<AbstractMetaItem<?>> items = null;
-        NoConnectionException preparedException = null;
-        try {
-            items = fetchMetaItems(clazz);
-        } catch (NoConnectionException nce) {
-            preparedException = new NoConnectionException(nce.getMessage());
-            preparedException.initCause(nce);
-        }
+        List<AbstractMetaItem<?>> items = fetchMetaItems(clazz);
 
         if (items != null) {
             Log.i("ResourceManager", "Received " + items.size() + " meta-data items from server");
@@ -560,13 +588,12 @@ public class ResourceManager {
         } else {
             /* return cached data instead */
             Log.w("ResourceManager", "Could not fetch meta-data from server, using cached data");
-            Log.i("ResourceManager", "Cached metaTree size: " + cachedTree.size());
-            result.addAll(cachedTree);
-        }
-
-        if (preparedException != null) {
-            preparedException.setCachedResult(result);
-            throw preparedException;
+            if (cachedTree == null) {
+                Log.w("ResourceManager", "Cached metaTree is null");
+            } else {
+                Log.i("ResourceManager", "Cached metaTree size: " + cachedTree.size());
+                result.addAll(cachedTree);
+            }
         }
 
         return result;
