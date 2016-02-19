@@ -17,6 +17,8 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -81,6 +83,12 @@ public class ResourceManager {
                     + "in the MainActivity's onCreate()!");
     }
 
+    private static String getStackTraceAsString(Exception e) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        return sw.toString();
+    }
+
     public void init(Context context) {
         if (!initialized) {
             this.context = context.getApplicationContext();
@@ -133,7 +141,7 @@ public class ResourceManager {
 
                 Log.d("ResourceManager.init", "ResteasyClient setup complete.");
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e("ResourceManager.init", getStackTraceAsString(e));
                 return;
             }
 
@@ -186,7 +194,7 @@ public class ResourceManager {
      * @return the identifying String.
      * @throws RuntimeException if clazz is not a valid Object for this operation.
      */
-    private String getResourceString(Class clazz) {
+    private static String getResourceString(Class clazz) {
         String type = treeCaches.get(clazz);
         if (type == null || type.equals("")) {
             throw new RuntimeException("Class '" + clazz + "' is not a valid request Object");
@@ -224,16 +232,15 @@ public class ResourceManager {
             Class proxyClass = this.onc.getClass();
             Method getResource = proxyClass.getMethod(methodName, int.class);
             result = (AbstractMetaItem) getResource.invoke(this.onc, id);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
-            if (e.getCause() instanceof NotFoundException) {
+            Log.w("ResourceManager", getStackTraceAsString(e));
+            if (e.getCause() instanceof ProcessingException) {
                 // TODO: inform the user of this somehow
                 result = null;
             }
+        } catch (Exception e) {
+            Log.w("ResourceManager", getStackTraceAsString(e));
+            result = null;
         }
 
         /* return the result that may still be null */
@@ -260,16 +267,15 @@ public class ResourceManager {
             Class proxyClass = this.onc.getClass();
             Method getMetaResources = proxyClass.getMethod(methodName);
             result = (List<AbstractMetaItem<?>>) getMetaResources.invoke(this.onc);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            Log.w("ResourceManager", getStackTraceAsString(e));
             if (e.getCause() instanceof ProcessingException) {
                 // TODO: inform the user of this somehow
                 result = null;
             }
+        } catch (Exception e) {
+            Log.w("ResourceManager", getStackTraceAsString(e));
+            result = null;
         }
 
         /* return the result that may still be null */
@@ -320,7 +326,7 @@ public class ResourceManager {
                 metaTreeCache.put(type, tree);
             } catch (Exception e) {
                 /* lord have mercy */
-                e.printStackTrace();
+                Log.e("ResourceManager", getStackTraceAsString(e));
             }
             Log.d("ResourceManager", "[cleanup] '" + type + "' finished");
         }
@@ -551,7 +557,7 @@ public class ResourceManager {
             return item;
         } catch (Exception e) {
             /* lord have mercy */
-            e.printStackTrace();
+            Log.e("ResourceManager", getStackTraceAsString(e));
             return null;
         }
     }
