@@ -23,6 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.KeyStore;
+import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -35,31 +36,59 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.ws.rs.NotFoundException;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import javax.ws.rs.ProcessingException;
 
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
-import eu.olynet.olydorfapp.model.NewsItem;
+import eu.olynet.olydorfapp.model.DailyMealMetaItem;
+import eu.olynet.olydorfapp.model.FoodMetaItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
 
 /**
+ * The ResourceManager is the Singleton interface for accessing data on the OlyNet servers.
+ * Requested data is cached using the DualCache library and provided as needed. The ResourceManager
+ * has to be initialized with the application Context by calling its <i>init(Context)</i> method
+ * prior to use. If this is neglected, a RuntimeException will be thrown.
+ *
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
  */
 public class ResourceManager {
 
+    /**
+     * The static Map mapping the valid Classes to their corresponding identifier Strings.
+     */
     private static final Map<Class, String> treeCaches;
 
+    /* statically fill the Map */
     static {
         Map<Class, String> initMap = new LinkedHashMap<>();
         initMap.put(NewsMetaItem.class, "news");
+        initMap.put(FoodMetaItem.class, "food");
+        initMap.put(DailyMealMetaItem.class, "motd");
 
         treeCaches = Collections.unmodifiableMap(initMap);
     }
 
-    private static final String CA_FILE = "olynet_ca.crt";
+    /**
+     * The file containing the OlyNet e.V. custom Certificate Authority (CA).
+     */
+    private static final String CA_FILE = "olynet_ca.pem";
+
+    /**
+     * The file containing the version-specific user certificate for accessing the server.
+     */
     private static final String CERTIFICATE_FILE = "client_certificate.p12";
+
+    /**
+     * The decryption key for the version-specific user certificate.
+     */
     private static final char[] CERTIFICATE_KEY = "1234567".toCharArray();
 
+    /**
+     * Singleton instance
+     */
     private static ResourceManager ourInstance = new ResourceManager();
 
     private boolean initialized;
@@ -69,26 +98,54 @@ public class ResourceManager {
     private DualCache<TreeSet> metaTreeCache;
     private DualCache<AbstractMetaItem> itemCache;
 
+    /**
+     * @return the instance of the ResourceManager Singleton.
+     */
     public static ResourceManager getInstance() {
         return ourInstance;
     }
 
-    private ResourceManager() {
-    }
-
-    private void checkInitialized() {
-        if (!initialized)
-            throw new RuntimeException("The ResourceManager has not been initialized. Initialize "
-                    + "it by calling 'ResourceManager.getInstance().init(this); '"
-                    + "in the MainActivity's onCreate()!");
-    }
-
+    /**
+     * Returns the StackTrace of an Exception as a String.
+     *
+     * @param e the Exception
+     * @return the StackTrace as String.
+     */
     private static String getStackTraceAsString(Exception e) {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
         return sw.toString();
     }
 
+    /**
+     * Returns the String identifying an Object that can be handled by the ResourceManager.
+     *
+     * @param clazz the Class Object.
+     * @return the identifying String.
+     * @throws RuntimeException if clazz is not a valid Class for this operation.
+     */
+    private static String getResourceString(Class clazz) {
+        String type = treeCaches.get(clazz);
+        if (type == null || type.equals("")) {
+            throw new RuntimeException("Class '" + clazz + "' is not a valid request Object");
+        }
+
+        return type;
+    }
+
+    /**
+     * Empty constructor.
+     */
+    private ResourceManager() {
+    }
+
+    /**
+     * Initializes the ResourceManager with the Context. This has to be called before any other
+     * operation on the ResourceManager. Failure to do so will cause a RuntimeException. Duplicate
+     * calls to this function are not recommended and will result in a warning.
+     *
+     * @param context the application Context.
+     */
     public void init(Context context) {
         if (!initialized) {
             this.context = context.getApplicationContext();
@@ -96,7 +153,8 @@ public class ResourceManager {
             /* dynamically get the PackageInformation */
             PackageInfo pInfo;
             try {
-                pInfo = this.context.getPackageManager().getPackageInfo(this.context.getPackageName(), 0);
+                pInfo = this.context.getPackageManager().getPackageInfo(
+                        this.context.getPackageName(), 0);
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
                 return;
@@ -117,27 +175,45 @@ public class ResourceManager {
              * ONLY MESS WITH THIS IF YOU KNOW EXACTLY WHAT YOU ARE DOING!
              */
             try {
-                /* create a KeyStore that contains our client certificate */
+                /*
+                 * create a X509TrustManager that contains the OlyNet e.V. custom CA
+                 *
+                 * See: https://stackoverflow.com/questions/27562666/programmatically-add-a-certificate-authority-while-keeping-android-system-ssl-ce
+                 */
+                KeyStore trustStore = KeyStore.getInstance("pkcs12");
+                trustStore.load(null);
+                trustStore.setCertificateEntry("OlyNet e.V. Certificate Authority",
+                        CertificateFactory.getInstance("X.509")
+                                .generateCertificate(this.context.getAssets().open(CA_FILE)));
+                CustomTrustManager tm = new CustomTrustManager(trustStore);
+
+                /* create a KeyManagerFactory that contains our client certificate */
                 //InputStream certificate = this.context.getAssets().open(CERTIFICATE_FILE);
                 KeyStore keyStore = KeyStore.getInstance("PKCS12");
                 keyStore.load(null);
                 //keyStore.load(certificate, CERTIFICATE_KEY);
+                KeyManagerFactory kmf = KeyManagerFactory.getInstance("X509");
+                kmf.init(keyStore, CERTIFICATE_KEY);
 
+                /* instantiate our SSLContext with the trust store and the key store*/
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(kmf.getKeyManagers(), new TrustManager[]{tm}, null);
 
                 /* instantiate the HttpEngine we are going to use */
                 HackedURLConnectionEngine engine = new HackedURLConnectionEngine();
                 engine.setConnectionTimeout(5000);
+                engine.setNotFuckedUpSslContext(sslContext);
 
                 /* instantiate the ResteasyClient */
                 ResteasyClient client = new ResteasyClientBuilder()
                         .httpEngine(engine)
-                        .keyStore(keyStore, new char[0])
                         .build();
 
                 client.register(JacksonJsonProvider.class);
 
-                ResteasyWebTarget target = client.target("http://web1.olydorf.mhn.de:8230/dorfapp-rest/api");
-                onc = target.proxy(OlyNetClient.class);
+                ResteasyWebTarget target = client.target("https://wstest.olynet.eu/dorfapp-rest/api");
+
+                this.onc = target.proxy(OlyNetClient.class);
 
                 Log.d("ResourceManager.init", "ResteasyClient setup complete.");
             } catch (Exception e) {
@@ -150,6 +226,17 @@ public class ResourceManager {
         } else {
             Log.w("ResourceManager", "Duplicate init");
         }
+    }
+
+    /**
+     * Checks whether the ResourceManager has been correctly initialized. Must be called at the
+     * beginning of every public non-static function of this class.
+     */
+    private void checkInitialized() {
+        if (!initialized)
+            throw new RuntimeException("The ResourceManager has not been initialized. Initialize "
+                    + "it by calling 'ResourceManager.getInstance().init(this); '"
+                    + "in the MainActivity's onCreate()!");
     }
 
     /**
@@ -170,11 +257,15 @@ public class ResourceManager {
     }
 
     /**
-     * @return <b>true</b> if there is a connection to the internet available, <b>false</b> otherwise.
+     * Checks whether an internet connection is available. Also informs the user if this is not the
+     * case.
+     *
+     * @return <b>true</b> iff there is a connection to the internet available.
      */
     private boolean isOnline() {
         try {
-            ConnectivityManager cm = (ConnectivityManager) this.context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager cm = (ConnectivityManager) this.context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
             if (cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
                 return true;
             } else {
@@ -188,22 +279,6 @@ public class ResourceManager {
     }
 
     /**
-     * Returns the String identifying an Object that can be handled by the ResourceManager.
-     *
-     * @param clazz the Class Object.
-     * @return the identifying String.
-     * @throws RuntimeException if clazz is not a valid Object for this operation.
-     */
-    private static String getResourceString(Class clazz) {
-        String type = treeCaches.get(clazz);
-        if (type == null || type.equals("")) {
-            throw new RuntimeException("Class '" + clazz + "' is not a valid request Object");
-        }
-
-        return type;
-    }
-
-    /**
      * @param type the String identifying a meta-data TreeSet in the cache.
      * @return the meta-data TreeSet (can be <b>null</b>)
      */
@@ -212,6 +287,15 @@ public class ResourceManager {
         return metaTreeCache.get(type);
     }
 
+    /**
+     * Tries to fetch a specific item from the server.
+     *
+     * @param clazz the Class of the item to be fetched. Must be specified within the treeCaches
+     *              Map.
+     * @param id    the ID identifying the fetched item.
+     * @return the fetched item or <b>null</b> if this operation was not successful.
+     * @throws RuntimeException if clazz is not a valid Class for this operation.
+     */
     @SuppressWarnings("unchecked")
     private AbstractMetaItem<?> fetchItem(Class clazz, int id) {
         /* terminate if we do not have an internet connection */
@@ -247,6 +331,14 @@ public class ResourceManager {
         return result;
     }
 
+    /**
+     * Tries to fetch the up-to-date meta-data information from the server.
+     *
+     * @param clazz the Class of the meta-data to be fetched. Must be specified within the
+     *              treeCaches Map.
+     * @return the fetched item or <b>null</b> if this operation was not successful.
+     * @throws RuntimeException if clazz is not a valid Class for this operation.
+     */
     @SuppressWarnings("unchecked")
     private List<AbstractMetaItem<?>> fetchMetaItems(Class clazz) {
         /* terminate if we do not have an internet connection */
@@ -282,6 +374,12 @@ public class ResourceManager {
         return result;
     }
 
+    /**
+     * Performs a cleanup of all caches. Everything that has not been used in the last month will be
+     * purged.
+     *
+     * @throws RuntimeException if the ResourceManager has not been initialized correctly.
+     */
     @SuppressWarnings("unchecked")
     public void cleanup() {
         checkInitialized();
@@ -312,7 +410,8 @@ public class ResourceManager {
                 AbstractMetaItem filterDummy = AbstractMetaItem.class.cast(cons.newInstance(cutoff));
 
                 /* get all items last used on or before the cutoff date */
-                Set<AbstractMetaItem> deleteSet = new HashSet<>(tree.headSet(tree.floor(filterDummy), true));
+                Set<AbstractMetaItem> deleteSet = new HashSet<>(tree.headSet(
+                        tree.floor(filterDummy), true));
 
                 /* delete all cached entries of the full objects */
                 for (AbstractMetaItem metaItem : deleteSet) {
@@ -332,170 +431,17 @@ public class ResourceManager {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public void performCleanupTest() {
-        checkInitialized();
-        TreeSet<NewsMetaItem> tree;
-
-        Log.e("Debug", "---------------------------------------------");
-        Log.e("Debug", "- Old cache content                         -");
-        Log.e("Debug", "---------------------------------------------");
-
-        tree = metaTreeCache.get(treeCaches.get(NewsMetaItem.class));
-        if (tree != null) {
-            for (NewsMetaItem nm : tree) {
-                Log.e("Debug", nm.toString());
-            }
-        } else {
-            Log.e("Debug", "tree == null");
-        }
-        tree = null;
-        metaTreeCache.put(treeCaches.get(NewsMetaItem.class), null);
-
-
-        Log.e("Debug", "---------------------------------------------");
-        Log.e("Debug", "- Cache content post-deletion               -");
-        Log.e("Debug", "---------------------------------------------");
-
-        tree = metaTreeCache.get(treeCaches.get(NewsMetaItem.class));
-        if (tree != null) {
-            for (NewsMetaItem nm : tree) {
-                Log.e("Debug", nm.toString());
-            }
-        } else {
-            Log.e("Debug", "tree == null");
-        }
-        tree = null;
-
-        Log.e("Debug", "---------------------------------------------");
-        Log.e("Debug", "- Tree pre-cache                            -");
-        Log.e("Debug", "---------------------------------------------");
-
-        Calendar calendar = Calendar.getInstance();
-
-        tree = new TreeSet<>();
-        tree.add(new NewsMetaItem(1, new Date(), new Date(), "test1 - should be gone (null)", "Test", 0));
-
-        calendar.add(Calendar.SECOND, -1);
-        NewsMetaItem item = new NewsMetaItem(2, new Date(), new Date(), "test2 - should stay", "Test", 0);
-        item.setLastUsed(calendar.getTime());
-        tree.add(item);
-
-        calendar.add(Calendar.MONTH, -1);
-        item = new NewsMetaItem(3, new Date(), new Date(), "test3 - should be gone", "Test", 0);
-        item.setLastUsed(calendar.getTime());
-        tree.add(item);
-
-        calendar.add(Calendar.MINUTE, -1);
-        item = new NewsMetaItem(4, new Date(), new Date(), "test4 - should be gone", "Test", 0);
-        item.setLastUsed(calendar.getTime());
-        tree.add(item);
-
-        for (NewsMetaItem nm : tree) {
-            Log.e("Debug", nm.toString());
-        }
-
-        metaTreeCache.put(treeCaches.get(NewsMetaItem.class), tree);
-        tree = null;
-
-        Log.e("Debug", "---------------------------------------------");
-        Log.e("Debug", "- Tree from cache pre-cleanup               -");
-        Log.e("Debug", "---------------------------------------------");
-
-        tree = metaTreeCache.get(treeCaches.get(NewsMetaItem.class));
-        for (NewsMetaItem nm : tree) {
-            Log.e("Debug", nm.toString());
-        }
-        tree = null;
-
-        Log.e("Debug", "---------------------------------------------");
-        Log.e("Debug", "- Tree from cache post-cleanup              -");
-        Log.e("Debug", "---------------------------------------------");
-
-        cleanup();
-        tree = metaTreeCache.get(treeCaches.get(NewsMetaItem.class));
-        for (NewsMetaItem nm : tree) {
-            Log.e("Debug", nm.toString());
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public void performTest() {
-        checkInitialized();
-        TreeSet<NewsMetaItem> tree = null;
-        NewsItem news = null;
-        String resIdent = null;
-        Date d = new Date();
-
-
-        metaTreeCache.put(treeCaches.get(NewsMetaItem.class), null);
-
-        Calendar calendar = Calendar.getInstance();
-
-        tree = new TreeSet<>();
-        tree.add(new NewsMetaItem(1, new Date(), new Date(), "test1 - should be gone (null)", "Test", 0));
-
-        calendar.add(Calendar.SECOND, -1);
-        NewsMetaItem item = new NewsMetaItem(2, new Date(), new Date(), "test2 - should stay", "Test", 0);
-        item.setLastUsed(calendar.getTime());
-        tree.add(item);
-
-        calendar.add(Calendar.MONTH, -1);
-        item = new NewsMetaItem(3, d, d, "test3 - should be gone", "Test", 0);
-        resIdent = treeCaches.get(NewsMetaItem.class) + "_" + 3;
-        news = new NewsItem(3, d, d, "test3 - should be gone", "Test", 0, "asdfasdfasdfadsfgkjlahsdfkljh", new byte[0]);
-        itemCache.put(resIdent, news);
-        item.setLastUsed(calendar.getTime());
-        tree.add(item);
-
-        calendar.add(Calendar.MINUTE, -1);
-        item = new NewsMetaItem(4, d, d, "test4 - should be gone", "Test", 0);
-        news = new NewsItem(4, d, d, "test4 - should be gone", "Test", 0, "asdfasdfasdf", new byte[0]);
-        resIdent = treeCaches.get(NewsMetaItem.class) + "_" + 4;
-        itemCache.put(resIdent, news);
-        item.setLastUsed(calendar.getTime());
-        tree.add(item);
-
-        metaTreeCache.put(treeCaches.get(NewsMetaItem.class), tree);
-        tree = null;
-
-        Log.e("Debug", "---------------------------------------------");
-        Log.e("Debug", "- Tree                                      -");
-        Log.e("Debug", "---------------------------------------------");
-
-        tree = metaTreeCache.get(treeCaches.get(NewsMetaItem.class));
-        for (NewsMetaItem nm : tree) {
-            Log.e("Debug", nm + "");
-        }
-        tree = null;
-
-
-        Log.e("Debug", "---------------------------------------------");
-        Log.e("Debug", "- Items that should exist                    -");
-        Log.e("Debug", "---------------------------------------------");
-        news = null;
-        resIdent = treeCaches.get(NewsMetaItem.class) + "_" + 4;
-        news = (NewsItem) getItem(NewsMetaItem.class, 4);
-        Log.e("Debug", news + "");
-        news = null;
-        resIdent = treeCaches.get(NewsMetaItem.class) + "_" + 3;
-        news = (NewsItem) getItem(NewsMetaItem.class, 3);
-        Log.e("Debug", news + "");
-
-
-        Log.e("Debug", "---------------------------------------------");
-        Log.e("Debug", "- Items that should not exist               -");
-        Log.e("Debug", "---------------------------------------------");
-        news = null;
-        resIdent = treeCaches.get(NewsMetaItem.class) + "_" + 5;
-        news = (NewsItem) getItem(NewsMetaItem.class, 5);
-        Log.e("Debug", news + "");
-        resIdent = treeCaches.get(NewsMetaItem.class) + "_" + -1;
-        news = (NewsItem) getItem(NewsMetaItem.class, -1);
-        Log.e("Debug", news + "");
-
-    }
-
+    /**
+     * Get a specific item from the server (preferably) or the cache.
+     *
+     * @param clazz the Class of the item to be fetched. Must be specified within the treeCaches
+     *              Map.
+     * @param id    the ID identifying the fetched item.
+     * @return the requested item. This does not necessarily have to be up-to-date. If the server
+     * cannot be reached in time, a cached version will be returned instead.
+     * @throws RuntimeException if the ResourceManager has not been initialized correctly.
+     * @throws RuntimeException if clazz is not a valid Class for this operation.
+     */
     @SuppressWarnings("unchecked")
     public AbstractMetaItem<?> getItem(Class<?> clazz, int id) {
         checkInitialized();
@@ -562,6 +508,16 @@ public class ResourceManager {
         }
     }
 
+    /**
+     * Get meta-data of a specific category from the server (preferably) or the cache.
+     *
+     * @param clazz the Class of the meta-data to be fetched. Must be specified within the
+     *              treeCaches Map.
+     * @return the requested meta-data. This does not necessarily have to be up-to-date. If the
+     * server cannot be reached in time, a cached version will be returned instead.
+     * @throws RuntimeException if the ResourceManager has not been initialized correctly.
+     * @throws RuntimeException if clazz is not a valid Class for this operation.
+     */
     @SuppressWarnings("unchecked")
     public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class clazz) {
         checkInitialized();
@@ -593,6 +549,7 @@ public class ResourceManager {
         } else {
             /* return cached data instead */
             Log.w("ResourceManager", "Could not fetch meta-data from server, using cached data");
+            informUser("Unable to contact the server");
             if (cachedTree == null) {
                 Log.w("ResourceManager", "Cached metaTree is null");
             } else {
@@ -604,6 +561,19 @@ public class ResourceManager {
         return result;
     }
 
+    /**
+     * Not implemented yet.
+     *
+     * @param clazz      the Class of the item to be fetched. Must be specified within the
+     *                   treeCaches Map.
+     * @param first      the first element to be part of the returned selection.
+     * @param last       the last element to be part of the returned selection.
+     * @param comparator the Comparator used for ordering the meta-data tree.
+     * @return the requested meta-data. This does not necessarily have to be up-to-date. If the
+     * server cannot be reached in time, a cached version will be returned instead.
+     * @throws RuntimeException if the ResourceManager has not been initialized correctly.
+     * @throws RuntimeException if clazz is not a valid Class for this operation.
+     */
     public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class clazz, AbstractMetaItem<?> first,
                                                            AbstractMetaItem<?> last,
                                                            Comparator<AbstractMetaItem<?>> comparator) {

@@ -9,6 +9,7 @@ import java.util.Date;
 public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
 
     protected String name;
+    protected String englishname = null;
     protected float price;
     protected boolean vegetarian;
     protected int organization;

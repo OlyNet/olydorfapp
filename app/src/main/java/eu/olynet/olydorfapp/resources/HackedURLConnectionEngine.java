@@ -6,21 +6,33 @@ import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+
 /**
- * Wrapped version of the URLConnectionEngine to be able to specify a connection timeout.
+ * Wrapped version of the URLConnectionEngine because it is a piece of shit.
  *
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
  */
 public class HackedURLConnectionEngine extends URLConnectionEngine {
 
-    int connectionTimeout = -1;
+    private int connectionTimeout = 0;
+
+    private SSLContext notFuckedUpSslContext;
 
     protected HttpURLConnection createConnection(ClientInvocation request) throws IOException {
         HttpURLConnection con = super.createConnection(request);
-        if (connectionTimeout > 0) {
-            con.setConnectTimeout(connectionTimeout);
+
+        /* fix for timeout not being set */
+        con.setConnectTimeout(connectionTimeout);
+
+        /* fix for SSLContext not being applied */
+        if(con instanceof HttpsURLConnection) {
+            ((HttpsURLConnection) con).setSSLSocketFactory(
+                    this.notFuckedUpSslContext.getSocketFactory());
         }
 
+        /* return the actually working connection */
         return con;
     }
 
@@ -41,5 +53,13 @@ public class HackedURLConnectionEngine extends URLConnectionEngine {
 
     public int getConnectionTimeout() {
         return this.connectionTimeout;
+    }
+
+    public SSLContext getNotFuckedUpSslContext() {
+        return notFuckedUpSslContext;
+    }
+
+    public void setNotFuckedUpSslContext(SSLContext notFuckedUpSslContext) {
+        this.notFuckedUpSslContext = notFuckedUpSslContext;
     }
 }
