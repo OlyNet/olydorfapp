@@ -1,5 +1,7 @@
 package eu.olynet.olydorfapp.resources;
 
+import android.util.Log;
+
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -82,10 +84,18 @@ public class CustomTrustManager implements X509TrustManager {
      */
     @Override
     public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+        Log.d("CustomTrustManager", "Auth-type: " + authType);
+        int n = 1;
+        for(X509Certificate cert : chain) {
+            Log.d("CustomTrustManager", "Cert " + n++ + ": " + cert.getIssuerDN());
+        }
         try {
             localTrustManager.checkServerTrusted(chain, authType);
+            Log.d("CustomTrustManager", "ACCEPTED (custom)");
         } catch (CertificateException ce) {
+            Log.w("CustomTrustManager", "REJECTED (custom)");
             defaultTrustManager.checkServerTrusted(chain, authType);
+            Log.d("CustomTrustManager", "ACCEPTED (default)");
         }
     }
 

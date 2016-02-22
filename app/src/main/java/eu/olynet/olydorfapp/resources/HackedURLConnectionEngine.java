@@ -1,5 +1,7 @@
 package eu.olynet.olydorfapp.resources;
 
+import android.util.Log;
+
 import org.jboss.resteasy.client.jaxrs.engines.URLConnectionEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 

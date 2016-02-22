@@ -17,12 +17,14 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.KeyStore;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,6 +41,7 @@ import java.util.TreeSet;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.ProcessingException;
 
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
@@ -77,14 +80,22 @@ public class ResourceManager {
     private static final String CA_FILE = "olynet_ca.pem";
 
     /**
+     * The file containing the OlyNet e.V. Intermediate Certificate Authority (CA).
+     * <p/>
+     * <b>IMPORTANT:</b> if this is not present, verification will fail when supplying a client
+     * certificate. This seems to be a bug in Android's HttpsURLConnection implementation.
+     */
+    private static final String INTERMEDIATE_FILE = "olynet_intermediate.pem";
+
+    /**
      * The file containing the version-specific user certificate for accessing the server.
      */
-    private static final String CERTIFICATE_FILE = "client_certificate.p12";
+    private static final String CERTIFICATE_FILE = "app_01.pfx";
 
     /**
      * The decryption key for the version-specific user certificate.
      */
-    private static final char[] CERTIFICATE_KEY = "1234567".toCharArray();
+    private static final char[] CERTIFICATE_KEY = "$gf6yuW$%Cs4".toCharArray();
 
     /**
      * Singleton instance
@@ -175,25 +186,39 @@ public class ResourceManager {
              * ONLY MESS WITH THIS IF YOU KNOW EXACTLY WHAT YOU ARE DOING!
              */
             try {
+                /* basic setup for certificate loading */
+                CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                String algorithm = TrustManagerFactory.getDefaultAlgorithm();
+
                 /*
-                 * create a X509TrustManager that contains the OlyNet e.V. custom CA
+                 * create a X509TrustManager that contains the OlyNet e.V. custom CA and the
+                 * Intermediate CA. Both are necessary!
                  *
-                 * See: https://stackoverflow.com/questions/27562666/programmatically-add-a-certificate-authority-while-keeping-android-system-ssl-ce
+                 * See:
+                 * https://stackoverflow.com/questions/27562666/programmatically-add-a-certificate-authority-while-keeping-android-system-ssl-ce
+                 * https://stackoverflow.com/questions/35539969/https-with-client-authentication-not-working-on-android/35549515#35549515
                  */
-                KeyStore trustStore = KeyStore.getInstance("pkcs12");
+                InputStream ca = this.context.getAssets().open(CA_FILE);
+                InputStream intermediate = this.context.getAssets().open(INTERMEDIATE_FILE);
+                KeyStore trustStore = KeyStore.getInstance("PKCS12");
                 trustStore.load(null);
-                trustStore.setCertificateEntry("OlyNet e.V. Certificate Authority",
-                        CertificateFactory.getInstance("X.509")
-                                .generateCertificate(this.context.getAssets().open(CA_FILE)));
+                Certificate caCert = cf.generateCertificate(ca);
+                Certificate intermediateCert = cf.generateCertificate(intermediate);
+                trustStore.setCertificateEntry("OlyNet e.V. Certificate Authority", caCert);
+                trustStore.setCertificateEntry("OlyNet e.V. Intermediate Certificate Authority",
+                        intermediateCert);
                 CustomTrustManager tm = new CustomTrustManager(trustStore);
+                ca.close();
+                intermediate.close();
 
                 /* create a KeyManagerFactory that contains our client certificate */
-                //InputStream certificate = this.context.getAssets().open(CERTIFICATE_FILE);
+                InputStream clientCert = this.context.getAssets().open(CERTIFICATE_FILE);
                 KeyStore keyStore = KeyStore.getInstance("PKCS12");
-                keyStore.load(null);
-                //keyStore.load(certificate, CERTIFICATE_KEY);
-                KeyManagerFactory kmf = KeyManagerFactory.getInstance("X509");
+                keyStore.load(clientCert, CERTIFICATE_KEY);
+                Log.e("KeyStore", "Size: " + keyStore.size());
+                KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm);
                 kmf.init(keyStore, CERTIFICATE_KEY);
+                clientCert.close();
 
                 /* instantiate our SSLContext with the trust store and the key store*/
                 SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -212,15 +237,14 @@ public class ResourceManager {
                 client.register(JacksonJsonProvider.class);
 
                 ResteasyWebTarget target = client.target("https://wstest.olynet.eu/dorfapp-rest/api");
-
                 this.onc = target.proxy(OlyNetClient.class);
 
                 Log.d("ResourceManager.init", "ResteasyClient setup complete.");
             } catch (Exception e) {
+                Log.e("ResourceManager.init", "ResourceManager initialization failed!");
                 Log.e("ResourceManager.init", getStackTraceAsString(e));
                 return;
             }
-
 
             this.initialized = true;
         } else {
