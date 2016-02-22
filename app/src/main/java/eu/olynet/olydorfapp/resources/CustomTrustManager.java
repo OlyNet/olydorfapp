@@ -38,6 +38,7 @@ public class CustomTrustManager implements X509TrustManager {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+        Log.d("CustomTrustManager", "Initialization successful.");
     }
 
     private X509TrustManager createTrustManager(KeyStore store) throws NoSuchAlgorithmException,
