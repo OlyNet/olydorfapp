@@ -106,8 +106,8 @@
     <orderEntry type="library" exported="" name="core-1.8.4" level="project" />
     <orderEntry type="library" exported="" name="support-v4-23.1.1" level="project" />
     <orderEntry type="library" exported="" name="resteasy-client-3.0.14.Final" level="project" />
-    <orderEntry type="library" exported="" name="jackson-annotations-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="resteasy-jaxrs-3.0.14.Final" level="project" />
+    <orderEntry type="library" exported="" name="jackson-annotations-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.1.1" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-23.1.1" level="project" />
     <orderEntry type="library" exported="" name="activation-1.1.1" level="project" />
@@ -115,13 +115,13 @@
     <orderEntry type="library" exported="" name="jackson-core-2.4.2" level="project" />
     <orderEntry type="library" exported="" name="jcip-annotations-1.0" level="project" />
     <orderEntry type="library" exported="" name="jackson-xc-1.9.13" level="project" />
+    <orderEntry type="library" exported="" name="jackson-core-asl-1.9.13" level="project" />
     <orderEntry type="library" exported="" name="jboss-logging-3.1.4.GA" level="project" />
     <orderEntry type="library" exported="" name="dualcache-2.2.2" level="project" />
-    <orderEntry type="library" exported="" name="jackson-core-asl-1.9.13" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-23.1.1" level="project" />
     <orderEntry type="library" exported="" name="zxing-1.8.4" level="project" />
-    <orderEntry type="library" exported="" name="jackson-jaxrs-1.9.13" level="project" />
     <orderEntry type="library" exported="" name="jackson-databind-2.4.2" level="project" />
+    <orderEntry type="library" exported="" name="jackson-jaxrs-1.9.13" level="project" />
     <orderEntry type="library" exported="" name="play-services-gcm-8.4.0" level="project" />
     <orderEntry type="library" exported="" name="design-23.1.1" level="project" />
     <orderEntry type="library" exported="" name="jboss-jaxrs-api_2.0_spec-1.0.0.Final" level="project" />

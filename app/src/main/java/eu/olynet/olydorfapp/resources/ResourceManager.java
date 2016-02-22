@@ -215,7 +215,6 @@ public class ResourceManager {
                 InputStream clientCert = this.context.getAssets().open(CERTIFICATE_FILE);
                 KeyStore keyStore = KeyStore.getInstance("PKCS12");
                 keyStore.load(clientCert, CERTIFICATE_KEY);
-                Log.e("KeyStore", "Size: " + keyStore.size());
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm);
                 kmf.init(keyStore, CERTIFICATE_KEY);
                 clientCert.close();
