@@ -16,8 +16,14 @@
 #   public *;
 #}
 
--dontobfuscate
-
 -keep class javax.imageio.IIOImage
 
 -keep public class eu.olynet.olydorfapp.model.*
+
+-keep class org.codehaus.jackson.databind.ObjectMapper {
+    public <methods>;
+    protected <methods>;
+}
+-keep class org.codehaus.jackson.databind.ObjectWriter {
+    public ** writeValueAsString(**);
+}
