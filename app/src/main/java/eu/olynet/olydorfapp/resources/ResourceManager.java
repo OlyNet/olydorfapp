@@ -126,6 +126,7 @@ public class ResourceManager {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
         return sw.toString();
+
     }
 
     /**
