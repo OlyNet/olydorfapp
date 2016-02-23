@@ -16,6 +16,7 @@ import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -231,10 +232,12 @@ public class ResourceManager {
 
                 /* instantiate the ResteasyClient */
                 ResteasyClient client = new ResteasyClientBuilder()
+                        .providerFactory(new ResteasyProviderFactory()
+                                .register(JacksonJsonProvider.class))
                         .httpEngine(engine)
                         .build();
 
-                client.register(JacksonJsonProvider.class);
+//                client.register(JacksonJsonProvider.class);
 
                 ResteasyWebTarget target = client.target("https://wstest.olynet.eu/dorfapp-rest/api");
                 this.onc = target.proxy(OlyNetClient.class);

@@ -27,3 +27,5 @@
 -keep class org.codehaus.jackson.databind.ObjectWriter {
     public ** writeValueAsString(**);
 }
+
+-keepattributes *Annotation*,Signature,InnerClasses
