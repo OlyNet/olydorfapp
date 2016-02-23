@@ -15,9 +15,9 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
--keep class javax.imageio.IIOImage {
-    public *;
-    protected *;
-}
 
 -dontobfuscate
+
+-keep class javax.imageio.IIOImage
+
+-keep public class eu.olynet.olydorfapp.model.*
