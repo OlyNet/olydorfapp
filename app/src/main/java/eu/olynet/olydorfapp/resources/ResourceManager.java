@@ -240,9 +240,9 @@ public class ResourceManager {
 
                 Log.d("ResourceManager.init", "ResteasyClient setup complete.");
             } catch (Exception e) {
-                Log.e("ResourceManager.init", "ResourceManager initialization failed!");
-                Log.e("ResourceManager.init", getStackTraceAsString(e));
-                return;
+                RuntimeException re = new RuntimeException("ResourceManager initialization failed");
+                re.initCause(e);
+                throw re;
             }
 
             this.initialized = true;
