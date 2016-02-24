@@ -9,23 +9,20 @@ android {
         minSdkVersion 16
         targetSdkVersion 23
         /* use either the Jenkins build number as version code or a user specified one */
-        if(System.getenv("BUILD_NUMBER") != null && !System.getenv("BUILD_NUMBER").equals("")) {
+        if (System.getenv("BUILD_NUMBER") != null && !System.getenv("BUILD_NUMBER").equals("")) {
             versionCode Integer.parseInt(System.getenv("BUILD_NUMBER"))
         } else {
             versionCode 7
         }
         /* append either the Jenkins build number or 'local' */
-        versionName "0.1" + "." +
-                (System.getenv("BUILD_NUMBER") != null &&
-                !System.getenv("BUILD_NUMBER").equals("")) ?
-                System.getenv("BUILD_NUMBER") : "0"
+        versionName "0.1"
 
         // Enabling multidex support.
         multiDexEnabled true
     }
     signingConfigs {
         release {
-            if(System.getenv("RELEASE_BUILD").equals("true")) {
+            if (System.getenv("RELEASE_BUILD").equals("true")) {
                 storeFile file(System.getenv("KEYSTORE"))
                 storePassword System.getenv("KEYSTORE_PASSWORD")
                 keyAlias System.getenv("KEY_ALIAS")
@@ -37,9 +34,19 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            if(System.getenv("RELEASE_BUILD").equals("true")) {
+
+            /* sign only if the correct environment variable is set */
+            if (System.getenv("RELEASE_BUILD").equals("true")) {
                 signingConfig signingConfigs.release
             }
+
+            /* append the build number if present */
+            if (System.getenv("BUILD_NUMBER") != null && !System.getenv("BUILD_NUMBER").equals("")) {
+                versionNameSuffix "." + System.getenv("BUILD_NUMBER")
+            }
+        }
+        debug {
+            versionNameSuffix "-SNAPSHOT"
         }
     }
     dexOptions {
@@ -82,7 +89,7 @@ dependencies {
     compile 'org.jboss.resteasy:resteasy-jackson-provider:3.0.14.Final'
     compile 'org.jboss.resteasy:resteasy-client:3.0.14.Final'
     // Caching
-    compile ('com.vincentbrison.openlibraries.android:dualcache:2.2.2@jar') {
+    compile('com.vincentbrison.openlibraries.android:dualcache:2.2.2@jar') {
         transitive = true
     }
 }
