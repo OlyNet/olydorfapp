@@ -8,8 +8,17 @@ android {
         applicationId "eu.olynet.olydorfapp"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 7
-        versionName "0.1"
+        /* use either the Jenkins build number as version code or a user specified one */
+        if(System.getenv("BUILD_NUMBER") != null && !System.getenv("BUILD_NUMBER").equals("")) {
+            versionCode Integer.parseInt(System.getenv("BUILD_NUMBER"))
+        } else {
+            versionCode 7
+        }
+        /* append either the Jenkins build number or 'local' */
+        versionName "0.1" +
+                "-" + (System.getenv("BUILD_NUMBER") != null &&
+                !System.getenv("BUILD_NUMBER").equals("")) ?
+                System.getenv("BUILD_NUMBER") : "local"
 
         // Enabling multidex support.
         multiDexEnabled true

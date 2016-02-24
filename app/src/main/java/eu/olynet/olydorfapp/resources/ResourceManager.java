@@ -237,8 +237,6 @@ public class ResourceManager {
                         .httpEngine(engine)
                         .build();
 
-//                client.register(JacksonJsonProvider.class);
-
                 ResteasyWebTarget target = client.target("https://wstest.olynet.eu/dorfapp-rest/api");
                 this.onc = target.proxy(OlyNetClient.class);
 
@@ -425,6 +423,10 @@ public class ResourceManager {
             try {
                 /* get the TreeSet from the cache */
                 cachedTree = metaTreeCache.get(type);
+                if(cachedTree == null) {
+                    Log.w("ResourceManager", "[cleanup] '" + type + "' failed, tree is null");
+                    continue;
+                }
 
                 /* get a copy of the tree that is sorted by lastUsed */
                 TreeSet<AbstractMetaItem> tree = new TreeSet<>(comparator);
@@ -450,7 +452,7 @@ public class ResourceManager {
                 metaTreeCache.put(type, tree);
             } catch (Exception e) {
                 /* lord have mercy */
-                Log.e("ResourceManager", getStackTraceAsString(e));
+                throw new RuntimeException("cleanup of cached data failed for '" + type + "'", e);
             }
             Log.d("ResourceManager", "[cleanup] '" + type + "' finished");
         }
