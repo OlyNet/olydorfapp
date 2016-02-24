@@ -49,7 +49,7 @@ public class NewsItem extends NewsMetaItem {
     public String toString() {
         String result = super.toString() + "\n";
         result += "text = " + this.text + "\n";
-        result += "image = " + image.length + " Byte";
+        result += "image = " + ((image != null) ? image.length : 0) + " Byte";
 
         return result;
     }

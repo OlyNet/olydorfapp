@@ -13,9 +13,9 @@ public class FoodItem extends FoodMetaItem {
         super();
     }
 
-    public FoodItem(int id, Date date, Date lastUpdated, String name, float price,
-                        boolean vegetarian, int organization, byte[] image) {
-        super(id, date, lastUpdated, name, price, vegetarian, organization);
+    public FoodItem(int id, Date date, Date lastUpdated, String name, String englishname,
+                    float price, boolean vegetarian, int organization, byte[] image) {
+        super(id, date, lastUpdated, name, englishname, price, vegetarian, organization);
         this.image = image;
     }
 
@@ -36,7 +36,7 @@ public class FoodItem extends FoodMetaItem {
     @Override
     public String toString() {
         String result = super.toString() + "\n";
-        result += "image = " + image.length + " Byte";
+        result += "image = " + ((image != null) ? image.length : 0) + " Byte";
 
         return result;
     }

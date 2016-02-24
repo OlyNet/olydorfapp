@@ -9,7 +9,7 @@ import java.util.Date;
 public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
 
     protected String name;
-    protected String englishname = null;
+    protected String englishname;
     protected float price;
     protected boolean vegetarian;
     protected int organization;
@@ -21,6 +21,7 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
     public FoodMetaItem(Date lastUsed) {
         super(lastUsed);
         this.name = null;
+        this.englishname = null;
         this.price = Float.NaN;
         this.vegetarian = false;
         this.organization = 0;
@@ -29,15 +30,17 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
     public FoodMetaItem(int id) {
         super(id);
         this.name = null;
+        this.englishname = null;
         this.price = Float.NaN;
         this.vegetarian = false;
         this.organization = 0;
     }
 
-    public FoodMetaItem(int id, Date date, Date lastUpdated, String name, float price,
-                        boolean vegetarian, int organization) {
+    public FoodMetaItem(int id, Date date, Date lastUpdated, String name, String englishname,
+                        float price, boolean vegetarian, int organization) {
         super(id, date, lastUpdated);
         this.name = name;
+        this.englishname = englishname;
         this.price = price;
         this.vegetarian = vegetarian;
         this.organization = organization;
@@ -49,6 +52,14 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEnglishname() {
+        return englishname;
+    }
+
+    public void setEnglishname(String englishname) {
+        this.englishname = englishname;
     }
 
     public float getPrice() {
@@ -90,6 +101,7 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
     public String toString() {
         String result = super.toString() + "\n";
         result += "name = " + this.name + "\n";
+        result += "englishname = " + this.englishname + "\n";
         result += "price = " + this.price + "\n";
         result += "vegetarian = " + this.vegetarian + "\n";
         result += "organization = " + this.organization;
@@ -101,6 +113,7 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
     public void updateItem(FoodMetaItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
         this.name = updatedItem.name;
+        this.englishname = updatedItem.englishname;
         this.price = updatedItem.price;
         this.vegetarian = updatedItem.vegetarian;
         this.organization = updatedItem.organization;
@@ -111,6 +124,15 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
             @Override
             public int compare(FoodMetaItem lhs, FoodMetaItem rhs) {
                 return -lhs.getDate().compareTo(rhs.getDate());
+            }
+        };
+    }
+
+    public static Comparator<FoodMetaItem> getDateAscComparator() {
+        return new Comparator<FoodMetaItem>() {
+            @Override
+            public int compare(FoodMetaItem lhs, FoodMetaItem rhs) {
+                return lhs.getDate().compareTo(rhs.getDate());
             }
         };
     }

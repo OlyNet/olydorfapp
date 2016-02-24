@@ -62,6 +62,11 @@ public class ResourceManager {
 
     /**
      * The static Map mapping the valid Classes to their corresponding identifier Strings.
+     * <p/>
+     * All items that need to be available via this Class have to be added in the static{...}
+     * section below.
+     *
+     * @see eu.olynet.olydorfapp.resources.OlyNetClient
      */
     private static final Map<Class, String> treeCaches;
 
@@ -280,24 +285,19 @@ public class ResourceManager {
     }
 
     /**
-     * Checks whether an internet connection is available. Also informs the user if this is not the
-     * case.
+     * Ensures that the device is connected to the internet.
      *
-     * @return <b>true</b> iff there is a connection to the internet available.
+     * @throws NoConnectionException if no connection could be detected.
      */
-    private boolean isOnline() {
+    private void isOnline() throws NoConnectionException {
         try {
             ConnectivityManager cm = (ConnectivityManager) this.context
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
-                return true;
-            } else {
-                informUser("No internet connection detected.");
-                return false;
+            if (!cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
+                throw new NoConnectionException("No internet connection detected");
             }
         } catch (Exception e) {
-            informUser("No internet connection detected.");
-            return false;
+            throw new NoConnectionException("No internet connection detected", e);
         }
     }
 
@@ -317,14 +317,13 @@ public class ResourceManager {
      *              Map.
      * @param id    the ID identifying the fetched item.
      * @return the fetched item or <b>null</b> if this operation was not successful.
-     * @throws RuntimeException if clazz is not a valid Class for this operation.
+     * @throws RuntimeException      if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException if no internet connection is available.
      */
     @SuppressWarnings("unchecked")
-    private AbstractMetaItem<?> fetchItem(Class clazz, int id) {
+    private AbstractMetaItem<?> fetchItem(Class clazz, int id) throws NoConnectionException {
         /* terminate if we do not have an internet connection */
-        if (!isOnline()) {
-            return null;
-        }
+        isOnline();
 
         /* check if a valid type has been requested */
         String type = getResourceString(clazz);
@@ -360,14 +359,13 @@ public class ResourceManager {
      * @param clazz the Class of the meta-data to be fetched. Must be specified within the
      *              treeCaches Map.
      * @return the fetched item or <b>null</b> if this operation was not successful.
-     * @throws RuntimeException if clazz is not a valid Class for this operation.
+     * @throws RuntimeException      if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException if no internet connection is available.
      */
     @SuppressWarnings("unchecked")
-    private List<AbstractMetaItem<?>> fetchMetaItems(Class clazz) {
+    private List<AbstractMetaItem<?>> fetchMetaItems(Class clazz) throws NoConnectionException {
         /* terminate if we do not have an internet connection */
-        if (!isOnline()) {
-            return null;
-        }
+        isOnline();
 
         /* check if a valid type has been requested */
         String type = getResourceString(clazz);
@@ -423,7 +421,7 @@ public class ResourceManager {
             try {
                 /* get the TreeSet from the cache */
                 cachedTree = metaTreeCache.get(type);
-                if(cachedTree == null) {
+                if (cachedTree == null) {
                     Log.w("ResourceManager", "[cleanup] '" + type + "' failed, tree is null");
                     continue;
                 }
@@ -555,7 +553,13 @@ public class ResourceManager {
 
         /* fetch meta-data from server */
         TreeSet<AbstractMetaItem<?>> result = new TreeSet<>();
-        List<AbstractMetaItem<?>> items = fetchMetaItems(clazz);
+        List<AbstractMetaItem<?>> items = null;
+        boolean noConnection = false;
+        try {
+            items = fetchMetaItems(clazz);
+        } catch (NoConnectionException nce) {
+            noConnection = true;
+        }
 
         if (items != null) {
             Log.d("ResourceManager", "Received " + items.size() + " meta-data items from server");
@@ -575,8 +579,11 @@ public class ResourceManager {
             metaTreeCache.put(type, cachedTree);
         } else {
             /* return cached data instead */
-            Log.w("ResourceManager", "Could not fetch meta-data from server, using cached data");
-            informUser("Unable to contact the server");
+            if (noConnection) {
+                informUser("No internet connection detected, using cached data instead.");
+            } else {
+                informUser("Unable to contact the server, using cached data instead.");
+            }
             if (cachedTree == null) {
                 Log.w("ResourceManager", "Cached metaTree is null");
             } else {
