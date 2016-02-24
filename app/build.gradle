@@ -15,10 +15,10 @@ android {
             versionCode 7
         }
         /* append either the Jenkins build number or 'local' */
-        versionName "0.1" +
-                "-" + (System.getenv("BUILD_NUMBER") != null &&
+        versionName "0.1" + "." +
+                (System.getenv("BUILD_NUMBER") != null &&
                 !System.getenv("BUILD_NUMBER").equals("")) ?
-                System.getenv("BUILD_NUMBER") : "local"
+                System.getenv("BUILD_NUMBER") : "0"
 
         // Enabling multidex support.
         multiDexEnabled true
