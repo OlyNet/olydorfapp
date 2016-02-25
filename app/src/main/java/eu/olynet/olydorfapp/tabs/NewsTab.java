@@ -1,5 +1,6 @@
 package eu.olynet.olydorfapp.tabs;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,12 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.NewsDataAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.NewsItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
 import eu.olynet.olydorfapp.resources.ResourceManager;
 
@@ -31,7 +34,8 @@ public class NewsTab extends Fragment {
     private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.tab_news, container, false);
         mRecyclerView = (RecyclerView) v.findViewById(R.id.news_card_list);
         return v;
@@ -40,26 +44,37 @@ public class NewsTab extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         final Context context = getContext();
-        (new AsyncTask<Void, Void, List<NewsMetaItem>>() {
+
+        (new AsyncTask<Void, Void, List<NewsItem>>() {
 
             @Override
-            protected List<NewsMetaItem> doInBackground(Void... params) {
+            protected List<NewsItem> doInBackground(Void... params) {
+                ResourceManager rm = ResourceManager.getInstance();
+
                 /* querying the ResourceManager for the needed data */
-                TreeSet<AbstractMetaItem<?>> tree = ResourceManager.getInstance()
-                        .getTreeOfMetaItems(NewsMetaItem.class);
+                TreeSet<AbstractMetaItem<?>> tree = rm.getTreeOfMetaItems(NewsMetaItem.class);
 
                 /* creating the result ArrayList */
-                List<NewsMetaItem> result = new ArrayList<>();
+                List<NewsItem> result = new ArrayList<>();
                 if (tree == null) {
                     return result;
                 }
 
                 /* create a new TreeSet with the correct ordering */
-                TreeSet<NewsMetaItem> tmpTree = new TreeSet<>(NewsMetaItem.getDateDescComparator());
+                TreeSet<NewsItem> tmpTree = new TreeSet<>(NewsItem.getDateDescComparator());
                 for (AbstractMetaItem<?> item : tree) {
-                    tmpTree.add((NewsMetaItem) item);
+                    NewsMetaItem metaItem = (NewsMetaItem) item;
+                    NewsItem newsItem = (NewsItem) rm.getItem(NewsMetaItem.class, item.getId());
+
+                    /* reconstruct as much data as possible from the NewsMetaItem */
+                    if(newsItem == null) {
+                        newsItem = new NewsItem(metaItem.getId(), metaItem.getDate(),
+                                metaItem.getLastUpdated(), metaItem.getTitle(),
+                                metaItem.getAuthor(), metaItem.getOrganization(), "", null);
+                    }
+
+                    tmpTree.add(newsItem);
                 }
 
                 /* copying the elements of the TreeSet into the result ArrayList and return it */
@@ -68,10 +83,10 @@ public class NewsTab extends Fragment {
             }
 
             @Override
-            protected void onPostExecute(List<NewsMetaItem> result) {
+            protected void onPostExecute(List<NewsItem> result) {
                 super.onPostExecute(result);
 
-                mAdapter = new NewsDataAdapter(result);
+                mAdapter = new NewsDataAdapter(context, result);
 
                 mLayoutManager = new LinearLayoutManager(getActivity());
                 mRecyclerView.setHasFixedSize(true);

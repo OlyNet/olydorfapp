@@ -16,28 +16,52 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="01.01.1970"
-            android:id="@+id/newsCardDate"
-            android:layout_below="@+id/newsCardTitle" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Are your titles too lame?"
             android:id="@+id/newsCardTitle"
             android:layout_gravity="center|left"
             android:textStyle="bold"
-            android:textSize="20dp"
-            android:layout_alignParentTop="true"/>
+            android:textSize="24sp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="Toller Titel der unglaublich lang ist und nicht auf den Bildschirm passt"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/newsCardImage"
+            android:layout_below="@+id/newsCardTitle"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/ic_account_circle_white_64dp"
+            android:scaleType="center"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:contentDescription="News image" />
+
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Organization"
+            android:id="@+id/newsCardDate"
+            android:textSize="16sp"
+            android:layout_below="@+id/newsCardImage"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:text="01.01.1970" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/newsCardOrganization"
-            android:layout_alignTop="@+id/newsCardDate"
+            android:textSize="16sp"
+            android:layout_below="@+id/newsCardImage"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:text="OlyNet e.V." />
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>
