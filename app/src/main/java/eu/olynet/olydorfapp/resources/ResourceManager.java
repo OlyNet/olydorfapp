@@ -34,6 +34,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,14 +71,24 @@ public class ResourceManager {
      */
     private static final Map<Class, String> treeCaches;
 
-    /* statically fill the Map */
+    /**
+     * All items contained in this Set will be skipped during cleanup operations.
+     */
+    private static final Set<Class> skipDuringCleanup;
+
+    /* statically fill the Map and the Set */
     static {
         Map<Class, String> initMap = new LinkedHashMap<>();
         initMap.put(NewsMetaItem.class, "news");
         initMap.put(FoodMetaItem.class, "food");
         initMap.put(DailyMealMetaItem.class, "motd");
 
+
+        Set<Class> initSet = new LinkedHashSet<>();
+        initSet.add(FoodMetaItem.class);
+
         treeCaches = Collections.unmodifiableMap(initMap);
+        skipDuringCleanup = Collections.unmodifiableSet(initSet);
     }
 
     /**
@@ -185,7 +196,7 @@ public class ResourceManager {
                     .useDefaultSerializerInDisk(10 * 1024 * 1024, true);
             itemCache = new DualCacheBuilder<>("Items", pInfo.versionCode, AbstractMetaItem.class)
                     .useDefaultSerializerInRam(5 * 1024 * 1024)
-                    .useDefaultSerializerInDisk(50 * 1024 * 1024, true);
+                    .useDefaultSerializerInDisk(200 * 1024 * 1024, true);
             Log.d("ResourceManager.init", "DualCache setup complete.");
 
             /*
@@ -416,6 +427,12 @@ public class ResourceManager {
         for (Map.Entry<Class, String> entry : treeCaches.entrySet()) {
             String type = entry.getValue();
             Class<?> clazz = entry.getKey();
+
+            /* skip certain types during the cleanup */
+            if(skipDuringCleanup.contains(clazz)) {
+                Log.d("ResourceManager", "[cleanup] '" + type + "' skipped");
+                continue;
+            }
 
             Log.d("ResourceManager", "[cleanup] '" + type + "' started");
             try {

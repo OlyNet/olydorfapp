@@ -4,14 +4,34 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     card_view:cardCornerRadius="4dp"
-    android:layout_margin="5dp">
+    card_view:cardBackgroundColor="#E6E6E6"
+    android:layout_margin="5dp"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            xmlns:rounded_image_view="http://schemas.android.com/apk/res-auto"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/newsCardImage"
+            android:src="@drawable/ic_account_circle_white_64dp"
+            android:contentDescription="News image"
+            rounded_image_view:riv_corner_radius_bottom_left="0dp"
+            rounded_image_view:riv_corner_radius_bottom_right="0dp"
+            rounded_image_view:riv_corner_radius_top_left="4dp"
+            rounded_image_view:riv_corner_radius_top_right="4dp"
+            android:adjustViewBounds="true"
+            android:maxHeight="150dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:scaleType="centerCrop"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -19,49 +39,32 @@
             android:id="@+id/newsCardTitle"
             android:layout_gravity="center|left"
             android:textStyle="bold"
-            android:textSize="24sp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="5dp"
-            android:text="Toller Titel der unglaublich lang ist und nicht auf den Bildschirm passt"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/newsCardImage"
-            android:layout_below="@+id/newsCardTitle"
+            android:textSize="20sp"
+            android:text="Toller Titel"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:src="@drawable/ic_account_circle_white_64dp"
-            android:scaleType="center"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:contentDescription="News image" />
-
+            android:layout_below="@+id/newsCardImage"
+            android:adjustViewBounds="true"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/newsCardDate"
             android:textSize="16sp"
-            android:layout_below="@+id/newsCardImage"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:text="01.01.1970" />
+            android:text="01.01.1970"
+            android:layout_below="@+id/newsCardTitle"
+            android:layout_alignLeft="@+id/newsCardTitle"
+            android:layout_alignStart="@+id/newsCardTitle"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/newsCardOrganization"
             android:textSize="16sp"
-            android:layout_below="@+id/newsCardImage"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"
-            android:text="OlyNet e.V." />
+            android:text="OlyNet e.V."
+            android:layout_below="@+id/newsCardTitle"
+            android:layout_alignRight="@+id/newsCardTitle"
+            android:layout_alignEnd="@+id/newsCardTitle"/>
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>
