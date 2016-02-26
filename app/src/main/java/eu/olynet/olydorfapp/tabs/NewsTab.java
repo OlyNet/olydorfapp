@@ -46,44 +46,27 @@ public class NewsTab extends Fragment {
         super.onActivityCreated(savedInstanceState);
         final Context context = getContext();
 
-        (new AsyncTask<Void, Void, List<NewsItem>>() {
+        (new AsyncTask<Void, Void, List<AbstractMetaItem<?>>>() {
 
             @Override
-            protected List<NewsItem> doInBackground(Void... params) {
+            protected List<AbstractMetaItem<?>> doInBackground(Void... params) {
                 ResourceManager rm = ResourceManager.getInstance();
 
                 /* querying the ResourceManager for the needed data */
                 TreeSet<AbstractMetaItem<?>> tree = rm.getTreeOfMetaItems(NewsMetaItem.class);
 
-                /* creating the result ArrayList */
-                List<NewsItem> result = new ArrayList<>();
-                if (tree == null) {
-                    return result;
+                List<Integer> ids = new ArrayList<>();
+                for(AbstractMetaItem<?> item : tree) {
+                    ids.add(item.getId());
                 }
 
-                /* create a new TreeSet with the correct ordering */
-                TreeSet<NewsItem> tmpTree = new TreeSet<>(NewsItem.getDateDescComparator());
-                for (AbstractMetaItem<?> item : tree) {
-                    NewsMetaItem metaItem = (NewsMetaItem) item;
-                    NewsItem newsItem = (NewsItem) rm.getItem(NewsMetaItem.class, item.getId());
-
-                    /* reconstruct as much data as possible from the NewsMetaItem */
-                    if(newsItem == null) {
-                        newsItem = new NewsItem(metaItem.getId(), metaItem.getDate(),
-                                metaItem.getLastUpdated(), metaItem.getTitle(),
-                                metaItem.getAuthor(), metaItem.getOrganization(), "", null);
-                    }
-
-                    tmpTree.add(newsItem);
-                }
-
-                /* copying the elements of the TreeSet into the result ArrayList and return it */
-                result.addAll(tmpTree);
-                return result;
+                /* requesting and returning the result array */
+                return rm.getItems(NewsMetaItem.class, ids,
+                        new AbstractMetaItem.DateDescComparator());
             }
 
             @Override
-            protected void onPostExecute(List<NewsItem> result) {
+            protected void onPostExecute(List<AbstractMetaItem<?>> result) {
                 super.onPostExecute(result);
 
                 mAdapter = new NewsDataAdapter(context, result);

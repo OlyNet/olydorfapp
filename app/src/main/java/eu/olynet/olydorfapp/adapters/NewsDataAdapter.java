@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import eu.olynet.olydorfapp.R;
+import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsItem;
 import eu.olynet.olydorfapp.model.Organization;
 
@@ -24,12 +25,8 @@ import eu.olynet.olydorfapp.model.Organization;
  */
 public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHolder> {
 
-    private List<NewsItem> items;
+    private List<AbstractMetaItem<?>> items;
     private Context context;
-
-    public NewsDataAdapter() {
-
-    }
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -51,7 +48,7 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public NewsDataAdapter(Context context, List<NewsItem> newsItems) {
+    public NewsDataAdapter(Context context, List<AbstractMetaItem<?>> newsItems) {
         this.context = context;
         this.items = newsItems;
     }
@@ -68,7 +65,11 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        NewsItem newsItem = items.get(position);
+        if(!(items.get(position) instanceof NewsItem)) {
+            throw new IllegalArgumentException("the List of AbstractMetaItem<?>s provided does not"
+                    + " seem to only contain NewsItems");
+        }
+        NewsItem newsItem = (NewsItem) items.get(position);
 
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 

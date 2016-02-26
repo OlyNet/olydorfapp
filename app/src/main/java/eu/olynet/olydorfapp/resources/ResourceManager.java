@@ -18,6 +18,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -28,6 +29,7 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -63,7 +65,7 @@ public class ResourceManager {
 
     /**
      * The static Map mapping the valid Classes to their corresponding identifier Strings.
-     * <p/>
+     * <p>
      * All items that need to be available via this Class have to be added in the static{...}
      * section below.
      *
@@ -98,7 +100,7 @@ public class ResourceManager {
 
     /**
      * The file containing the OlyNet e.V. Intermediate Certificate Authority (CA).
-     * <p/>
+     * <p>
      * <b>IMPORTANT:</b> if this is not present, verification will fail when supplying a client
      * certificate. This seems to be a bug in Android's HttpsURLConnection implementation.
      */
@@ -429,7 +431,7 @@ public class ResourceManager {
             Class<?> clazz = entry.getKey();
 
             /* skip certain types during the cleanup */
-            if(skipDuringCleanup.contains(clazz)) {
+            if (skipDuringCleanup.contains(clazz)) {
                 Log.d("ResourceManager", "[cleanup] '" + type + "' skipped");
                 continue;
             }
@@ -483,8 +485,9 @@ public class ResourceManager {
      * cannot be reached in time, a cached version will be returned instead.
      * @throws RuntimeException if the ResourceManager has not been initialized correctly.
      * @throws RuntimeException if clazz is not a valid Class for this operation.
+     * @throws RuntimeException if the ID requested is not present in the meta-data tree.
+     * @throws RuntimeException if some weird Reflection error occurs.
      */
-    @SuppressWarnings("unchecked")
     public AbstractMetaItem<?> getItem(Class<?> clazz, int id) {
         checkInitialized();
 
@@ -504,9 +507,8 @@ public class ResourceManager {
             /* use the dummy item to search for the real item within the tree */
             AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
             if (metaItem == null || metaItem.getId() != id || metaItem.getLastUpdated() == null) {
-                Log.e("ResourceManager", "meta-data tree " + clazz
-                        + " does not contain the requested element " + id);
-                return null;
+                throw new RuntimeException("meta-data tree of type '" + type
+                        + "' does not contain the requested element " + id);
             }
 
             /* check cache and query server on miss or date mismatch */
@@ -544,10 +546,101 @@ public class ResourceManager {
 
             return item;
         } catch (Exception e) {
-            /* lord have mercy */
-            Log.e("ResourceManager", getStackTraceAsString(e));
+            throw new RuntimeException("during the getItem() for '" + type + "' with id: " + id, e);
+        }
+    }
+
+    /**
+     * Get a list of items from the server (preferably) or the cache.
+     *
+     * @param clazz      the Class of the item to be fetched. Must be specified within the treeCaches
+     *                   Map.
+     * @param ids        the List of IDs identifying the fetched items.
+     * @param comparator The comparator specifying the ordering of the items. If it is <b>null</b>,
+     *                   items will be sorted using their inherent order.
+     * @return a List of the requested Items with the specified ordering.
+     * @throws RuntimeException if the ResourceManager has not been initialized correctly.
+     * @throws RuntimeException if clazz is not a valid Class for this operation.
+     * @throws RuntimeException if one of the IDs requested is not present in the meta-data tree.
+     * @throws RuntimeException if some weird Reflection error occurs.
+     */
+    public List<AbstractMetaItem<?>> getItems(Class<?> clazz, List<Integer> ids,
+                                              Comparator<AbstractMetaItem> comparator) {
+        checkInitialized();
+
+        /* get the corresponding meta-data tree */
+        String type = getResourceString(clazz);
+        TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(type);
+        if (tree == null) {
+            Log.e("ResourceManager", "meta-data tree for " + clazz + " not found");
             return null;
         }
+
+        /* TreeSet used for ordering */
+        TreeSet<AbstractMetaItem<?>> itemTree;
+        if (comparator != null) {
+            itemTree = new TreeSet<>(comparator);
+        } else {
+            itemTree = new TreeSet<>();
+        }
+
+        try {
+            for (int id : ids) {
+                /* create a dummy item with the same id */
+                Constructor<?> cons = clazz.getConstructor(int.class);
+                AbstractMetaItem<?> dummyItem = (AbstractMetaItem<?>) cons.newInstance(id);
+
+                /* use the dummy item to search for the real item within the tree */
+                AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
+                if (metaItem == null || metaItem.getId() != id || metaItem.getLastUpdated() == null) {
+                    throw new RuntimeException("meta-data tree of type '" + type
+                            + "' does not contain the requested element " + id);
+                }
+
+                /* check cache and query server on miss or date mismatch */
+                String resIdentifier = treeCaches.get(clazz) + "_" + id;
+                AbstractMetaItem<?> item = (AbstractMetaItem<?>) itemCache.get(resIdentifier);
+                if (item == null || !item.getLastUpdated().equals(metaItem.getLastUpdated())) {
+                    Log.i("ResourceManager", "Cached item is outdated, fetch necessary");
+                    AbstractMetaItem<?> webItem = fetchItem(clazz, id);
+
+                    /* return webItem instead of the cached item if successful */
+                    if (webItem != null) {
+                        item = webItem;
+                    } else {
+                        Log.w("ResourceManager", "Fetch failed for some reason");
+                    }
+                } else {
+                    Log.d("ResourceManager", "Cached item was up-to-date, no fetch necessary");
+                }
+
+                /* check if we have some valid item (up-to-date or not) */
+                if (item != null) {
+                    /* update last used */
+                    item.setLastUsed();
+
+                    /* update meta-data tree */
+                    Method updateItem = clazz.getMethod("updateItem", clazz);
+                    updateItem.invoke(clazz.cast(metaItem), clazz.cast(item));
+
+                    /* write updated item to cache */
+                    Log.d("ResourceManager", "Updating cache for item '" + resIdentifier + "'");
+                    itemCache.put(resIdentifier, item);
+
+                    /* add item to the Collection of items to be returned */
+                    itemTree.add(item);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("during the getItems() for '" + type + "' with ids: "
+                    + Arrays.toString(ids.toArray()), e);
+        }
+
+        Log.d("ResourceManager", "Updating meta-data tree cache of type '" + type + "'");
+        metaTreeCache.put(type, tree);
+
+        /* convert and return result */
+        return new ArrayList<>(itemTree);
     }
 
     /**

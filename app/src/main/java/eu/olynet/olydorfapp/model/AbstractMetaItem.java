@@ -90,7 +90,8 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
             this.date = updatedItem.date;
             this.lastUpdated = updatedItem.lastUpdated;
         } else {
-            throw new ItemMismatchException(this.toString() + "cannot be overwritten by " + updatedItem.toString());
+            throw new ItemMismatchException(this.toString() + "cannot be overwritten by "
+                    + updatedItem.toString());
         }
     }
 
@@ -138,6 +139,28 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
             } else {
                 return lhs.lastUsed.compareTo(rhs.lastUsed);
             }
+        }
+    }
+
+    /**
+     * Comparator used to order items by their date in ascending order. A use case for this would be
+     * displaying daily meals for the next month.
+     */
+    public static class DateAscComparator implements Comparator<AbstractMetaItem> {
+        @Override
+        public int compare(AbstractMetaItem lhs, AbstractMetaItem rhs) {
+            return lhs.getDate().compareTo(rhs.getDate());
+        }
+    }
+
+    /**
+     * Comparator used to order items by their date in descending order. A use case for this would
+     * be displaying news entries.
+     */
+    public static class DateDescComparator implements Comparator<AbstractMetaItem> {
+        @Override
+        public int compare(AbstractMetaItem lhs, AbstractMetaItem rhs) {
+            return -lhs.getDate().compareTo(rhs.getDate());
         }
     }
 }

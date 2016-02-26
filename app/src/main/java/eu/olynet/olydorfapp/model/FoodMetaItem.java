@@ -118,22 +118,4 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
         this.vegetarian = updatedItem.vegetarian;
         this.organization = updatedItem.organization;
     }
-
-    public static Comparator<FoodMetaItem> getDateDescComparator() {
-        return new Comparator<FoodMetaItem>() {
-            @Override
-            public int compare(FoodMetaItem lhs, FoodMetaItem rhs) {
-                return -lhs.getDate().compareTo(rhs.getDate());
-            }
-        };
-    }
-
-    public static Comparator<FoodMetaItem> getDateAscComparator() {
-        return new Comparator<FoodMetaItem>() {
-            @Override
-            public int compare(FoodMetaItem lhs, FoodMetaItem rhs) {
-                return lhs.getDate().compareTo(rhs.getDate());
-            }
-        };
-    }
 }

@@ -85,13 +85,4 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
         this.title = updatedItem.title;
         this.author = updatedItem.author;
     }
-
-    public static Comparator<NewsMetaItem> getDateDescComparator() {
-        return new Comparator<NewsMetaItem>() {
-            @Override
-            public int compare(NewsMetaItem lhs, NewsMetaItem rhs) {
-                return -lhs.getDate().compareTo(rhs.getDate());
-            }
-        };
-    }
 }
