@@ -398,12 +398,6 @@ public class ResourceManager {
             Class proxyClass = this.onc.getClass();
             Method getMetaResources = proxyClass.getMethod(methodName);
             result = (List<AbstractMetaItem<?>>) getMetaResources.invoke(this.onc);
-        } catch (InvocationTargetException e) {
-            Log.w("ResourceManager", getStackTraceAsString(e));
-            if (e.getCause() instanceof ProcessingException) {
-                // TODO: inform the user of this somehow
-                result = null;
-            }
         } catch (Exception e) {
             Log.w("ResourceManager", getStackTraceAsString(e));
             result = null;
@@ -667,7 +661,6 @@ public class ResourceManager {
         TreeSet<AbstractMetaItem<?>> cachedTree = getCachedMetaDataTree(type);
 
         /* fetch meta-data from server */
-        TreeSet<AbstractMetaItem<?>> result = new TreeSet<>();
         List<AbstractMetaItem<?>> items = null;
         boolean noConnection = false;
         try {
@@ -676,6 +669,7 @@ public class ResourceManager {
             noConnection = true;
         }
 
+        TreeSet<AbstractMetaItem<?>> result = new TreeSet<>();
         if (items != null) {
             Log.d("ResourceManager", "Received " + items.size() + " meta-data items from server");
 
