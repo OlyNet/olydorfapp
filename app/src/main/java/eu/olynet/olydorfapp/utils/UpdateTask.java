@@ -14,7 +14,6 @@ import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.activities.MainActivity;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
-import eu.olynet.olydorfapp.model.FoodItem;
 import eu.olynet.olydorfapp.model.NewsItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
 import eu.olynet.olydorfapp.resources.ResourceManager;

@@ -18,17 +18,15 @@ import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheBuilder;
 import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheContextUtils;
 
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -51,7 +49,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import javax.ws.rs.ProcessingException;
 
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
@@ -265,7 +262,7 @@ public class ResourceManager {
 
                 Log.d("ResourceManager.init", "ResteasyClient setup complete.");
             } catch (Exception e) {
-                throw new RuntimeException("ResourceManager initialization failed", e);
+                throw new RuntimeException("ResteasyClient setup failed", e);
             }
 
             this.initialized = true;
@@ -351,17 +348,11 @@ public class ResourceManager {
         Log.d("fetchItem", methodName);
 
         /* dynamically invoke the correct Method */
-        AbstractMetaItem<?> result = null;
+        AbstractMetaItem<?> result;
         try {
             Class proxyClass = this.onc.getClass();
             Method getResource = proxyClass.getMethod(methodName, int.class);
             result = (AbstractMetaItem) getResource.invoke(this.onc, id);
-        } catch (InvocationTargetException e) {
-            Log.w("ResourceManager", getStackTraceAsString(e));
-            if (e.getCause() instanceof ProcessingException) {
-                // TODO: inform the user of this somehow
-                result = null;
-            }
         } catch (Exception e) {
             Log.w("ResourceManager", getStackTraceAsString(e));
             result = null;
@@ -376,7 +367,7 @@ public class ResourceManager {
      *
      * @param clazz the Class of the meta-data to be fetched. Must be specified within the
      *              treeCaches Map.
-     * @return the fetched item or <b>null</b> if this operation was not successful.
+     * @return the fetched List of meta-data items or <b>null</b> if this operation failed.
      * @throws RuntimeException      if clazz is not a valid Class for this operation.
      * @throws NoConnectionException if no internet connection is available.
      */
@@ -393,7 +384,7 @@ public class ResourceManager {
         Log.d("fetchMetaItems", methodName);
 
         /* dynamically invoke the correct Method */
-        List<AbstractMetaItem<?>> result = new ArrayList<>();
+        List<AbstractMetaItem<?>> result;
         try {
             Class proxyClass = this.onc.getClass();
             Method getMetaResources = proxyClass.getMethod(methodName);
@@ -417,6 +408,7 @@ public class ResourceManager {
     public void cleanup() {
         checkInitialized();
 
+        /* create a Date object exactly one month in the past */
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MONTH, -1);
         Date cutoff = calendar.getTime();
@@ -467,7 +459,6 @@ public class ResourceManager {
                 /* write the pruned tree back to cache */
                 metaTreeCache.put(type, tree);
             } catch (Exception e) {
-                /* lord have mercy */
                 throw new RuntimeException("cleanup of cached data failed for '" + type + "'", e);
             }
             Log.d("ResourceManager", "[cleanup] '" + type + "' finished");
@@ -484,7 +475,8 @@ public class ResourceManager {
      * cannot be reached in time, a cached version will be returned instead.
      * @throws RuntimeException if the ResourceManager has not been initialized correctly.
      * @throws RuntimeException if clazz is not a valid Class for this operation.
-     * @throws RuntimeException if the ID requested is not present in the meta-data tree.
+     * @throws RuntimeException if the ID requested is not present in the meta-data tree or the
+     *                          whole tree itself is missing.
      * @throws RuntimeException if some weird Reflection error occurs.
      */
     public AbstractMetaItem<?> getItem(Class<?> clazz, int id) {
@@ -494,8 +486,7 @@ public class ResourceManager {
         String type = getResourceString(clazz);
         TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(type);
         if (tree == null) {
-            Log.e("ResourceManager", "meta-data tree for " + clazz + " not found");
-            return null;
+            throw new RuntimeException("meta-data tree for " + clazz + " not found");
         }
 
         try {
@@ -560,7 +551,8 @@ public class ResourceManager {
      * @return a List of the requested Items with the specified ordering.
      * @throws RuntimeException if the ResourceManager has not been initialized correctly.
      * @throws RuntimeException if clazz is not a valid Class for this operation.
-     * @throws RuntimeException if one of the IDs requested is not present in the meta-data tree.
+     * @throws RuntimeException if one of the IDs requested is not present in the meta-data tree or
+     *                          the whole tree itself is missing.
      * @throws RuntimeException if some weird Reflection error occurs.
      */
     public List<AbstractMetaItem<?>> getItems(Class<?> clazz, List<Integer> ids,
@@ -571,8 +563,7 @@ public class ResourceManager {
         String type = getResourceString(clazz);
         TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(type);
         if (tree == null) {
-            Log.e("ResourceManager", "meta-data tree for " + clazz + " not found");
-            return null;
+            throw new RuntimeException("meta-data tree for " + clazz + " not found");
         }
 
         /* TreeSet used for ordering */
