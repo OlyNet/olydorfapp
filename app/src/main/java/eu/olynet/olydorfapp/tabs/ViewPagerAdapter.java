@@ -1,5 +1,9 @@
+/**
+ * Copyright (C) OlyNet e.V. 2015 - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited.
+ * Proprietary and confidential
+ */
 package eu.olynet.olydorfapp.tabs;
-
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
