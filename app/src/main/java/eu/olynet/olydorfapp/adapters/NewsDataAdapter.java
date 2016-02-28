@@ -70,7 +70,7 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if(!(items.get(position) instanceof NewsItem)) {
+        if (!(items.get(position) instanceof NewsItem)) {
             throw new IllegalArgumentException("the List of AbstractMetaItem<?>s provided does not"
                     + " seem to only contain NewsItems");
         }
@@ -88,7 +88,7 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
         /* Organization */
         Organization organization = Organization.organizations.get(newsItem.getOrganization());
         String orgName;
-        if(organization != null) {
+        if (organization != null) {
             orgName = organization.getName();
         } else {
             orgName = "N/A";
@@ -97,7 +97,7 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
 
         /* Image */
         byte[] image = newsItem.getImage();
-        if(image != null && image.length > 0) {
+        if (image != null && image.length > 0) {
             Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
             DisplayMetrics dm = new DisplayMetrics();
             windowManager.getDefaultDisplay().getMetrics(dm);
@@ -105,9 +105,44 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
         }
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+    /**
+     * Return the size of your data-set (invoked by the layout manager).
+     *
+     * @return the number of items present.
+     */
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    /**
+     * Returns the NewsItem (as AbstractMetaItem) at a certain position within the list. This item
+     * must actually exist.
+     *
+     * @param position the requested NewsItem's position
+     * @return the NewsItem
+     */
+    public AbstractMetaItem<?> getAbstractMetaItem(int position) {
+        return items.get(position);
+    }
+
+    /**
+     * Adds a List of AbstractMetaItems that <b>must</b> be NewsItems to this Adapter
+     *
+     * @param items the List of AbstractMetaItems to add.
+     */
+    public void addAbstractMetaItems(List<AbstractMetaItem<?>> items) {
+        this.items.addAll(items);
+    }
+
+    /**
+     * Replaces the internal List of AbstractMetaItems with a new one that <b>must</b> contain only
+     * NewsItems.
+     *
+     * @param items the new List of AbstractMetaItems to use.
+     */
+    public void replaceAbstractMetaItems(List<AbstractMetaItem<?>> items) {
+        this.items.clear();
+        this.items.addAll(items);
     }
 }
