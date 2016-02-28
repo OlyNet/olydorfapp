@@ -48,6 +48,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
 
         /* initiate RecycleView */
         mRecyclerView = (RecyclerView) v.findViewById(R.id.news_card_list);
+//        mAdapter = new
 
         return v;
     }
