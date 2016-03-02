@@ -686,6 +686,7 @@ public class ResourceManager {
             }
             if (cachedTree == null) {
                 Log.w("ResourceManager", "Cached metaTree is null");
+                return null;
             } else {
                 Log.i("ResourceManager", "Cached metaTree size: " + cachedTree.size());
                 result.addAll(cachedTree);

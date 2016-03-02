@@ -91,7 +91,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
      * Call this function to load new data asynchronously.
      *
      * @param action what action to perform.
-     * @param limit how many new items to fetch at most.
+     * @param limit  how many new items to fetch at most.
      */
     public void loadData(Action action, int limit) {
         /* disable swipe to refresh while already refreshing */
@@ -152,14 +152,19 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
             ResourceManager rm = ResourceManager.getInstance();
 
             /* querying the ResourceManager for the needed data and order it correctly */
-            TreeSet<AbstractMetaItem<?>> tree = new TreeSet<>(new AbstractMetaItem.DateDescComparator());
-            tree.addAll(rm.getTreeOfMetaItems(NewsMetaItem.class));
+            TreeSet<AbstractMetaItem<?>> fetchedTree = rm.getTreeOfMetaItems(NewsMetaItem.class);
+            if (fetchedTree == null || fetchedTree.isEmpty()) {
+                return new ArrayList<>();
+            }
+            TreeSet<AbstractMetaItem<?>> resultTree = new TreeSet<>(
+                    new AbstractMetaItem.DateDescComparator());
+            resultTree.addAll(fetchedTree);
 
             // TODO: implement incremental fetching
 
             int count = 0;
             List<Integer> ids = new ArrayList<>();
-            for (AbstractMetaItem<?> item : tree) {
+            for (AbstractMetaItem<?> item : resultTree) {
                 /* enforce item limit */
                 if (count++ >= limit) {
                     break;
