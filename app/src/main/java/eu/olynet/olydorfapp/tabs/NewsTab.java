@@ -55,16 +55,15 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        // https://stackoverflow.com/questions/26543131/how-to-implement-endless-list-with-recyclerview
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            // https://stackoverflow.com/questions/26543131/how-to-implement-endless-list-with-recyclerview
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                /* check for scroll down, second-to-last item visible and not currently refreshing*/
-                if (dy > 0 &&
+                /* check for scroll down, second-to-last item visible and not already refreshing */
+                if (dy > 0 && !mRefreshLayout.isRefreshing() &&
                         mLayoutManager.findLastCompletelyVisibleItemPosition() ==
-                                mAdapter.getItemCount() - 2 && !mRefreshLayout.isRefreshing()) {
+                                mAdapter.getItemCount() - 2) {
                     loadData(Action.ADD, DEFAULT_COUNT);
-
                 }
             }
         });

@@ -64,7 +64,7 @@
             android:textSize="16sp"
             android:text="OlyNet e.V."
             android:layout_below="@+id/newsCardTitle"
-            android:layout_alignRight="@+id/newsCardTitle"
+            android:layout_alignRight="@+id/newsCardImage"
             android:layout_alignEnd="@+id/newsCardTitle"/>
 
     </RelativeLayout>
