@@ -18,14 +18,16 @@ public class FoodItem extends FoodMetaItem {
         super();
     }
 
-    public FoodItem(int id, Date date, Date lastUpdated, String name, String englishname,
-                    float price, boolean vegetarian, int organization, byte[] image) {
-        super(id, date, lastUpdated, name, englishname, price, vegetarian, organization);
+    public FoodItem(int id, Date date, Date createDate, Date editDate, boolean published,
+                    boolean deleted, String createUser, String editUser, Organization organization,
+                    String name, String englishname, float price, boolean vegetarian, byte[] image) {
+        super(id, date, createDate, editDate, published, deleted, createUser, editUser,
+                organization, name, englishname, price, vegetarian);
         this.image = image;
     }
 
     public byte[] getImage() {
-        this.setLastUsed();
+        this.setLastUsedDate();
         return this.image;
     }
 

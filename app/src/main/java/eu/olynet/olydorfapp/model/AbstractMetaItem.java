@@ -5,6 +5,8 @@
  */
 package eu.olynet.olydorfapp.model;
 
+import android.support.annotation.NonNull;
+
 import java.util.Comparator;
 import java.util.Date;
 
@@ -16,9 +18,19 @@ import java.util.Date;
 public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements Comparable<T> {
 
     private int id;
-    protected Date date = null;
-    protected Date lastUpdated = null;
-    protected Date lastUsed = null;
+
+    protected Date date;
+    protected Date createDate;
+    protected Date editDate = null;
+    protected Date lastUsedDate = null;
+
+    protected boolean published;
+    protected boolean deleted;
+
+    protected String createUser;
+    protected String editUser = null;
+
+    protected Organization organization;
 
     /**
      * Dummy-constructor for (de-)serialization. <b>Do not use!</b>
@@ -28,38 +40,95 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
     }
 
     /**
-     * Dummy-constructor for filtering by lastUsed
+     * Dummy-constructor for filtering by lastUsedDate
      *
-     * @param lastUsed the Date this item was last used.
+     * @param lastUsedDate the Date this item was last used.
      */
-    public AbstractMetaItem(Date lastUsed) {
+    public AbstractMetaItem(Date lastUsedDate) {
         this.id = -1;
-        this.date = null;
-        this.lastUpdated = null;
-        this.lastUsed = lastUsed;
+        this.createDate = null;
+        this.editDate = null;
+        this.lastUsedDate = lastUsedDate;
+        this.published = false;
+        this.deleted = false;
+        this.createUser = null;
+        this.editUser = null;
+        this.organization = null;
     }
 
     /**
-     * Dummy-constructor for filtering by id
+     * Dummy-constructor for filtering by ID.
      *
-     * @param id
+     * @param id the ID of the dummy item.
      */
     public AbstractMetaItem(int id) {
         this.id = id;
-        this.date = null;
-        this.lastUpdated = null;
-        this.lastUsed = null;
+        this.createDate = null;
+        this.editDate = null;
+        this.lastUsedDate = null;
+        this.published = false;
+        this.deleted = false;
+        this.createUser = null;
+        this.editUser = null;
+        this.organization = null;
     }
 
-    protected AbstractMetaItem(int id, Date date, Date updated) {
+    protected AbstractMetaItem(int id, Date date, Date createDate, Date editDate, boolean published,
+                               boolean deleted, String createUser, String editUser,
+                               Organization organization) {
         this.id = id;
-        this.date = date;
-        this.lastUpdated = updated;
-        this.lastUsed = null;
+        this.createDate = createDate;
+        this.editDate = editDate;
+        this.lastUsedDate = null;
+        this.published = published;
+        this.deleted = deleted;
+        this.createUser = createUser;
+        this.editUser = editUser;
+        this.organization = organization;
     }
 
     public int getId() {
         return id;
+    }
+
+    public boolean isPublished() {
+        return published;
+    }
+
+    public void setPublished(boolean published) {
+        this.published = published;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public String getCreateUser() {
+        return createUser;
+    }
+
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
+    }
+
+    public String getEditUser() {
+        return editUser;
+    }
+
+    public void setEditUser(String editUser) {
+        this.editUser = editUser;
+    }
+
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 
     public Date getDate() {
@@ -70,30 +139,44 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.date = date;
     }
 
-    public Date getLastUpdated() {
-        return lastUpdated;
+    public Date getCreateDate() {
+        return createDate;
     }
 
-    public void setLastUpdated(Date lastUpdated) {
-        this.lastUpdated = lastUpdated;
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
-    public Date getLastUsed() {
-        return lastUsed;
+    public Date getEditDate() {
+        return editDate;
     }
 
-    public void setLastUsed(Date lastUsed) {
-        this.lastUsed = lastUsed;
+    public void setEditDate(Date editDate) {
+        this.editDate = editDate;
     }
 
-    public void setLastUsed() {
-        this.lastUsed = new Date();
+    public Date getLastUsedDate() {
+        return lastUsedDate;
+    }
+
+    public void setLastUsedDate(Date lastUsedDate) {
+        this.lastUsedDate = lastUsedDate;
+    }
+
+    public void setLastUsedDate() {
+        this.lastUsedDate = new Date();
     }
 
     public void updateItem(T updatedItem) throws ItemMismatchException {
         if (this.equals(updatedItem)) {
-            this.date = updatedItem.date;
-            this.lastUpdated = updatedItem.lastUpdated;
+            this.createDate = updatedItem.createDate;
+            this.editDate = updatedItem.editDate;
+            this.lastUsedDate = new Date();
+            this.published = updatedItem.published;
+            this.deleted = updatedItem.deleted;
+            this.createUser = updatedItem.createUser;
+            this.editUser = updatedItem.editUser;
+            this.organization = updatedItem.organization;
         } else {
             throw new ItemMismatchException(this.toString() + "cannot be overwritten by "
                     + updatedItem.toString());
@@ -107,14 +190,20 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         String result = super.toString() + "\n";
         result += "id = " + this.getId() + "\n";
         result += "date = " + this.date + "\n";
-        result += "lastUpdated = " + this.lastUpdated + "\n";
-        result += "lastUsed = " + this.lastUsed;
+        result += "createDate = " + this.createDate + "\n";
+        result += "editDate = " + this.editDate + "\n";
+        result += "lastUsedDate = " + this.lastUsedDate + "\n";
+        result += "published = " + this.published + "\n";
+        result += "deleted = " + this.deleted + "\n";
+        result += "createUser = " + this.createUser + "\n";
+        result += "editUser = " + this.editUser + "\n";
+        result += "organization = [[" + this.organization.toString() + "]]";
 
         return result;
     }
 
     @Override
-    public int compareTo(T another) {
+    public int compareTo(@NonNull T another) {
         if (this.getId() < another.getId())
             return -1;
         else if (this.getId() == another.getId())
@@ -124,7 +213,8 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
     }
 
     /**
-     * Comparator used to order items by their lastUsed date. Needed for periodic cache cleanup.
+     * Comparator used to order items by their lastUsedDate createDate. Needed for periodic cache
+     * cleanup.
      */
     public static class LastUsedComparator implements Comparator<AbstractMetaItem> {
         @Override
@@ -135,21 +225,21 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
                 return -1;
             } else if (lhs != null && rhs == null) {
                 return 1;
-            } else if (lhs.lastUsed == null && rhs.lastUsed == null) {
+            } else if (lhs.lastUsedDate == null && rhs.lastUsedDate == null) {
                 return 0;
-            } else if (lhs.lastUsed != null && rhs.lastUsed == null) {
+            } else if (lhs.lastUsedDate != null && rhs.lastUsedDate == null) {
                 return 1;
-            } else if (lhs.lastUsed == null && rhs.lastUsed != null) {
+            } else if (lhs.lastUsedDate == null && rhs.lastUsedDate != null) {
                 return -1;
             } else {
-                return lhs.lastUsed.compareTo(rhs.lastUsed);
+                return lhs.lastUsedDate.compareTo(rhs.lastUsedDate);
             }
         }
     }
 
     /**
-     * Comparator used to order items by their date in ascending order. A use case for this would be
-     * displaying daily meals for the next month.
+     * Comparator used to order items by their createDate in ascending order. A use case for this
+     * would be displaying daily meals for the next month.
      */
     public static class DateAscComparator implements Comparator<AbstractMetaItem> {
         @Override
@@ -159,8 +249,8 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
     }
 
     /**
-     * Comparator used to order items by their date in descending order. A use case for this would
-     * be displaying news entries.
+     * Comparator used to order items by their createDate in descending order. A use case for this
+     * would be displaying news entries.
      */
     public static class DateDescComparator implements Comparator<AbstractMetaItem> {
         @Override

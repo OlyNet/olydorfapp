@@ -5,7 +5,6 @@
  */
 package eu.olynet.olydorfapp.model;
 
-import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -17,7 +16,6 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
     protected String englishname;
     protected float price;
     protected boolean vegetarian;
-    protected int organization;
 
     public FoodMetaItem() {
         super();
@@ -29,7 +27,6 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
         this.englishname = null;
         this.price = Float.NaN;
         this.vegetarian = false;
-        this.organization = 0;
     }
 
     public FoodMetaItem(int id) {
@@ -38,17 +35,18 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
         this.englishname = null;
         this.price = Float.NaN;
         this.vegetarian = false;
-        this.organization = 0;
     }
 
-    public FoodMetaItem(int id, Date date, Date lastUpdated, String name, String englishname,
-                        float price, boolean vegetarian, int organization) {
-        super(id, date, lastUpdated);
+    public FoodMetaItem(int id, Date date, Date createDate, Date editDate, boolean published,
+                        boolean deleted, String createUser, String editUser,
+                        Organization organization, String name, String englishname, float price,
+                        boolean vegetarian) {
+        super(id, date, createDate, editDate, published, deleted, createUser, editUser,
+                organization);
         this.name = name;
         this.englishname = englishname;
         this.price = price;
         this.vegetarian = vegetarian;
-        this.organization = organization;
     }
 
     public String getName() {
@@ -83,14 +81,6 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
         this.vegetarian = vegetarian;
     }
 
-    public int getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(int organization) {
-        this.organization = organization;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null)
@@ -108,8 +98,7 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
         result += "name = " + this.name + "\n";
         result += "englishname = " + this.englishname + "\n";
         result += "price = " + this.price + "\n";
-        result += "vegetarian = " + this.vegetarian + "\n";
-        result += "organization = " + this.organization;
+        result += "vegetarian = " + this.vegetarian;
 
         return result;
     }
@@ -121,6 +110,5 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
         this.englishname = updatedItem.englishname;
         this.price = updatedItem.price;
         this.vegetarian = updatedItem.vegetarian;
-        this.organization = updatedItem.organization;
     }
 }

@@ -35,9 +35,11 @@ public class DailyMealMetaItem extends AbstractMetaItem<DailyMealMetaItem> {
         this.price = Float.NaN;
     }
 
-    public DailyMealMetaItem(int id, Date date, Date lastUpdated, int foodId, String cook,
-                             float price) {
-        super(id, date, lastUpdated);
+    public DailyMealMetaItem(int id, Date date, Date createDate, Date editDate, boolean published,
+                             boolean deleted, String createUser, String editUser,
+                             Organization organization, int foodId, String cook, float price) {
+        super(id, date, createDate, editDate, published, deleted, createUser, editUser,
+                organization);
         this.foodId = foodId;
         this.cook = cook;
         this.price = price;
@@ -100,7 +102,7 @@ public class DailyMealMetaItem extends AbstractMetaItem<DailyMealMetaItem> {
         return new Comparator<DailyMealMetaItem>() {
             @Override
             public int compare(DailyMealMetaItem lhs, DailyMealMetaItem rhs) {
-                return -lhs.getDate().compareTo(rhs.getDate());
+                return -lhs.getCreateDate().compareTo(rhs.getCreateDate());
             }
         };
     }

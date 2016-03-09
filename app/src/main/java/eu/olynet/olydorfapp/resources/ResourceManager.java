@@ -24,8 +24,6 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.security.KeyStore;
@@ -67,7 +65,7 @@ public class ResourceManager {
 
     /**
      * The static Map mapping the valid Classes to their corresponding identifier Strings.
-     * <p>
+     * <p/>
      * All items that need to be available via this Class have to be added in the static{...}
      * section below.
      *
@@ -101,14 +99,6 @@ public class ResourceManager {
     private static final String CA_FILE = "olynet_ca.pem";
 
     /**
-     * The file containing the OlyNet e.V. Intermediate Certificate Authority (CA).
-     * <p>
-     * <b>IMPORTANT:</b> if this is not present, verification will fail when supplying a client
-     * certificate. This seems to be a bug in Android's HttpsURLConnection implementation.
-     */
-    private static final String INTERMEDIATE_FILE = "olynet_intermediate.pem";
-
-    /**
      * The file containing the version-specific user certificate for accessing the server.
      */
     private static final String CERTIFICATE_FILE = "app_01.pfx";
@@ -135,19 +125,6 @@ public class ResourceManager {
      */
     public static ResourceManager getInstance() {
         return ourInstance;
-    }
-
-    /**
-     * Returns the StackTrace of an Exception as a String.
-     *
-     * @param e the Exception
-     * @return the StackTrace as String.
-     */
-    private static String getStackTraceAsString(Exception e) {
-        StringWriter sw = new StringWriter();
-        e.printStackTrace(new PrintWriter(sw));
-        return sw.toString();
-
     }
 
     /**
@@ -213,25 +190,18 @@ public class ResourceManager {
                 String algorithm = TrustManagerFactory.getDefaultAlgorithm();
 
                 /*
-                 * create a X509TrustManager that contains the OlyNet e.V. custom CA and the
-                 * Intermediate CA. Both are necessary!
+                 * create a X509TrustManager that contains the OlyNet e.V. custom CA.
                  *
                  * See:
                  * https://stackoverflow.com/questions/27562666/programmatically-add-a-certificate-authority-while-keeping-android-system-ssl-ce
-                 * https://stackoverflow.com/questions/35539969/https-with-client-authentication-not-working-on-android/35549515#35549515
                  */
                 InputStream ca = this.context.getAssets().open(CA_FILE);
-                InputStream intermediate = this.context.getAssets().open(INTERMEDIATE_FILE);
                 KeyStore trustStore = KeyStore.getInstance("PKCS12");
                 trustStore.load(null);
                 Certificate caCert = cf.generateCertificate(ca);
-                Certificate intermediateCert = cf.generateCertificate(intermediate);
                 trustStore.setCertificateEntry("OlyNet e.V. Certificate Authority", caCert);
-                trustStore.setCertificateEntry("OlyNet e.V. Intermediate Certificate Authority",
-                        intermediateCert);
                 CustomTrustManager tm = new CustomTrustManager(trustStore);
                 ca.close();
-                intermediate.close();
 
                 /* create a KeyManagerFactory that contains our client certificate */
                 InputStream clientCert = this.context.getAssets().open(CERTIFICATE_FILE);
@@ -269,6 +239,15 @@ public class ResourceManager {
         } else {
             Log.w("ResourceManager", "Duplicate init");
         }
+    }
+
+    /**
+     * Has the ResourceManager been properly intialized?
+     *
+     * @return <b>true</b> if and only if the ResourceManager has been properly initialized.
+     */
+    public boolean isInitialized() {
+        return this.initialized;
     }
 
     /**
@@ -354,7 +333,7 @@ public class ResourceManager {
             Method getResource = proxyClass.getMethod(methodName, int.class);
             result = (AbstractMetaItem) getResource.invoke(this.onc, id);
         } catch (Exception e) {
-            Log.w("ResourceManager", getStackTraceAsString(e));
+            Log.w("ResourceManager", "Exception during fetch", e);
             result = null;
         }
 
@@ -363,7 +342,7 @@ public class ResourceManager {
     }
 
     /**
-     * Tries to fetch the up-to-date meta-data information from the server.
+     * Tries to fetch the up-to-createDate meta-data information from the server.
      *
      * @param clazz the Class of the meta-data to be fetched. Must be specified within the
      *              treeCaches Map.
@@ -390,7 +369,7 @@ public class ResourceManager {
             Method getMetaResources = proxyClass.getMethod(methodName);
             result = (List<AbstractMetaItem<?>>) getMetaResources.invoke(this.onc);
         } catch (Exception e) {
-            Log.w("ResourceManager", getStackTraceAsString(e));
+            Log.w("ResourceManager", "Exception during fetch", e);
             result = null;
         }
 
@@ -436,7 +415,7 @@ public class ResourceManager {
                     continue;
                 }
 
-                /* get a copy of the tree that is sorted by lastUsed */
+                /* get a copy of the tree that is sorted by lastUsedDate */
                 TreeSet<AbstractMetaItem> tree = new TreeSet<>(comparator);
                 tree.addAll(cachedTree);
 
@@ -444,7 +423,7 @@ public class ResourceManager {
                 Constructor<?> cons = clazz.getConstructor(Date.class);
                 AbstractMetaItem filterDummy = AbstractMetaItem.class.cast(cons.newInstance(cutoff));
 
-                /* get all items last used on or before the cutoff date */
+                /* get all items last used on or before the cutoff createDate */
                 Set<AbstractMetaItem> deleteSet = new HashSet<>(tree.headSet(
                         tree.floor(filterDummy), true));
 
@@ -471,7 +450,7 @@ public class ResourceManager {
      * @param clazz the Class of the item to be fetched. Must be specified within the treeCaches
      *              Map.
      * @param id    the ID identifying the fetched item.
-     * @return the requested item. This does not necessarily have to be up-to-date. If the server
+     * @return the requested item. This does not necessarily have to be up-to-createDate. If the server
      * cannot be reached in time, a cached version will be returned instead.
      * @throws RuntimeException if the ResourceManager has not been initialized correctly.
      * @throws RuntimeException if clazz is not a valid Class for this operation.
@@ -496,15 +475,15 @@ public class ResourceManager {
 
             /* use the dummy item to search for the real item within the tree */
             AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
-            if (metaItem == null || metaItem.getId() != id || metaItem.getLastUpdated() == null) {
+            if (metaItem == null || metaItem.getId() != id || metaItem.getEditDate() == null) {
                 throw new RuntimeException("meta-data tree of type '" + type
                         + "' does not contain the requested element " + id);
             }
 
-            /* check cache and query server on miss or date mismatch */
+            /* check cache and query server on miss or createDate mismatch */
             String resIdentifier = treeCaches.get(clazz) + "_" + id;
             AbstractMetaItem<?> item = (AbstractMetaItem<?>) itemCache.get(resIdentifier);
-            if (item == null || !item.getLastUpdated().equals(metaItem.getLastUpdated())) {
+            if (item == null || !item.getEditDate().equals(metaItem.getEditDate())) {
                 Log.i("ResourceManager", "Cached item is outdated, fetch necessary");
                 AbstractMetaItem<?> webItem = fetchItem(clazz, id);
 
@@ -515,13 +494,13 @@ public class ResourceManager {
                     Log.w("ResourceManager", "Fetch failed for some reason");
                 }
             } else {
-                Log.d("ResourceManager", "Cached item was up-to-date, no fetch necessary");
+                Log.d("ResourceManager", "Cached item was up-to-createDate, no fetch necessary");
             }
 
-            /* check if we have some valid item (up-to-date or not) */
+            /* check if we have some valid item (up-to-createDate or not) */
             if (item != null) {
                 /* update last used */
-                item.setLastUsed();
+                item.setLastUsedDate();
 
                 /* update meta-data tree */
                 Method updateItem = clazz.getMethod("updateItem", clazz);
@@ -582,15 +561,15 @@ public class ResourceManager {
 
                 /* use the dummy item to search for the real item within the tree */
                 AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
-                if (metaItem == null || metaItem.getId() != id || metaItem.getLastUpdated() == null) {
+                if (metaItem == null || metaItem.getId() != id || metaItem.getEditDate() == null) {
                     throw new RuntimeException("meta-data tree of type '" + type
                             + "' does not contain the requested element " + id);
                 }
 
-                /* check cache and query server on miss or date mismatch */
+                /* check cache and query server on miss or createDate mismatch */
                 String resIdentifier = treeCaches.get(clazz) + "_" + id;
                 AbstractMetaItem<?> item = (AbstractMetaItem<?>) itemCache.get(resIdentifier);
-                if (item == null || !item.getLastUpdated().equals(metaItem.getLastUpdated())) {
+                if (item == null || !item.getEditDate().equals(metaItem.getEditDate())) {
                     Log.i("ResourceManager", "Cached item is outdated, fetch necessary");
                     AbstractMetaItem<?> webItem = fetchItem(clazz, id);
 
@@ -601,13 +580,13 @@ public class ResourceManager {
                         Log.w("ResourceManager", "Fetch failed for some reason");
                     }
                 } else {
-                    Log.d("ResourceManager", "Cached item was up-to-date, no fetch necessary");
+                    Log.d("ResourceManager", "Cached item was up-to-createDate, no fetch necessary");
                 }
 
-                /* check if we have some valid item (up-to-date or not) */
+                /* check if we have some valid item (up-to-createDate or not) */
                 if (item != null) {
                     /* update last used */
-                    item.setLastUsed();
+                    item.setLastUsedDate();
 
                     /* update meta-data tree */
                     Method updateItem = clazz.getMethod("updateItem", clazz);
@@ -638,7 +617,7 @@ public class ResourceManager {
      *
      * @param clazz the Class of the meta-data to be fetched. Must be specified within the
      *              treeCaches Map.
-     * @return the requested meta-data. This does not necessarily have to be up-to-date. If the
+     * @return the requested meta-data. This does not necessarily have to be up-to-createDate. If the
      * server cannot be reached in time, a cached version will be returned instead.
      * @throws RuntimeException if the ResourceManager has not been initialized correctly.
      * @throws RuntimeException if clazz is not a valid Class for this operation.
@@ -704,7 +683,7 @@ public class ResourceManager {
      * @param first      the first element to be part of the returned selection.
      * @param last       the last element to be part of the returned selection.
      * @param comparator the Comparator used for ordering the meta-data tree.
-     * @return the requested meta-data. This does not necessarily have to be up-to-date. If the
+     * @return the requested meta-data. This does not necessarily have to be up-to-createDate. If the
      * server cannot be reached in time, a cached version will be returned instead.
      * @throws RuntimeException if the ResourceManager has not been initialized correctly.
      * @throws RuntimeException if clazz is not a valid Class for this operation.

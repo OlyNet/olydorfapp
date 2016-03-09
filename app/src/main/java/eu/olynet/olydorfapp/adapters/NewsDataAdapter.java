@@ -80,7 +80,7 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
 
         /* Date */
         SimpleDateFormat localFormat = (SimpleDateFormat) android.text.format.DateFormat.getDateFormat(context);
-        holder.vDate.setText(localFormat.format(newsItem.getDate()));
+        holder.vDate.setText(localFormat.format(newsItem.getCreateDate()));
 
         /* Title */
         holder.vTitle.setText(newsItem.getTitle());

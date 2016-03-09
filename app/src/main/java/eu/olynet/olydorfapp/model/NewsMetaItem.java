@@ -5,7 +5,6 @@
  */
 package eu.olynet.olydorfapp.model;
 
-import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -14,8 +13,6 @@ import java.util.Date;
 public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
 
     protected String title;
-    protected String author = null;
-    protected int organization;
 
     public NewsMetaItem() {
         super();
@@ -24,23 +21,19 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
     public NewsMetaItem(Date lastUsed) {
         super(lastUsed);
         this.title = null;
-        this.author = null;
-        this.organization = 0;
     }
 
     public NewsMetaItem(int id) {
         super(id);
         this.title = null;
-        this.author = null;
-        this.organization = 0;
     }
 
-    public NewsMetaItem(int id, Date date, Date lastUpdated, String title, String author,
-                        int organization) {
-        super(id, date, lastUpdated);
+    public NewsMetaItem(int id, Date date, Date createDate, Date editDate, boolean published,
+                        boolean deleted, String createUser, String editUser,
+                        Organization organization, String title) {
+        super(id, date, createDate, editDate, published, deleted, createUser, editUser,
+                organization);
         this.title = title;
-        this.author = author;
-        this.organization = organization;
     }
 
     public String getTitle() {
@@ -51,24 +44,10 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
         this.title = title;
     }
 
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public int getOrganization() {
-        return organization;
-    }
-
     @Override
     public String toString() {
         String result = super.toString() + "\n";
         result += "title = " + this.title + "\n";
-        result += "author = " + this.author + "\n";
-        result += "organization = " + this.organization;
 
         return result;
     }
@@ -85,9 +64,8 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
     }
 
     @Override
-    public void updateItem(NewsMetaItem updatedItem) throws ItemMismatchException{
+    public void updateItem(NewsMetaItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
         this.title = updatedItem.title;
-        this.author = updatedItem.author;
     }
 }

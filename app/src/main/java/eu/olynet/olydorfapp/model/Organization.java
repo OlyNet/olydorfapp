@@ -46,4 +46,17 @@ public class Organization {
     public String getName() {
         return name;
     }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
 }

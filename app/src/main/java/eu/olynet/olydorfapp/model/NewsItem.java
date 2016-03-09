@@ -19,15 +19,17 @@ public class NewsItem extends NewsMetaItem {
         super();
     }
 
-    public NewsItem(int id, Date date, Date lastUpdated, String title, String author,
-                    int organization, String content, byte[] image) {
-        super(id, date, lastUpdated, title, author, organization);
-        this.text = content;
+    public NewsItem(int id, Date date, Date createDate, Date editDate, boolean published,
+                        boolean deleted, String createUser, String editUser,
+                        Organization organization, String title, String text, byte[] image) {
+        super(id, date, createDate, editDate, published, deleted, createUser, editUser,
+                organization, title);
+        this.text = text;
         this.image = image;
     }
 
     public String getText() {
-        this.setLastUsed();
+        this.setLastUsedDate();
         return text;
     }
 
@@ -36,7 +38,7 @@ public class NewsItem extends NewsMetaItem {
     }
 
     public byte[] getImage() {
-        this.setLastUsed();
+        this.setLastUsedDate();
         return this.image;
     }
 
