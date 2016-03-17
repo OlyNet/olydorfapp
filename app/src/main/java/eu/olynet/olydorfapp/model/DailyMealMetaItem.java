@@ -5,6 +5,9 @@
  */
 package eu.olynet.olydorfapp.model;
 
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import java.util.Comparator;
 import java.util.Date;
 
@@ -16,10 +19,6 @@ public class DailyMealMetaItem extends AbstractMetaItem<DailyMealMetaItem> {
     protected int foodId;
     protected String cook;
     protected float price;
-
-    public DailyMealMetaItem() {
-        super();
-    }
 
     public DailyMealMetaItem(Date lastUsed) {
         super(lastUsed);
@@ -35,11 +34,18 @@ public class DailyMealMetaItem extends AbstractMetaItem<DailyMealMetaItem> {
         this.price = Float.NaN;
     }
 
-    public DailyMealMetaItem(int id, Date date, Date createDate, Date editDate, boolean published,
-                             boolean deleted, String createUser, String editUser,
-                             Organization organization, int foodId, String cook, float price) {
-        super(id, date, createDate, editDate, published, deleted, createUser, editUser,
-                organization);
+    @JsonCreator
+    public DailyMealMetaItem(@JsonProperty("id") int id,
+                             @JsonProperty("createDate") Date createDate,
+                             @JsonProperty("editDate") Date editDate,
+                             @JsonProperty("published") boolean published,
+                             @JsonProperty("deleted") boolean deleted,
+                             @JsonProperty("createUser") String createUser,
+                             @JsonProperty("editUser") String editUser,
+                             @JsonProperty("foodId") int foodId,
+                             @JsonProperty("cook")  String cook,
+                             @JsonProperty("price") float price) {
+        super(id, createDate, editDate, published, deleted, createUser, editUser);
         this.foodId = foodId;
         this.cook = cook;
         this.price = price;

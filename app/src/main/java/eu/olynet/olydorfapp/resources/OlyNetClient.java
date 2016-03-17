@@ -18,6 +18,8 @@ import eu.olynet.olydorfapp.model.FoodItem;
 import eu.olynet.olydorfapp.model.FoodMetaItem;
 import eu.olynet.olydorfapp.model.NewsItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
+import eu.olynet.olydorfapp.model.OrganizationItem;
+import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 
 /**
  * Interface for the connection to the server. Methods will be implemented by the ResteasyClient.
@@ -47,6 +49,15 @@ public interface OlyNetClient {
     @GET
     @Path("/food/{id}")
     public FoodItem getFood(@PathParam("id") int id);
+
+    /* Organization API */
+    @GET
+    @Path("/organization/meta")
+    public List<OrganizationMetaItem> getMetaOrganization();
+
+    @GET
+    @Path("/organization/{id}")
+    public OrganizationItem getOrganization(@PathParam("id") int id);
 
     /* MealOfTheDay API - no fetch by ID necessary */
     @GET

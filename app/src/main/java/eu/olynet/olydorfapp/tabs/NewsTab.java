@@ -149,32 +149,34 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
 
         @Override
         protected List<AbstractMetaItem<?>> doInBackground(Void... params) {
-            ResourceManager rm = ResourceManager.getInstance();
-
-            /* querying the ResourceManager for the needed data and order it correctly */
-            TreeSet<AbstractMetaItem<?>> fetchedTree = rm.getTreeOfMetaItems(NewsMetaItem.class);
-            if (fetchedTree == null || fetchedTree.isEmpty()) {
-                return new ArrayList<>();
-            }
-            TreeSet<AbstractMetaItem<?>> resultTree = new TreeSet<>(
-                    new AbstractMetaItem.DateDescComparator());
-            resultTree.addAll(fetchedTree);
-
-            // TODO: implement incremental fetching
-
-            int count = 0;
-            List<Integer> ids = new ArrayList<>();
-            for (AbstractMetaItem<?> item : resultTree) {
-                /* enforce item limit */
-                if (count++ >= limit) {
-                    break;
-                }
-
-                ids.add(item.getId());
-            }
-
-            /* requesting and returning the result array */
-            return rm.getItems(NewsMetaItem.class, ids, new AbstractMetaItem.DateDescComparator());
+            // FIXME: ...
+//            ResourceManager rm = ResourceManager.getInstance();
+//
+//            /* querying the ResourceManager for the needed data and order it correctly */
+//            TreeSet<AbstractMetaItem<?>> fetchedTree = rm.getTreeOfMetaItems(NewsMetaItem.class);
+//            if (fetchedTree == null || fetchedTree.isEmpty()) {
+//                return new ArrayList<>();
+//            }
+//            TreeSet<AbstractMetaItem<?>> resultTree = new TreeSet<>(
+//                    new NewsMetaItem.DateDescComparator());
+//            resultTree.addAll(fetchedTree);
+//
+//            // TODO: implement incremental fetching
+//
+//            int count = 0;
+//            List<Integer> ids = new ArrayList<>();
+//            for (AbstractMetaItem<?> item : resultTree) {
+//                /* enforce item limit */
+//                if (count++ >= limit) {
+//                    break;
+//                }
+//
+//                ids.add(item.getId());
+//            }
+//
+//            /* requesting and returning the result array */
+//            return rm.getItems(NewsMetaItem.class, ids, new AbstractMetaItem.DateDescComparator());
+            return new ArrayList<>();
         }
 
         @Override

@@ -5,6 +5,9 @@
  */
 package eu.olynet.olydorfapp.model;
 
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import java.util.Date;
 
 /**
@@ -14,14 +17,21 @@ public class FoodItem extends FoodMetaItem {
 
     protected byte[] image;
 
-    public FoodItem() {
-        super();
-    }
-
-    public FoodItem(int id, Date date, Date createDate, Date editDate, boolean published,
-                    boolean deleted, String createUser, String editUser, Organization organization,
-                    String name, String englishname, float price, boolean vegetarian, byte[] image) {
-        super(id, date, createDate, editDate, published, deleted, createUser, editUser,
+    @JsonCreator
+    public FoodItem(@JsonProperty("id") int id,
+                    @JsonProperty("createDate") Date createDate,
+                    @JsonProperty("editDate") Date editDate,
+                    @JsonProperty("published") boolean published,
+                    @JsonProperty("deleted") boolean deleted,
+                    @JsonProperty("createUser") String createUser,
+                    @JsonProperty("editUser") String editUser,
+                    @JsonProperty("organization") OrganizationItem organization,
+                    @JsonProperty("name") String name,
+                    @JsonProperty("englishname") String englishname,
+                    @JsonProperty("price") float price,
+                    @JsonProperty("vegetarian") boolean vegetarian,
+                    @JsonProperty("image") byte[] image) {
+        super(id, createDate, editDate, published, deleted, createUser, editUser,
                 organization, name, englishname, price, vegetarian);
         this.image = image;
     }

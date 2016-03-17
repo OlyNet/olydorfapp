@@ -7,8 +7,13 @@ package eu.olynet.olydorfapp.model;
 
 import android.support.annotation.NonNull;
 
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import java.util.Comparator;
 import java.util.Date;
+
+import eu.olynet.olydorfapp.resources.OrganizationDeserializer;
 
 /**
  * The abstract base class containing the metadata of corresponding AbstractItems.
@@ -17,27 +22,17 @@ import java.util.Date;
  */
 public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements Comparable<T> {
 
-    private int id;
+    private final int id;
 
-    protected Date date;
     protected Date createDate;
-    protected Date editDate = null;
-    protected Date lastUsedDate = null;
+    protected Date editDate;
+    protected Date lastUsedDate;
 
     protected boolean published;
     protected boolean deleted;
 
     protected String createUser;
-    protected String editUser = null;
-
-    protected Organization organization;
-
-    /**
-     * Dummy-constructor for (de-)serialization. <b>Do not use!</b>
-     */
-    public AbstractMetaItem() {
-
-    }
+    protected String editUser;
 
     /**
      * Dummy-constructor for filtering by lastUsedDate
@@ -53,7 +48,6 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.deleted = false;
         this.createUser = null;
         this.editUser = null;
-        this.organization = null;
     }
 
     /**
@@ -70,12 +64,16 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.deleted = false;
         this.createUser = null;
         this.editUser = null;
-        this.organization = null;
     }
 
-    protected AbstractMetaItem(int id, Date date, Date createDate, Date editDate, boolean published,
-                               boolean deleted, String createUser, String editUser,
-                               Organization organization) {
+    @JsonCreator
+    protected AbstractMetaItem(@JsonProperty("id") int id,
+                               @JsonProperty("createDate") Date createDate,
+                               @JsonProperty("editDate") Date editDate,
+                               @JsonProperty("published") boolean published,
+                               @JsonProperty("deleted") boolean deleted,
+                               @JsonProperty("createUser") String createUser,
+                               @JsonProperty("editUser") String editUser) {
         this.id = id;
         this.createDate = createDate;
         this.editDate = editDate;
@@ -84,7 +82,6 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.deleted = deleted;
         this.createUser = createUser;
         this.editUser = editUser;
-        this.organization = organization;
     }
 
     public int getId() {
@@ -121,22 +118,6 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
 
     public void setEditUser(String editUser) {
         this.editUser = editUser;
-    }
-
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     public Date getCreateDate() {
@@ -176,7 +157,6 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
             this.deleted = updatedItem.deleted;
             this.createUser = updatedItem.createUser;
             this.editUser = updatedItem.editUser;
-            this.organization = updatedItem.organization;
         } else {
             throw new ItemMismatchException(this.toString() + "cannot be overwritten by "
                     + updatedItem.toString());
@@ -189,15 +169,13 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
     public String toString() {
         String result = super.toString() + "\n";
         result += "id = " + this.getId() + "\n";
-        result += "date = " + this.date + "\n";
         result += "createDate = " + this.createDate + "\n";
         result += "editDate = " + this.editDate + "\n";
         result += "lastUsedDate = " + this.lastUsedDate + "\n";
         result += "published = " + this.published + "\n";
         result += "deleted = " + this.deleted + "\n";
         result += "createUser = " + this.createUser + "\n";
-        result += "editUser = " + this.editUser + "\n";
-        result += "organization = [[" + this.organization.toString() + "]]";
+        result += "editUser = " + this.editUser;
 
         return result;
     }
@@ -234,28 +212,6 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
             } else {
                 return lhs.lastUsedDate.compareTo(rhs.lastUsedDate);
             }
-        }
-    }
-
-    /**
-     * Comparator used to order items by their createDate in ascending order. A use case for this
-     * would be displaying daily meals for the next month.
-     */
-    public static class DateAscComparator implements Comparator<AbstractMetaItem> {
-        @Override
-        public int compare(AbstractMetaItem lhs, AbstractMetaItem rhs) {
-            return lhs.getDate().compareTo(rhs.getDate());
-        }
-    }
-
-    /**
-     * Comparator used to order items by their createDate in descending order. A use case for this
-     * would be displaying news entries.
-     */
-    public static class DateDescComparator implements Comparator<AbstractMetaItem> {
-        @Override
-        public int compare(AbstractMetaItem lhs, AbstractMetaItem rhs) {
-            return -lhs.getDate().compareTo(rhs.getDate());
         }
     }
 }

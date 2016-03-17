@@ -5,6 +5,9 @@
  */
 package eu.olynet.olydorfapp.model;
 
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import java.util.Date;
 
 /**
@@ -15,15 +18,22 @@ public class NewsItem extends NewsMetaItem {
     protected String text;
     protected byte[] image;
 
-    public NewsItem() {
-        super();
-    }
-
-    public NewsItem(int id, Date date, Date createDate, Date editDate, boolean published,
-                        boolean deleted, String createUser, String editUser,
-                        Organization organization, String title, String text, byte[] image) {
-        super(id, date, createDate, editDate, published, deleted, createUser, editUser,
-                organization, title);
+    @JsonCreator
+    public NewsItem(@JsonProperty("id") int id,
+                    @JsonProperty("createDate") Date createDate,
+                    @JsonProperty("editDate") Date editDate,
+                    @JsonProperty("published") boolean published,
+                    @JsonProperty("deleted") boolean deleted,
+                    @JsonProperty("createUser") String createUser,
+                    @JsonProperty("editUser") String editUser,
+                    @JsonProperty("organization") OrganizationItem organization,
+                    @JsonProperty("date") Date date,
+                    @JsonProperty("title") String title,
+                    @JsonProperty("link") String link,
+                    @JsonProperty("text") String text,
+                    @JsonProperty("image") byte[] image) {
+        super(id, createDate, editDate, published, deleted, createUser, editUser,
+                organization, date, title, link);
         this.text = text;
         this.image = image;
     }
@@ -45,7 +55,7 @@ public class NewsItem extends NewsMetaItem {
     public void setImage(byte[] image) {
         this.image = image;
     }
-    
+
     public void updateItem(NewsItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
         this.text = updatedItem.text;

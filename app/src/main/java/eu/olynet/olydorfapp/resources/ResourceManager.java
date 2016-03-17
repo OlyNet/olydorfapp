@@ -52,6 +52,7 @@ import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.FoodMetaItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
+import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 
 /**
  * The ResourceManager is the Singleton interface for accessing data on the OlyNet servers.
@@ -84,10 +85,11 @@ public class ResourceManager {
         initMap.put(NewsMetaItem.class, "news");
         initMap.put(FoodMetaItem.class, "food");
         initMap.put(DailyMealMetaItem.class, "motd");
-
+        initMap.put(OrganizationMetaItem.class, "organization");
 
         Set<Class> initSet = new LinkedHashSet<>();
         initSet.add(FoodMetaItem.class);
+        initSet.add(OrganizationMetaItem.class);
 
         treeCaches = Collections.unmodifiableMap(initMap);
         skipDuringCleanup = Collections.unmodifiableSet(initSet);
