@@ -13,7 +13,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.FoodItem;
 import eu.olynet.olydorfapp.model.FoodMetaItem;
 import eu.olynet.olydorfapp.model.NewsItem;
@@ -70,9 +69,4 @@ public interface OlyNetClient {
     @GET
     @Path("/organization")
     public List<OrganizationItem> getOrganization();
-
-    /* MealOfTheDay API - no fetch by ID necessary */
-    @GET
-    @Path("/mealoftheday/meta")
-    public List<DailyMealMetaItem> getMetaMotd();
 }

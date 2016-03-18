@@ -6,8 +6,7 @@
 
 package eu.olynet.olydorfapp.model;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 
@@ -16,11 +15,27 @@ import java.util.Date;
  */
 public class OrganizationItem extends OrganizationMetaItem {
 
-    String name;
-    String shortname;
-    String website;
-    String description;
-    byte[] logo;
+    @JsonProperty("name")
+    protected String name;
+
+    @JsonProperty("shortname")
+    protected String shortname;
+
+    @JsonProperty("website")
+    protected String website;
+
+    @JsonProperty("description")
+    protected String description;
+
+    @JsonProperty("logo")
+    protected byte[] logo;
+
+    /**
+     * Default constructor for deserialization. <b>Do not use!</b>
+     */
+    public OrganizationItem() {
+        super();
+    }
 
     /**
      * Copy constructor. Performs a shallow copy.
@@ -36,19 +51,9 @@ public class OrganizationItem extends OrganizationMetaItem {
         this.logo = item.logo;
     }
 
-    @JsonCreator
-    public OrganizationItem(@JsonProperty("id") int id,
-                            @JsonProperty("createDate") Date createDate,
-                            @JsonProperty("editDate") Date editDate,
-                            @JsonProperty("published") boolean published,
-                            @JsonProperty("deleted") boolean deleted,
-                            @JsonProperty("createUser") String createUser,
-                            @JsonProperty("editUser") String editUser,
-                            @JsonProperty("name") String name,
-                            @JsonProperty("shortname") String shortname,
-                            @JsonProperty("website") String website,
-                            @JsonProperty("description") String description,
-                            @JsonProperty("logo") byte[] logo) {
+    public OrganizationItem(int id, Date createDate, Date editDate, boolean published,
+                            boolean deleted, String createUser, String editUser, String name,
+                            String shortname, String website, String description, byte[] logo) {
         super(id, createDate, editDate, published, deleted, createUser, editUser);
         this.name = name;
         this.shortname = shortname;

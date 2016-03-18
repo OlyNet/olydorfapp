@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/newsCardImage"
             android:src="@drawable/ic_account_circle_white_64dp"
-            android:contentDescription="News image"
+            android:contentDescription="News logo"
             rounded_image_view:riv_corner_radius_bottom_left="0dp"
             rounded_image_view:riv_corner_radius_bottom_right="0dp"
             rounded_image_view:riv_corner_radius_top_left="4dp"

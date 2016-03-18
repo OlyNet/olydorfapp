@@ -6,13 +6,15 @@
 
 package eu.olynet.olydorfapp.resources;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincentbrison.openlibraries.android.dualcache.lib.Serializer;
 
-import org.codehaus.jackson.annotate.JsonAutoDetect;
-import org.codehaus.jackson.annotate.JsonMethod;
-import org.codehaus.jackson.map.ObjectMapper;
-
 import java.io.IOException;
+
+import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.AbstractMetaItemMixIn;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
@@ -20,14 +22,14 @@ import java.io.IOException;
 public class CacheSerializer<T> implements Serializer<T> {
 
     private final Class<T> clazz;
-
     private static final ObjectMapper sMapper;
 
     static {
         sMapper = new ObjectMapper();
-        sMapper.setVisibility(JsonMethod.ALL, JsonAutoDetect.Visibility.NONE);
-        sMapper.setVisibility(JsonMethod.FIELD, JsonAutoDetect.Visibility.ANY);
+        sMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+        sMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         sMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        sMapper.addMixIn(AbstractMetaItem.class, AbstractMetaItemMixIn.class);
     }
 
     public CacheSerializer(Class<T> clazz) {
@@ -43,7 +45,7 @@ public class CacheSerializer<T> implements Serializer<T> {
     @Override
     public T fromString(String data) {
         try {
-            return sMapper.reader(this.clazz).readValue(data);
+            return sMapper.readValue(data, this.clazz);
         } catch (IOException e) {
             throw new RuntimeException("deserialization failed", e);
         }

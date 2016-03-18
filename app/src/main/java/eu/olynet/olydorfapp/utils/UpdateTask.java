@@ -33,10 +33,13 @@ public class UpdateTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... nope) {
         ResourceManager rm = ResourceManager.getInstance();
 
-        rm.getItems(OrganizationMetaItem.class);
-        List<AbstractMetaItem<?>> items = rm.getItems(NewsMetaItem.class);
+        List<AbstractMetaItem<?>> organizations = rm.getItems(OrganizationMetaItem.class);
+        for (AbstractMetaItem<?> organization : organizations) {
+            Log.w("UpdateTask", organization.toString());
+        }
 
-        for(AbstractMetaItem<?> item : items) {
+        List<AbstractMetaItem<?>> items = rm.getItems(NewsMetaItem.class);
+        for (AbstractMetaItem<?> item : items) {
             Log.w("UpdateTask", item.toString());
         }
 

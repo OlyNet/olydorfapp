@@ -38,9 +38,7 @@ public class CustomTrustManager implements X509TrustManager {
         try {
             this.defaultTrustManager = createTrustManager(null);
             this.localTrustManager = createTrustManager(customTrustStore);
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         Log.d("CustomTrustManager", "Initialization successful.");
@@ -90,18 +88,10 @@ public class CustomTrustManager implements X509TrustManager {
      */
     @Override
     public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-        Log.d("CustomTrustManager", "Auth-type: " + authType);
-        int n = 1;
-        for(X509Certificate cert : chain) {
-            Log.d("CustomTrustManager", "Cert " + n++ + ": " + cert.getIssuerDN());
-        }
         try {
             localTrustManager.checkServerTrusted(chain, authType);
-            Log.d("CustomTrustManager", "ACCEPTED (custom)");
         } catch (CertificateException ce) {
-            Log.w("CustomTrustManager", "REJECTED (custom)");
             defaultTrustManager.checkServerTrusted(chain, authType);
-            Log.d("CustomTrustManager", "ACCEPTED (default)");
         }
     }
 

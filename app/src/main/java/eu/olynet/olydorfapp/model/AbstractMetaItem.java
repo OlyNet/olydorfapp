@@ -7,8 +7,7 @@ package eu.olynet.olydorfapp.model;
 
 import android.support.annotation.NonNull;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Comparator;
 import java.util.Date;
@@ -20,17 +19,35 @@ import java.util.Date;
  */
 public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements Comparable<T> {
 
-    private final int id;
+    @JsonProperty("id")
+    private int id;
 
+    @JsonProperty("createDate")
     protected Date createDate;
-    protected Date editDate;
-    protected Date lastUsedDate;
 
+    @JsonProperty("editDate")
+    protected Date editDate;
+
+    @JsonProperty("published")
     protected boolean published;
+
+    @JsonProperty("deleted")
     protected boolean deleted;
 
+    @JsonProperty("createUser")
     protected String createUser;
+
+    @JsonProperty("editUser")
     protected String editUser;
+
+    protected Date lastUsedDate = new Date();
+
+    /**
+     * Default constructor for deserialization. <b>Do not use!</b>
+     */
+    public AbstractMetaItem() {
+        super();
+    }
 
     /**
      * Dummy-constructor for filtering by lastUsedDate
@@ -80,14 +97,8 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.editUser = item.editUser;
     }
 
-    @JsonCreator
-    protected AbstractMetaItem(@JsonProperty("id") int id,
-                               @JsonProperty("createDate") Date createDate,
-                               @JsonProperty("editDate") Date editDate,
-                               @JsonProperty("published") boolean published,
-                               @JsonProperty("deleted") boolean deleted,
-                               @JsonProperty("createUser") String createUser,
-                               @JsonProperty("editUser") String editUser) {
+    protected AbstractMetaItem(int id, Date createDate, Date editDate, boolean published,
+                               boolean deleted, String createUser, String editUser) {
         this.id = id;
         this.createDate = createDate;
         this.editDate = editDate;
@@ -96,6 +107,10 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.deleted = deleted;
         this.createUser = createUser;
         this.editUser = editUser;
+    }
+
+    private void setId(int id) {
+        this.id = id;
     }
 
     public int getId() {

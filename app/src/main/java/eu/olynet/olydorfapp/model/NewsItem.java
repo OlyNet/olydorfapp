@@ -5,18 +5,47 @@
  */
 package eu.olynet.olydorfapp.model;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import java.util.Comparator;
 import java.util.Date;
+
+import eu.olynet.olydorfapp.resources.OrganizationDeserializer;
+import eu.olynet.olydorfapp.resources.OrganizationSerializer;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
  */
 public class NewsItem extends NewsMetaItem {
 
+    @JsonProperty("organization")
+    @JsonSerialize(using = OrganizationSerializer.class)
+    @JsonDeserialize(using = OrganizationDeserializer.class)
+    protected OrganizationItem organization = null;
+
+    @JsonProperty("date")
+    protected Date date;
+
+    @JsonProperty("title")
+    protected String title;
+
+    @JsonProperty("link")
+    protected String link;
+
+    @JsonProperty("text")
     protected String text;
+
+    @JsonProperty("image")
     protected byte[] image;
+
+    /**
+     * Default constructor for deserialization. <b>Do not use!</b>
+     */
+    public NewsItem() {
+        super();
+    }
 
     /**
      * Copy constructor. Performs a shallow copy.
@@ -25,32 +54,59 @@ public class NewsItem extends NewsMetaItem {
      */
     public NewsItem(NewsItem item) {
         super(item);
+        this.organization = item.organization;
+        this.date = item.date;
+        this.title = item.title;
+        this.link = item.link;
         this.text = item.text;
         this.image = item.image;
     }
 
-    @JsonCreator
-    public NewsItem(@JsonProperty("id") int id,
-                    @JsonProperty("createDate") Date createDate,
-                    @JsonProperty("editDate") Date editDate,
-                    @JsonProperty("published") boolean published,
-                    @JsonProperty("deleted") boolean deleted,
-                    @JsonProperty("createUser") String createUser,
-                    @JsonProperty("editUser") String editUser,
-                    @JsonProperty("organization") OrganizationItem organization,
-                    @JsonProperty("date") Date date,
-                    @JsonProperty("title") String title,
-                    @JsonProperty("link") String link,
-                    @JsonProperty("text") String text,
-                    @JsonProperty("image") byte[] image) {
-        super(id, createDate, editDate, published, deleted, createUser, editUser, organization,
-                date, title, link);
+    public NewsItem(int id, Date createDate, Date editDate, boolean published, boolean deleted,
+                    String createUser, String editUser, OrganizationItem organization, Date date,
+                    String title, String link, String text, byte[] image) {
+        super(id, createDate, editDate, published, deleted, createUser, editUser);
+        this.organization = organization;
+        this.date = date;
+        this.title = title;
+        this.link = link;
         this.text = text;
         this.image = image;
     }
 
+    public OrganizationItem getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(OrganizationItem organization) {
+        this.organization = organization;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
+    }
+
     public String getText() {
-        this.setLastUsedDate();
         return text;
     }
 
@@ -59,7 +115,6 @@ public class NewsItem extends NewsMetaItem {
     }
 
     public byte[] getImage() {
-        this.setLastUsedDate();
         return this.image;
     }
 
@@ -69,6 +124,10 @@ public class NewsItem extends NewsMetaItem {
 
     public void updateItem(NewsItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
+        this.organization = updatedItem.organization;
+        this.date = updatedItem.date;
+        this.title = updatedItem.title;
+        this.link = updatedItem.link;
         this.text = updatedItem.text;
         this.image = updatedItem.image;
     }
@@ -76,9 +135,35 @@ public class NewsItem extends NewsMetaItem {
     @Override
     public String toString() {
         String result = super.toString() + "\n";
+        result += "organization = [[" + this.organization.toString() + "]]" + "\n";
+        result += "date = " + this.date + "\n";
+        result += "title = " + this.title + "\n";
+        result += "link = " + this.link + "\n";
         result += "text = " + this.text + "\n";
-        result += "image = " + ((image != null) ? image.length : 0) + " Byte";
+        result += "logo = " + ((image != null) ? image.length : 0) + " Byte";
 
         return result;
+    }
+
+    /**
+     * Comparator used to order items by their createDate in ascending order. A use case for this
+     * would be displaying daily meals for the next month.
+     */
+    public static class DateAscComparator implements Comparator<NewsItem> {
+        @Override
+        public int compare(NewsItem lhs, NewsItem rhs) {
+            return lhs.getDate().compareTo(rhs.getDate());
+        }
+    }
+
+    /**
+     * Comparator used to order items by their createDate in descending order. A use case for this
+     * would be displaying news entries.
+     */
+    public static class DateDescComparator implements Comparator<NewsItem> {
+        @Override
+        public int compare(NewsItem lhs, NewsItem rhs) {
+            return -lhs.getDate().compareTo(rhs.getDate());
+        }
     }
 }

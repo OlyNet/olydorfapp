@@ -6,15 +6,19 @@
 
 package eu.olynet.olydorfapp.model;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
-
 import java.util.Date;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
  */
 public class OrganizationMetaItem extends AbstractMetaItem<OrganizationMetaItem> {
+
+    /**
+     * Default constructor for deserialization. <b>Do not use!</b>
+     */
+    public OrganizationMetaItem() {
+        super();
+    }
 
     public OrganizationMetaItem(Date lastUsed) {
         super(lastUsed);
@@ -33,14 +37,8 @@ public class OrganizationMetaItem extends AbstractMetaItem<OrganizationMetaItem>
         super(item);
     }
 
-    @JsonCreator
-    public OrganizationMetaItem(@JsonProperty("id") int id,
-                                @JsonProperty("createDate") Date createDate,
-                                @JsonProperty("editDate") Date editDate,
-                                @JsonProperty("published") boolean published,
-                                @JsonProperty("deleted") boolean deleted,
-                                @JsonProperty("createUser") String createUser,
-                                @JsonProperty("editUser") String editUser) {
+    public OrganizationMetaItem(int id, Date createDate, Date editDate, boolean published,
+                                boolean deleted, String createUser, String editUser) {
         super(id, createDate, editDate, published, deleted, createUser, editUser);
     }
 
