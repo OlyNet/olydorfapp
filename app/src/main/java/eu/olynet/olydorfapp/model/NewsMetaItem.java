@@ -8,11 +8,13 @@ package eu.olynet.olydorfapp.model;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.util.Comparator;
 import java.util.Date;
 
 import eu.olynet.olydorfapp.resources.OrganizationDeserializer;
+import eu.olynet.olydorfapp.resources.OrganizationSerializer;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
@@ -20,6 +22,7 @@ import eu.olynet.olydorfapp.resources.OrganizationDeserializer;
 public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
 
     @JsonDeserialize(using = OrganizationDeserializer.class)
+    @JsonSerialize(using = OrganizationSerializer.class)
     protected OrganizationItem organization = null;
 
     protected Date date;
@@ -28,6 +31,7 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
 
     public NewsMetaItem(Date lastUsed) {
         super(lastUsed);
+        this.organization = null;
         this.date = null;
         this.title = null;
         this.link = null;
@@ -35,9 +39,23 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
 
     public NewsMetaItem(int id) {
         super(id);
+        this.organization = null;
         this.date = null;
         this.title = null;
         this.link = null;
+    }
+
+    /**
+     * Copy constructor. Performs a shallow copy.
+     *
+     * @param item the NewsMetaItem to be copied.
+     */
+    public NewsMetaItem(NewsMetaItem item) {
+        super(item);
+        this.organization = item.organization;
+        this.date = item.date;
+        this.title = item.title;
+        this.link = item.link;
     }
 
     @JsonCreator

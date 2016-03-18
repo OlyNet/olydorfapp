@@ -22,6 +22,20 @@ public class OrganizationItem extends OrganizationMetaItem {
     String description;
     byte[] logo;
 
+    /**
+     * Copy constructor. Performs a shallow copy.
+     *
+     * @param item the OrganizationItem to be copied.
+     */
+    public OrganizationItem(OrganizationItem item) {
+        super(item);
+        this.name = item.name;
+        this.shortname = item.shortname;
+        this.website = item.website;
+        this.description = item.description;
+        this.logo = item.logo;
+    }
+
     @JsonCreator
     public OrganizationItem(@JsonProperty("id") int id,
                             @JsonProperty("createDate") Date createDate,

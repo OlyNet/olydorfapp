@@ -18,6 +18,17 @@ public class NewsItem extends NewsMetaItem {
     protected String text;
     protected byte[] image;
 
+    /**
+     * Copy constructor. Performs a shallow copy.
+     *
+     * @param item the NewsItem to be copied.
+     */
+    public NewsItem(NewsItem item) {
+        super(item);
+        this.text = item.text;
+        this.image = item.image;
+    }
+
     @JsonCreator
     public NewsItem(@JsonProperty("id") int id,
                     @JsonProperty("createDate") Date createDate,
@@ -32,8 +43,8 @@ public class NewsItem extends NewsMetaItem {
                     @JsonProperty("link") String link,
                     @JsonProperty("text") String text,
                     @JsonProperty("image") byte[] image) {
-        super(id, createDate, editDate, published, deleted, createUser, editUser,
-                organization, date, title, link);
+        super(id, createDate, editDate, published, deleted, createUser, editUser, organization,
+                date, title, link);
         this.text = text;
         this.image = image;
     }

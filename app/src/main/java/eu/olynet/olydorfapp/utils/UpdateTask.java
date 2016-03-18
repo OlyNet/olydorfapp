@@ -7,9 +7,15 @@ package eu.olynet.olydorfapp.utils;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
+import java.util.List;
+
 import eu.olynet.olydorfapp.activities.MainActivity;
+import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.NewsMetaItem;
+import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resources.ResourceManager;
 
 /**
@@ -26,6 +32,13 @@ public class UpdateTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... nope) {
         ResourceManager rm = ResourceManager.getInstance();
+
+        rm.getItems(OrganizationMetaItem.class);
+        List<AbstractMetaItem<?>> items = rm.getItems(NewsMetaItem.class);
+
+        for(AbstractMetaItem<?> item : items) {
+            Log.w("UpdateTask", item.toString());
+        }
 
         // TODO: implement view refreshing here
 

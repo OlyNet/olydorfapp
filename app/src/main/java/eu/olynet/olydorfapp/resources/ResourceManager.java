@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.vincentbrison.openlibraries.android.dualcache.lib.DualCache;
 import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheBuilder;
 import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheContextUtils;
+import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheLogUtils;
 
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -136,7 +137,7 @@ public class ResourceManager {
      * @return the identifying String.
      * @throws RuntimeException if clazz is not a valid Class for this operation.
      */
-    private static String getResourceString(Class clazz) {
+    public static String getResourceString(Class clazz) {
         String type = treeCaches.get(clazz);
         if (type == null || type.equals("")) {
             throw new RuntimeException("Class '" + clazz + "' is not a valid request Object");
@@ -146,7 +147,7 @@ public class ResourceManager {
     }
 
     /**
-     * Empty constructor.
+     * Empty constructor. The real work is done by the init() method.
      */
     private ResourceManager() {
     }
@@ -173,13 +174,17 @@ public class ResourceManager {
             }
 
             /* setup DualCache */
+            DualCacheLogUtils.enableLog();
             DualCacheContextUtils.setContext(this.context);
+            CacheSerializer<TreeSet> treeSerializer =  new CacheSerializer<>(TreeSet.class);
             metaTreeCache = new DualCacheBuilder<>("MetaTrees", pInfo.versionCode, TreeSet.class)
-                    .useDefaultSerializerInRam(5 * 1024 * 1024)
-                    .useDefaultSerializerInDisk(10 * 1024 * 1024, true);
+                    .useCustomSerializerInRam(5 * 1024 * 1024, treeSerializer)
+                    .useCustomSerializerInDisk(10 * 1024 * 1024, true, treeSerializer);
+            CacheSerializer<AbstractMetaItem> itemSerializer =
+                    new CacheSerializer<>(AbstractMetaItem.class);
             itemCache = new DualCacheBuilder<>("Items", pInfo.versionCode, AbstractMetaItem.class)
-                    .useDefaultSerializerInRam(5 * 1024 * 1024)
-                    .useDefaultSerializerInDisk(200 * 1024 * 1024, true);
+                    .useCustomSerializerInRam(5 * 1024 * 1024, itemSerializer)
+                    .useCustomSerializerInDisk(200 * 1024 * 1024, true, itemSerializer);
             Log.d("ResourceManager.init", "DualCache setup complete.");
 
             /*
@@ -334,6 +339,42 @@ public class ResourceManager {
             Class proxyClass = this.onc.getClass();
             Method getResource = proxyClass.getMethod(methodName, int.class);
             result = (AbstractMetaItem) getResource.invoke(this.onc, id);
+        } catch (Exception e) {
+            Log.w("ResourceManager", "Exception during fetch", e);
+            result = null;
+        }
+
+        /* return the result that may still be null */
+        return result;
+    }
+
+    /**
+     * Tries to fetch all items of a specific type from the server.
+     *
+     * @param clazz the Class of the items to be fetched. Must be specified within the treeCaches
+     *              Map.
+     * @return the fetched items or <b>null</b> if this operation was not successful.
+     * @throws RuntimeException      if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException if no internet connection is available.
+     */
+    @SuppressWarnings("unchecked")
+    private List<AbstractMetaItem<?>> fetchItems(Class clazz) throws NoConnectionException {
+        /* terminate if we do not have an internet connection */
+        isOnline();
+
+        /* check if a valid type has been requested */
+        String type = getResourceString(clazz);
+
+        /* generate function name from type String */
+        String methodName = "get" + type.substring(0, 1).toUpperCase() + type.substring(1);
+        Log.d("fetchItem", methodName);
+
+        /* dynamically invoke the correct Method */
+        List<AbstractMetaItem<?>> result;
+        try {
+            Class proxyClass = this.onc.getClass();
+            Method getResource = proxyClass.getMethod(methodName);
+            result = (List<AbstractMetaItem<?>>) getResource.invoke(this.onc);
         } catch (Exception e) {
             Log.w("ResourceManager", "Exception during fetch", e);
             result = null;
@@ -612,6 +653,45 @@ public class ResourceManager {
 
         /* convert and return result */
         return new ArrayList<>(itemTree);
+    }
+
+    public List<AbstractMetaItem<?>> getItems(Class<?> clazz) {
+        checkInitialized();
+
+        /* get the corresponding meta-data tree */
+        String type = getResourceString(clazz);
+        TreeSet<AbstractMetaItem<?>> tree = new TreeSet<>();
+
+        List<AbstractMetaItem<?>> result;
+        try {
+            result = fetchItems(clazz);
+            if(result == null) {
+                return null;
+            }
+
+            /* dynamically create a MetaItem for each Item and add it to the new tree */
+            for (AbstractMetaItem<?> item : result) {
+                String resIdentifier = type + "_" + item.getId();
+                Constructor<?> cons = clazz.getConstructor(clazz);
+                AbstractMetaItem<?> metaItem = (AbstractMetaItem<?>) cons.newInstance(item);
+                tree.add(metaItem);
+
+                /* write item to cache */
+                Log.d("ResourceManager", "Updating cache for item '" + resIdentifier + "'");
+                itemCache.put(resIdentifier, item);
+            }
+
+            /* write meta-data tree to cache */
+            Log.d("ResourceManager", "Updating meta-data tree cache of type '" + type + "'");
+            metaTreeCache.put(type, tree);
+        } catch (NoConnectionException e) {
+            result = null;
+            // TODO: use cached data in this case
+        } catch (Exception e) {
+            throw new RuntimeException("during the getItems() for '" + type + "'", e);
+        }
+
+        return result;
     }
 
     /**

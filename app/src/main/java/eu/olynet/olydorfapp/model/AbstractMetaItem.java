@@ -13,8 +13,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import java.util.Comparator;
 import java.util.Date;
 
-import eu.olynet.olydorfapp.resources.OrganizationDeserializer;
-
 /**
  * The abstract base class containing the metadata of corresponding AbstractItems.
  *
@@ -39,7 +37,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
      *
      * @param lastUsedDate the Date this item was last used.
      */
-    public AbstractMetaItem(Date lastUsedDate) {
+    protected AbstractMetaItem(Date lastUsedDate) {
         this.id = -1;
         this.createDate = null;
         this.editDate = null;
@@ -55,7 +53,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
      *
      * @param id the ID of the dummy item.
      */
-    public AbstractMetaItem(int id) {
+    protected AbstractMetaItem(int id) {
         this.id = id;
         this.createDate = null;
         this.editDate = null;
@@ -64,6 +62,22 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.deleted = false;
         this.createUser = null;
         this.editUser = null;
+    }
+
+    /**
+     * Copy constructor. Performs a shallow copy.
+     *
+     * @param item the AbstractMetaItem to be copied.
+     */
+    protected AbstractMetaItem(AbstractMetaItem item) {
+        this.id = item.id;
+        this.createDate = item.createDate;
+        this.editDate = item.editDate;
+        this.lastUsedDate = item.lastUsedDate;
+        this.published = item.published;
+        this.deleted = item.deleted;
+        this.createUser = item.createUser;
+        this.editUser = item.editUser;
     }
 
     @JsonCreator
@@ -77,7 +91,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.id = id;
         this.createDate = createDate;
         this.editDate = editDate;
-        this.lastUsedDate = null;
+        this.lastUsedDate = new Date(); /* set lastUsedDate to now */
         this.published = published;
         this.deleted = deleted;
         this.createUser = createUser;

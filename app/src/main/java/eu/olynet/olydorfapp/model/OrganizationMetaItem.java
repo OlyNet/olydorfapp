@@ -24,6 +24,15 @@ public class OrganizationMetaItem extends AbstractMetaItem<OrganizationMetaItem>
         super(id);
     }
 
+    /**
+     * Copy constructor. Performs a shallow copy.
+     *
+     * @param item the OrganizationMetaItem to be copied.
+     */
+    public OrganizationMetaItem(OrganizationMetaItem item) {
+        super(item);
+    }
+
     @JsonCreator
     public OrganizationMetaItem(@JsonProperty("id") int id,
                                 @JsonProperty("createDate") Date createDate,

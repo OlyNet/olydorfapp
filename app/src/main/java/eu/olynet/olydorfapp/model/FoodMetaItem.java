@@ -8,10 +8,12 @@ package eu.olynet.olydorfapp.model;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 import java.util.Date;
 
 import eu.olynet.olydorfapp.resources.OrganizationDeserializer;
+import eu.olynet.olydorfapp.resources.OrganizationSerializer;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
@@ -19,6 +21,7 @@ import eu.olynet.olydorfapp.resources.OrganizationDeserializer;
 public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
 
     @JsonDeserialize(using = OrganizationDeserializer.class)
+    @JsonSerialize(using = OrganizationSerializer.class)
     protected OrganizationItem organization = null;
 
     protected String name;
@@ -28,6 +31,7 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
 
     public FoodMetaItem(Date lastUsed) {
         super(lastUsed);
+        this.organization = null;
         this.name = null;
         this.englishname = null;
         this.price = Float.NaN;
@@ -36,6 +40,7 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
 
     public FoodMetaItem(int id) {
         super(id);
+        this.organization = null;
         this.name = null;
         this.englishname = null;
         this.price = Float.NaN;
