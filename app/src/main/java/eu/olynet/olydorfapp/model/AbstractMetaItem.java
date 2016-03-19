@@ -265,9 +265,9 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
      * Comparator used to order items by their createDate in ascending order. A use case for this
      * would be displaying daily meals for the next month.
      */
-    public static class DateAscComparator implements Comparator<AbstractMetaItem> {
+    public static class DateAscComparator implements Comparator<AbstractMetaItem<?>> {
         @Override
-        public int compare(AbstractMetaItem lhs, AbstractMetaItem rhs) {
+        public int compare(AbstractMetaItem<?> lhs, AbstractMetaItem<?> rhs) {
             return lhs.getDate().compareTo(rhs.getDate());
         }
     }
@@ -276,9 +276,9 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
      * Comparator used to order items by their createDate in descending order. A use case for this
      * would be displaying news entries.
      */
-    public static class DateDescComparator implements Comparator<AbstractMetaItem> {
+    public static class DateDescComparator implements Comparator<AbstractMetaItem<?>> {
         @Override
-        public int compare(AbstractMetaItem lhs, AbstractMetaItem rhs) {
+        public int compare(AbstractMetaItem<?> lhs, AbstractMetaItem<?> rhs) {
             return -lhs.getDate().compareTo(rhs.getDate());
         }
     }

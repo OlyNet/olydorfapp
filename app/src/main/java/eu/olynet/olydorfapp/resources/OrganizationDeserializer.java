@@ -87,8 +87,7 @@ public class OrganizationDeserializer extends JsonDeserializer<OrganizationItem>
             throw new IOException("id=" + id + " does not refer to a valid OrganizationItem");
         }
 
-        /* first get the whole meta-data tree and then get the specific OrganizationItem */
-        rm.getTreeOfMetaItems(OrganizationMetaItem.class);
+        /* assuming up-to-date meta-data */
         OrganizationItem org = (OrganizationItem) rm.getItem(OrganizationMetaItem.class, id);
         if (org == null) {
             throw new JsonParseException(jp, "getting the OrganizationItem lead to a null value");

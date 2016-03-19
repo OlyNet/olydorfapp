@@ -10,6 +10,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -622,7 +623,7 @@ public class ResourceManager {
      * @throws RuntimeException      if some weird Reflection error occurs.
      */
     public List<AbstractMetaItem<?>> getItems(Class<?> clazz, List<Integer> ids,
-                                              Comparator<AbstractMetaItem> comparator) {
+                                              Comparator<AbstractMetaItem<?>> comparator) {
         abortIfNotInitialized();
 
         /* get the corresponding meta-data tree */
@@ -912,21 +913,87 @@ public class ResourceManager {
     }
 
     /**
-     * Not implemented yet.
+     * Returns a certain number of items of a specific type that are all greater (according to the
+     * ordering) then a specified element.
      *
      * @param clazz      the Class of the item to be fetched. Must be specified within the
      *                   treeCaches Map.
-     * @param first      the first element to be part of the returned selection.
-     * @param last       the last element to be part of the returned selection.
-     * @param comparator the Comparator used for ordering the meta-data tree.
+     * @param after      exclusive lower bound. Can be null or a dummy.
+     * @param limit      Number of elements that are returned. If it is below or equal to zero, no
+     *                   limit is imposed.
+     * @param comparator the Comparator used for ordering the meta-data tree. Can be null for
+     *                   default ordering.
      * @return the requested meta-data. This does not necessarily have to be up-to-createDate. If
      * the server cannot be reached in time, a cached version will be returned instead.
      * @throws IllegalStateException if the ResourceManager has not been initialized correctly.
      * @throws RuntimeException      if clazz is not a valid Class for this operation.
      */
-    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class clazz, AbstractMetaItem<?> first,
-                                                           AbstractMetaItem<?> last,
-                                                           Comparator<AbstractMetaItem<?>> comparator) {
+    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class clazz,
+                                                           int limit,
+                                                           @Nullable AbstractMetaItem<?> after,
+                                                           @Nullable Comparator<AbstractMetaItem<?>>
+                                                                   comparator) {
+        abortIfNotInitialized();
+
+        /* get the valid meta-data tree */
+        TreeSet<AbstractMetaItem<?>> tempMetaTree = getTreeOfMetaItems(clazz);
+        // FIXME: NPE
+
+        /* prepare the different TreeSets */
+        TreeSet<AbstractMetaItem<?>> result;
+        TreeSet<AbstractMetaItem<?>> preResult;
+        TreeSet<AbstractMetaItem<?>> sortedMetaTree;
+        if (comparator != null) {
+            result = new TreeSet<>(comparator);
+            preResult = new TreeSet<>(comparator);
+            sortedMetaTree = new TreeSet<>(comparator);
+        } else {
+            result = new TreeSet<>();
+            preResult = new TreeSet<>();
+            sortedMetaTree = new TreeSet<>();
+        }
+        preResult.addAll(tempMetaTree);
+        sortedMetaTree.addAll(tempMetaTree);
+
+        /* remove everything before (and including) the 'after' AbstractMetaItem if it exists */
+        if (after != null) {
+            preResult.removeAll(sortedMetaTree.headSet(
+                    sortedMetaTree.floor(after), true));
+        }
+
+        /* only take a specified number of items from the results */
+        if (limit > 0) {
+            int n = 0;
+            for (AbstractMetaItem<?> item : preResult) {
+                if (n++ >= limit) {
+                    break;
+                }
+                result.add(item);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Not implemented yet.
+     *
+     * @param clazz      the Class of the item to be fetched. Must be specified within the
+     *                   treeCaches Map.
+     * @param after      exclusive lower bound. Can be null or a dummy.
+     * @param before     exclusive upper bound. Can be null or a dummy.
+     * @param comparator Can be null for
+     *                   default ordering.
+     * @return the requested meta-data. This does not necessarily have to be up-to-createDate. If
+     * the server cannot be reached in time, a cached version will be returned instead.
+     * @throws IllegalStateException if the ResourceManager has not been initialized correctly.
+     * @throws RuntimeException      if clazz is not a valid Class for this operation.
+     */
+    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class clazz,
+                                                           @Nullable AbstractMetaItem<?> after,
+                                                           @Nullable AbstractMetaItem<?> before,
+                                                           @Nullable Comparator<AbstractMetaItem<?>>
+                                                                   comparator) {
         abortIfNotInitialized();
 
         TreeSet<AbstractMetaItem<?>> result = new TreeSet<>(comparator);

@@ -13,7 +13,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +24,8 @@ import java.util.TreeSet;
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.NewsDataAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
-import eu.olynet.olydorfapp.model.NewsItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
+import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resources.ResourceManager;
 
 /**
@@ -40,6 +39,8 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
 
     private SwipeRefreshLayout mRefreshLayout;
     private NewsDataAdapter mAdapter;
+
+    private boolean refreshing = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -62,7 +63,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 /* check for scroll down, second-to-last item visible and not already refreshing */
-                if (dy > 0 && !mRefreshLayout.isRefreshing() &&
+                if (dy > 0 && !mRefreshLayout.isRefreshing() && !refreshing &&
                         mLayoutManager.findLastCompletelyVisibleItemPosition() ==
                                 mAdapter.getItemCount() - 2) {
                     loadData(Action.ADD, DEFAULT_COUNT);
@@ -96,12 +97,20 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
      * @param limit  how many new items to fetch at most.
      */
     public void loadData(Action action, int limit) {
+        /* set local refreshing variable */
+        refreshing = true;
+
         /* disable swipe to refresh while already refreshing */
         mRefreshLayout.setEnabled(false);
 
         /* enable the refreshing animation if and only if it is not already enabled */
         if (!mRefreshLayout.isRefreshing()) {
-            mRefreshLayout.setRefreshing(true);
+            mRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    mRefreshLayout.setRefreshing(true);
+                }
+            });
         }
 
         /* start the AsyncTask that fetches the data */
@@ -119,7 +128,9 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
     private void onLoadCompleted(Action action, int position, int count) {
         switch (action) {
             case ADD:
-                mAdapter.notifyItemRangeInserted(position, count);
+                if (count > 0) {
+                    mAdapter.notifyItemRangeInserted(position, count);
+                }
                 break;
             default:
                 mAdapter.notifyDataSetChanged();
@@ -128,12 +139,13 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
         /* disable refreshing animation and enable swipe to refresh again */
         mRefreshLayout.setRefreshing(false);
         mRefreshLayout.setEnabled(true);
+        refreshing = false;
     }
 
     protected class NewsUpdateTask extends AsyncTask<Void, Void, List<AbstractMetaItem<?>>> {
 
         private final Action action;
-        private final int lastID;
+        private final AbstractMetaItem<?> lastItem;
         private final int limit;
 
         public NewsUpdateTask(Action action, int limit) {
@@ -142,10 +154,10 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
 
             /* get the ID of the last item of this view */
             int size = mAdapter.getItemCount();
-            if (size > 0) {
-                this.lastID = mAdapter.getAbstractMetaItem(size - 1).getId();
+            if (this.action == Action.ADD && size > 0) {
+                this.lastItem = mAdapter.getAbstractMetaItem(size - 1);
             } else {
-                this.lastID = -1;
+                this.lastItem = null;
             }
         }
 
@@ -153,25 +165,19 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
         protected List<AbstractMetaItem<?>> doInBackground(Void... params) {
             ResourceManager rm = ResourceManager.getInstance();
 
+            /* update OrganizationMetaItem tree */
+            rm.getTreeOfMetaItems(OrganizationMetaItem.class);
+
             /* querying the ResourceManager for the needed data and order it correctly */
-            TreeSet<AbstractMetaItem<?>> fetchedTree = rm.getTreeOfMetaItems(NewsMetaItem.class);
-            if (fetchedTree == null || fetchedTree.isEmpty()) {
+            TreeSet<AbstractMetaItem<?>> resultTree = rm.getTreeOfMetaItems(NewsMetaItem.class,
+                    this.limit, this.lastItem, new AbstractMetaItem.DateDescComparator());
+            if (resultTree == null || resultTree.isEmpty()) {
                 return new ArrayList<>();
             }
-            TreeSet<AbstractMetaItem<?>> resultTree = new TreeSet<>(
-                    new NewsItem.DateDescComparator());
-            resultTree.addAll(fetchedTree);
 
-            // TODO: implement incremental fetching
-
-            int count = 0;
+            /* getting just the ids for the needed NewsItems */
             List<Integer> ids = new ArrayList<>();
             for (AbstractMetaItem<?> item : resultTree) {
-                /* enforce item limit */
-                if (count++ >= limit) {
-                    break;
-                }
-
                 ids.add(item.getId());
             }
 

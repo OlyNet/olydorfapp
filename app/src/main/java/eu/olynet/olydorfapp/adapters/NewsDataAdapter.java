@@ -36,22 +36,24 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
         protected TextView vDate;
         protected TextView vTitle;
         protected TextView vOrganization;
         protected ImageView vImage;
 
-        public ViewHolder(View v) {
-            super(v);
-            vOrganization = (TextView) v.findViewById(R.id.newsCardOrganization);
-            vDate = (TextView) v.findViewById(R.id.newsCardDate);
-            vTitle = (TextView) v.findViewById(R.id.newsCardTitle);
-            vImage = (ImageView) v.findViewById(R.id.newsCardImage);
+        public ViewHolder(View view) {
+            super(view);
+            vOrganization = (TextView) view.findViewById(R.id.newsCardOrganization);
+            vDate = (TextView) view.findViewById(R.id.newsCardDate);
+            vTitle = (TextView) view.findViewById(R.id.newsCardTitle);
+            vImage = (ImageView) view.findViewById(R.id.newsCardImage);
         }
     }
 
-    // Provide a suitable constructor (depends on the kind of dataset)
+    /**
+     * @param context   the Context.
+     * @param newsItems the List containing the NewsItems.
+     */
     public NewsDataAdapter(Context context, List<AbstractMetaItem<?>> newsItems) {
         this.context = context;
         this.items = newsItems;
@@ -59,11 +61,10 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
 
     // Create new views (invoked by the layout manager)
     @Override
-    public NewsDataAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // create a new view
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_news, parent, false);
-        // set the view's size, margins, paddings and layout parameters
-        return new NewsDataAdapter.ViewHolder(v);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_news, parent, false);
+
+        return new ViewHolder(view);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -74,8 +75,6 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
                     + " seem to only contain NewsItems");
         }
         NewsItem newsItem = (NewsItem) items.get(position);
-
-        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
         /* Date */
         SimpleDateFormat localFormat = (SimpleDateFormat) android.text.format.DateFormat.getDateFormat(context);
@@ -89,21 +88,17 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
 
         /* Image */
         byte[] image = newsItem.getImage();
-        if (image != null && image.length > 0) {
-            /* use NewsItem image if available */
+        if (image == null || image.length <= 0) { /* fall back to Organization logo */
+            image = newsItem.getOrganization().getLogo();
+        }
+        if (image != null && image.length > 0) { /* finally set the image if one is available */
             Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
             DisplayMetrics dm = new DisplayMetrics();
+            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             windowManager.getDefaultDisplay().getMetrics(dm);
             holder.vImage.setImageBitmap(imageBitmap);
         } else {
-            /* fall back to Organization logo */
-            image = newsItem.getOrganization().getLogo();
-            if(image != null && image.length > 0) {
-                Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-                DisplayMetrics dm = new DisplayMetrics();
-                windowManager.getDefaultDisplay().getMetrics(dm);
-                holder.vImage.setImageBitmap(imageBitmap);
-            }
+            holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
         }
     }
 

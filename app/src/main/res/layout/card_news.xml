@@ -1,71 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardCornerRadius="4dp"
-    card_view:cardBackgroundColor="#E6E6E6"
-    card_view:cardElevation="2dp"
     android:layout_margin="5dp"
     android:clickable="true"
-    android:foreground="?android:attr/selectableItemBackground">
+    android:foreground="?android:attr/selectableItemBackground"
+    card_view:cardBackgroundColor="#E6E6E6"
+    card_view:cardCornerRadius="4dp"
+    card_view:cardElevation="2dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.makeramen.roundedimageview.RoundedImageView
-            xmlns:rounded_image_view="http://schemas.android.com/apk/res-auto"
+        <com.makeramen.roundedimageview.RoundedImageView xmlns:rounded_image_view="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/newsCardImage"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/newsCardImage"
-            android:src="@drawable/ic_account_circle_white_64dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:adjustViewBounds="true"
             android:contentDescription="News logo"
+            android:maxHeight="150dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_account_circle_white_64dp"
             rounded_image_view:riv_corner_radius_bottom_left="0dp"
             rounded_image_view:riv_corner_radius_bottom_right="0dp"
             rounded_image_view:riv_corner_radius_top_left="4dp"
-            rounded_image_view:riv_corner_radius_top_right="4dp"
-            android:adjustViewBounds="true"
-            android:maxHeight="150dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:scaleType="centerCrop"/>
+            rounded_image_view:riv_corner_radius_top_right="4dp" />
 
         <TextView
+            android:id="@+id/newsCardTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/newsCardTitle"
+            android:layout_below="@+id/newsCardImage"
             android:layout_gravity="center|left"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:text="Toller Titel"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:layout_below="@+id/newsCardImage"
-            android:adjustViewBounds="true"/>
+            android:adjustViewBounds="true"
+            android:text="Toller Titel"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/newsCardDate"
-            android:textSize="16sp"
-            android:text="01.01.1970"
-            android:layout_below="@+id/newsCardTitle"
             android:layout_alignLeft="@+id/newsCardTitle"
-            android:layout_alignStart="@+id/newsCardTitle"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/newsCardOrganization"
-            android:textSize="16sp"
-            android:text="OlyNet e.V."
+            android:layout_alignStart="@+id/newsCardTitle"
             android:layout_below="@+id/newsCardTitle"
-            android:layout_alignRight="@+id/newsCardImage"
-            android:layout_alignEnd="@+id/newsCardTitle"/>
+            android:weightSum="1.0">
+
+            <TextView
+                android:id="@+id/newsCardDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:text="01.01.1970"
+                android:textSize="16sp"
+                android:layout_gravity="bottom|right"
+                android:gravity="left|bottom" />
+
+            <TextView
+                android:id="@+id/newsCardOrganization"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7"
+                android:text="Studenten im Olympiazentrum e.V. asdfsdf adfgha asdfgasdf gfhjk"
+                android:textSize="16sp"
+                android:layout_gravity="right"
+                android:gravity="bottom|right" />
+
+        </LinearLayout>
 
     </RelativeLayout>
 </android.support.v7.widget.CardView>
