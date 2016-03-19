@@ -280,7 +280,7 @@ public class ResourceManager {
         Handler handler = new Handler(context.getMainLooper());
         handler.post(new Runnable() {
             public void run() {
-                Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
             }
         });
     }
