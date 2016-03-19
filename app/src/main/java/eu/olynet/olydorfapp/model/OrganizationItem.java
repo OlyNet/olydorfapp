@@ -52,9 +52,10 @@ public class OrganizationItem extends OrganizationMetaItem {
     }
 
     public OrganizationItem(int id, Date createDate, Date editDate, boolean published,
-                            boolean deleted, String createUser, String editUser, String name,
-                            String shortname, String website, String description, byte[] logo) {
-        super(id, createDate, editDate, published, deleted, createUser, editUser);
+                            boolean deleted, String createUser, String editUser, Date date,
+                            String name, String shortname, String website, String description,
+                            byte[] logo) {
+        super(id, createDate, editDate, published, deleted, createUser, editUser, date);
         this.name = name;
         this.shortname = shortname;
         this.website = website;

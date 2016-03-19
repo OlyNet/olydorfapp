@@ -37,8 +37,8 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
     }
 
     public FoodMetaItem(int id, Date createDate, Date editDate, boolean published, boolean deleted,
-                        String createUser, String editUser) {
-        super(id, createDate, editDate, published, deleted, createUser, editUser);
+                        String createUser, String editUser, Date date) {
+        super(id, createDate, editDate, published, deleted, createUser, editUser, date);
     }
 
     @Override

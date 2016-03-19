@@ -8,11 +8,11 @@ package eu.olynet.olydorfapp.activities;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.support.multidex.MultiDex;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -47,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
-    final CharSequence Titles[] = {"News", "Veranstaltungen", "Bierstube", "OlyDisco", "The O(n)ly", "Waschraum"};
+    final CharSequence Titles[] = {"News", "Veranstaltungen", "Bierstube", "OlyDisco", "The O(n)ly",
+            "Waschraum"};
     final int Numboftabs = Titles.length;
     private Menu optionsMenu;
 
@@ -60,10 +61,13 @@ public class MainActivity extends AppCompatActivity {
 
         init_navigator();
 
-        // setup the ResourceManager
-        ResourceManager.getInstance().init(this);
+        /* setup the ResourceManager */
+        ResourceManager rm = ResourceManager.getInstance();
+        if (!rm.isInitialized()) {
+            rm.init(this);
+        }
 
-        // enable BootReceiver
+        /* enable BootReceiver */
         ComponentName receiver = new ComponentName(this, BootReceiver.class);
         PackageManager pm = this.getPackageManager();
         pm.setComponentEnabledSetting(receiver,
@@ -151,11 +155,9 @@ public class MainActivity extends AppCompatActivity {
         mDrawerList.setAdapter(new NavigationDrawerItemsAdapter(this));
 
         // Add a click listener to the list view
-        mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener()
-        {
+        mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 mDrawerLayout.closeDrawer(mDrawerList);
             }

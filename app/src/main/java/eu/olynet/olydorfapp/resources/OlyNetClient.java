@@ -33,6 +33,10 @@ public interface OlyNetClient {
 
     /* News API */
     @GET
+    @Path("/news/meta/{id}")
+    public NewsMetaItem getMetaNews(@PathParam("id") int id);
+
+    @GET
     @Path("/news/meta")
     public List<NewsMetaItem> getMetaNews();
 
@@ -46,6 +50,10 @@ public interface OlyNetClient {
 
     /* Food API */
     @GET
+    @Path("/food/meta/{id}")
+    public FoodMetaItem getMetaFood(@PathParam("id") int id);
+
+    @GET
     @Path("/food/meta")
     public List<FoodMetaItem> getMetaFood();
 
@@ -58,6 +66,10 @@ public interface OlyNetClient {
     public List<FoodItem> getFood();
 
     /* Organization API */
+    @GET
+    @Path("/organization/meta/{id}")
+    public OrganizationMetaItem getMetaOrganization(@PathParam("id") int id);
+
     @GET
     @Path("/organization/meta")
     public List<OrganizationMetaItem> getMetaOrganization();

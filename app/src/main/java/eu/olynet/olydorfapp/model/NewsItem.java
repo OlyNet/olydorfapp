@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import java.util.Comparator;
 import java.util.Date;
 
 import eu.olynet.olydorfapp.resources.OrganizationDeserializer;
@@ -24,9 +23,6 @@ public class NewsItem extends NewsMetaItem {
     @JsonSerialize(using = OrganizationSerializer.class)
     @JsonDeserialize(using = OrganizationDeserializer.class)
     protected OrganizationItem organization = null;
-
-    @JsonProperty("date")
-    protected Date date;
 
     @JsonProperty("title")
     protected String title;
@@ -55,7 +51,6 @@ public class NewsItem extends NewsMetaItem {
     public NewsItem(NewsItem item) {
         super(item);
         this.organization = item.organization;
-        this.date = item.date;
         this.title = item.title;
         this.link = item.link;
         this.text = item.text;
@@ -63,11 +58,10 @@ public class NewsItem extends NewsMetaItem {
     }
 
     public NewsItem(int id, Date createDate, Date editDate, boolean published, boolean deleted,
-                    String createUser, String editUser, OrganizationItem organization, Date date,
+                    String createUser, String editUser, Date date, OrganizationItem organization,
                     String title, String link, String text, byte[] image) {
-        super(id, createDate, editDate, published, deleted, createUser, editUser);
+        super(id, createDate, editDate, published, deleted, createUser, editUser, date);
         this.organization = organization;
-        this.date = date;
         this.title = title;
         this.link = link;
         this.text = text;
@@ -80,14 +74,6 @@ public class NewsItem extends NewsMetaItem {
 
     public void setOrganization(OrganizationItem organization) {
         this.organization = organization;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     public String getTitle() {
@@ -125,7 +111,6 @@ public class NewsItem extends NewsMetaItem {
     public void updateItem(NewsItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
         this.organization = updatedItem.organization;
-        this.date = updatedItem.date;
         this.title = updatedItem.title;
         this.link = updatedItem.link;
         this.text = updatedItem.text;
@@ -136,34 +121,11 @@ public class NewsItem extends NewsMetaItem {
     public String toString() {
         String result = super.toString() + "\n";
         result += "organization = [[" + this.organization.toString() + "]]" + "\n";
-        result += "date = " + this.date + "\n";
         result += "title = " + this.title + "\n";
         result += "link = " + this.link + "\n";
         result += "text = " + this.text + "\n";
         result += "logo = " + ((image != null) ? image.length : 0) + " Byte";
 
         return result;
-    }
-
-    /**
-     * Comparator used to order items by their createDate in ascending order. A use case for this
-     * would be displaying daily meals for the next month.
-     */
-    public static class DateAscComparator implements Comparator<NewsItem> {
-        @Override
-        public int compare(NewsItem lhs, NewsItem rhs) {
-            return lhs.getDate().compareTo(rhs.getDate());
-        }
-    }
-
-    /**
-     * Comparator used to order items by their createDate in descending order. A use case for this
-     * would be displaying news entries.
-     */
-    public static class DateDescComparator implements Comparator<NewsItem> {
-        @Override
-        public int compare(NewsItem lhs, NewsItem rhs) {
-            return -lhs.getDate().compareTo(rhs.getDate());
-        }
     }
 }

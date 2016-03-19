@@ -6,6 +6,7 @@
 
 package eu.olynet.olydorfapp.resources;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -86,7 +87,14 @@ public class OrganizationDeserializer extends JsonDeserializer<OrganizationItem>
             throw new IOException("id=" + id + " does not refer to a valid OrganizationItem");
         }
 
-        return (OrganizationItem) rm.getItem(OrganizationMetaItem.class, id);
+        /* first get the whole meta-data tree and then get the specific OrganizationItem */
+        rm.getTreeOfMetaItems(OrganizationMetaItem.class);
+        OrganizationItem org = (OrganizationItem) rm.getItem(OrganizationMetaItem.class, id);
+        if (org == null) {
+            throw new JsonParseException(jp, "getting the OrganizationItem lead to a null value");
+        } else {
+            return (OrganizationItem) rm.getItem(OrganizationMetaItem.class, id);
+        }
     }
 
     /**
@@ -95,7 +103,7 @@ public class OrganizationDeserializer extends JsonDeserializer<OrganizationItem>
      * instantiating correct subtype. This can be due to annotation on
      * type (or its supertype), or due to global settings without
      * annotations.
-     *<p>
+     * <p/>
      * Default implementation may work for some types, but ideally subclasses
      * should not rely on current default implementation.
      * Implementation is mostly provided to avoid compilation errors with older

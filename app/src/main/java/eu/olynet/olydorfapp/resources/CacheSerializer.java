@@ -8,6 +8,7 @@ package eu.olynet.olydorfapp.resources;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vincentbrison.openlibraries.android.dualcache.lib.Serializer;
 
@@ -26,6 +27,7 @@ public class CacheSerializer<T> implements Serializer<T> {
 
     static {
         sMapper = new ObjectMapper();
+        sMapper.enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
         sMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
         sMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         sMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);

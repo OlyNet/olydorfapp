@@ -23,7 +23,6 @@ import java.util.List;
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsItem;
-import eu.olynet.olydorfapp.model.Organization;
 
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
@@ -80,28 +79,31 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
 
         /* Date */
         SimpleDateFormat localFormat = (SimpleDateFormat) android.text.format.DateFormat.getDateFormat(context);
-        holder.vDate.setText(localFormat.format(newsItem.getCreateDate()));
+        holder.vDate.setText(localFormat.format(newsItem.getDate()));
 
         /* Title */
         holder.vTitle.setText(newsItem.getTitle());
 
         /* Organization */
-        Organization organization = Organization.organizations.get(newsItem.getOrganization());
-        String orgName;
-        if (organization != null) {
-            orgName = organization.getName();
-        } else {
-            orgName = "N/A";
-        }
-        holder.vOrganization.setText(orgName);
+        holder.vOrganization.setText(newsItem.getOrganization().getName());
 
         /* Image */
         byte[] image = newsItem.getImage();
         if (image != null && image.length > 0) {
+            /* use NewsItem image if available */
             Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
             DisplayMetrics dm = new DisplayMetrics();
             windowManager.getDefaultDisplay().getMetrics(dm);
             holder.vImage.setImageBitmap(imageBitmap);
+        } else {
+            /* fall back to Organization logo */
+            image = newsItem.getOrganization().getLogo();
+            if(image != null && image.length > 0) {
+                Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                DisplayMetrics dm = new DisplayMetrics();
+                windowManager.getDefaultDisplay().getMetrics(dm);
+                holder.vImage.setImageBitmap(imageBitmap);
+            }
         }
     }
 

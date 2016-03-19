@@ -13,6 +13,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import java.util.TreeSet;
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.NewsDataAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.NewsItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
 import eu.olynet.olydorfapp.resources.ResourceManager;
 
@@ -149,34 +151,32 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
 
         @Override
         protected List<AbstractMetaItem<?>> doInBackground(Void... params) {
-            // FIXME: ...
-//            ResourceManager rm = ResourceManager.getInstance();
-//
-//            /* querying the ResourceManager for the needed data and order it correctly */
-//            TreeSet<AbstractMetaItem<?>> fetchedTree = rm.getTreeOfMetaItems(NewsMetaItem.class);
-//            if (fetchedTree == null || fetchedTree.isEmpty()) {
-//                return new ArrayList<>();
-//            }
-//            TreeSet<AbstractMetaItem<?>> resultTree = new TreeSet<>(
-//                    new NewsMetaItem.DateDescComparator());
-//            resultTree.addAll(fetchedTree);
-//
-//            // TODO: implement incremental fetching
-//
-//            int count = 0;
-//            List<Integer> ids = new ArrayList<>();
-//            for (AbstractMetaItem<?> item : resultTree) {
-//                /* enforce item limit */
-//                if (count++ >= limit) {
-//                    break;
-//                }
-//
-//                ids.add(item.getId());
-//            }
-//
-//            /* requesting and returning the result array */
-//            return rm.getItems(NewsMetaItem.class, ids, new AbstractMetaItem.DateDescComparator());
-            return new ArrayList<>();
+            ResourceManager rm = ResourceManager.getInstance();
+
+            /* querying the ResourceManager for the needed data and order it correctly */
+            TreeSet<AbstractMetaItem<?>> fetchedTree = rm.getTreeOfMetaItems(NewsMetaItem.class);
+            if (fetchedTree == null || fetchedTree.isEmpty()) {
+                return new ArrayList<>();
+            }
+            TreeSet<AbstractMetaItem<?>> resultTree = new TreeSet<>(
+                    new NewsItem.DateDescComparator());
+            resultTree.addAll(fetchedTree);
+
+            // TODO: implement incremental fetching
+
+            int count = 0;
+            List<Integer> ids = new ArrayList<>();
+            for (AbstractMetaItem<?> item : resultTree) {
+                /* enforce item limit */
+                if (count++ >= limit) {
+                    break;
+                }
+
+                ids.add(item.getId());
+            }
+
+            /* requesting and returning the result array */
+            return rm.getItems(NewsMetaItem.class, ids, new AbstractMetaItem.DateDescComparator());
         }
 
         @Override

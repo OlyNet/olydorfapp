@@ -40,6 +40,9 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
     @JsonProperty("editUser")
     protected String editUser;
 
+    @JsonProperty("date")
+    protected Date date = null;
+
     protected Date lastUsedDate = new Date();
 
     /**
@@ -63,6 +66,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.deleted = false;
         this.createUser = null;
         this.editUser = null;
+        this.date = null;
     }
 
     /**
@@ -79,6 +83,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.deleted = false;
         this.createUser = null;
         this.editUser = null;
+        this.date = null;
     }
 
     /**
@@ -95,10 +100,11 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.deleted = item.deleted;
         this.createUser = item.createUser;
         this.editUser = item.editUser;
+        this.date = item.date;
     }
 
     protected AbstractMetaItem(int id, Date createDate, Date editDate, boolean published,
-                               boolean deleted, String createUser, String editUser) {
+                               boolean deleted, String createUser, String editUser, Date date) {
         this.id = id;
         this.createDate = createDate;
         this.editDate = editDate;
@@ -107,6 +113,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.deleted = deleted;
         this.createUser = createUser;
         this.editUser = editUser;
+        this.date = date;
     }
 
     private void setId(int id) {
@@ -177,6 +184,14 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.lastUsedDate = new Date();
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
     public void updateItem(T updatedItem) throws ItemMismatchException {
         if (this.equals(updatedItem)) {
             this.createDate = updatedItem.createDate;
@@ -186,6 +201,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
             this.deleted = updatedItem.deleted;
             this.createUser = updatedItem.createUser;
             this.editUser = updatedItem.editUser;
+            this.date = updatedItem.date;
         } else {
             throw new ItemMismatchException(this.toString() + "cannot be overwritten by "
                     + updatedItem.toString());
@@ -204,7 +220,8 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         result += "published = " + this.published + "\n";
         result += "deleted = " + this.deleted + "\n";
         result += "createUser = " + this.createUser + "\n";
-        result += "editUser = " + this.editUser;
+        result += "editUser = " + this.editUser + "\n";
+        result += "date = " + this.date;
 
         return result;
     }
@@ -241,6 +258,28 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
             } else {
                 return lhs.lastUsedDate.compareTo(rhs.lastUsedDate);
             }
+        }
+    }
+
+    /**
+     * Comparator used to order items by their createDate in ascending order. A use case for this
+     * would be displaying daily meals for the next month.
+     */
+    public static class DateAscComparator implements Comparator<AbstractMetaItem> {
+        @Override
+        public int compare(AbstractMetaItem lhs, AbstractMetaItem rhs) {
+            return lhs.getDate().compareTo(rhs.getDate());
+        }
+    }
+
+    /**
+     * Comparator used to order items by their createDate in descending order. A use case for this
+     * would be displaying news entries.
+     */
+    public static class DateDescComparator implements Comparator<AbstractMetaItem> {
+        @Override
+        public int compare(AbstractMetaItem lhs, AbstractMetaItem rhs) {
+            return -lhs.getDate().compareTo(rhs.getDate());
         }
     }
 }

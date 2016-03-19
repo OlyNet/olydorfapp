@@ -385,6 +385,44 @@ public class ResourceManager {
     }
 
     /**
+     * Tries to fetch the up-to-createDate meta-data information for one specific item from the
+     * server.
+     *
+     * @param clazz the Class of the meta-data to be fetched. Must be specified within the
+     *              treeCaches Map.
+     * @param id    the id of the item for which the meta-data is to be fetched.
+     * @return the meta-data item or <b>null</b> if this operation failed.
+     * @throws RuntimeException      if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException if no internet connection is available.
+     */
+    @SuppressWarnings("unchecked")
+    private AbstractMetaItem<?> fetchMetaItem(Class clazz, int id) throws NoConnectionException {
+        /* terminate if we do not have an internet connection */
+        verifyConnectivity();
+
+        /* check if a valid type has been requested */
+        String type = getResourceString(clazz);
+
+        /* generate function name from type String */
+        String methodName = "get" + "Meta" + type.substring(0, 1).toUpperCase() + type.substring(1);
+        Log.d("fetchMetaItem", methodName);
+
+        /* dynamically invoke the correct Method */
+        AbstractMetaItem<?> result;
+        try {
+            Class proxyClass = this.onc.getClass();
+            Method getMetaResource = proxyClass.getMethod(methodName, int.class);
+            result = (AbstractMetaItem<?>) getMetaResource.invoke(this.onc, id);
+        } catch (Exception e) {
+            Log.w("ResourceManager", "Exception during fetch", e);
+            result = null;
+        }
+
+        /* return the result that may still be null */
+        return result;
+    }
+
+    /**
      * Tries to fetch the up-to-createDate meta-data information from the server.
      *
      * @param clazz the Class of the meta-data to be fetched. Must be specified within the
@@ -508,7 +546,7 @@ public class ResourceManager {
         String type = getResourceString(clazz);
         TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(type);
         if (tree == null) {
-            throw new RuntimeException("meta-data tree for " + clazz + " not found");
+            throw new RuntimeException("meta-data tree for '" + clazz + "' not found");
         }
 
         try {
@@ -542,7 +580,8 @@ public class ResourceManager {
                     Log.w("ResourceManager", "Fetch failed for some reason");
                 }
             } else {
-                Log.d("ResourceManager", "Cached item was up-to-createDate, no fetch necessary");
+                Log.d("ResourceManager", "Cached item " + id + " of type '" + type +
+                        "' was up-to-createDate, no fetch necessary");
             }
 
             /* check if we have some valid item (up-to-createDate or not) */
@@ -590,7 +629,7 @@ public class ResourceManager {
         String type = getResourceString(clazz);
         TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(type);
         if (tree == null) {
-            throw new RuntimeException("meta-data tree for " + clazz + " not found");
+            throw new RuntimeException("meta-data tree for '" + clazz + "' not found, creating it");
         }
 
         /* TreeSet used for ordering */
@@ -633,7 +672,8 @@ public class ResourceManager {
                         Log.w("ResourceManager", "Fetch failed for some reason");
                     }
                 } else {
-                    Log.d("ResourceManager", "Cached item was up-to-createDate, fetch unnecessary");
+                    Log.d("ResourceManager", "Cached item " + id + " of type '" + type +
+                            "' was up-to-createDate, no fetch necessary");
                 }
 
                 /* check if we have some valid item (up-to-createDate or not) */
@@ -736,6 +776,75 @@ public class ResourceManager {
             throw new RuntimeException("during the getItems() for '" + type + "'", e);
         }
 
+        return result;
+    }
+
+    /**
+     * Get meta-data of a specific category from the server (preferably) or the cache.
+     *
+     * @param clazz the Class of the meta-data to be fetched. Must be specified within the
+     *              treeCaches Map.
+     * @return the requested meta-data. This does not necessarily have to be up-to-createDate. If
+     * the server cannot be reached in time, a cached version will be returned instead.
+     * @throws IllegalStateException if the ResourceManager has not been initialized correctly.
+     * @throws RuntimeException      if clazz is not a valid Class for this operation.
+     * @throws RuntimeException      if some weird Reflection error occured.
+     */
+    @SuppressWarnings("unchecked")
+    public AbstractMetaItem<?> getMetaItem(Class clazz, int id) {
+        abortIfNotInitialized();
+
+        /* get the corresponding meta-data tree */
+        String type = getResourceString(clazz);
+        TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(type);
+        if (tree == null) {
+            Log.w("ResourceManager", "meta-data tree for '" + clazz + "' not found, creating it");
+            tree = new TreeSet<>();
+        }
+
+        for (AbstractMetaItem<?> item : tree) {
+            Log.w("before", item.toString());
+        }
+
+        /* fetch the up-to-date meta-data item from the server */
+        AbstractMetaItem<?> result;
+        try {
+            result = fetchMetaItem(clazz, id);
+        } catch (NoConnectionException nce) {
+            result = null;
+        }
+
+        /* try to use a cached item instead */
+        if (result == null) {
+            Log.w("ResourceManager", "fetch from server failed, falling back to cache");
+
+            /* create a dummy item with the same id */
+            AbstractMetaItem<?> dummyItem;
+            try {
+                Constructor<?> cons = clazz.getConstructor(int.class);
+                dummyItem = (AbstractMetaItem<?>) cons.newInstance(id);
+            } catch (Exception e) {
+                throw new RuntimeException("dynamic constructor invocation failed", e);
+            }
+            result = tree.floor(dummyItem);
+
+            /* if the returned item does not fit, set it to null */
+            if (result == null || result.getId() != id || result.getEditDate() == null) {
+                result = null;
+            }
+        }
+
+        /* update cache */
+        if (result != null) {
+            result.setLastUsedDate();
+            tree.remove(result);
+            tree.add(result);
+
+            Log.d("ResourceManager", "Updating meta-data tree cache of type '" + type + "' with " + id);
+            metaTreeCache.put(type, tree);
+        }
+
+        /* return the result, which can still be null */
         return result;
     }
 

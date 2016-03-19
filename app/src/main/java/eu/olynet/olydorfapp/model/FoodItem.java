@@ -62,9 +62,9 @@ public class FoodItem extends FoodMetaItem {
     }
 
     public FoodItem(int id, Date createDate, Date editDate, boolean published, boolean deleted,
-                    String createUser, String editUser, OrganizationItem organization, String name,
-                    String englishname, float price, boolean vegetarian, byte[] image) {
-        super(id, createDate, editDate, published, deleted, createUser, editUser);
+                    String createUser, String editUser, Date date, OrganizationItem organization,
+                    String name, String englishname, float price, boolean vegetarian, byte[] image) {
+        super(id, createDate, editDate, published, deleted, createUser, editUser, date);
         this.organization = organization;
         this.name = name;
         this.englishname = englishname;
