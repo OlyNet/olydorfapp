@@ -33,16 +33,6 @@ public class UpdateTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... nope) {
         ResourceManager rm = ResourceManager.getInstance();
 
-        List<AbstractMetaItem<?>> organizations = rm.getItems(OrganizationMetaItem.class);
-        for (AbstractMetaItem<?> organization : organizations) {
-            Log.w("UpdateTask", organization.toString());
-        }
-
-        List<AbstractMetaItem<?>> items = rm.getItems(NewsMetaItem.class);
-        for (AbstractMetaItem<?> item : items) {
-            Log.w("UpdateTask", item.toString());
-        }
-
         // TODO: implement view refreshing here
 
         return null;

@@ -7,6 +7,7 @@ package eu.olynet.olydorfapp.model;
 
 import android.support.annotation.NonNull;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Comparator;
@@ -17,6 +18,10 @@ import java.util.Date;
  *
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
  */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
+        getterVisibility = JsonAutoDetect.Visibility.NONE,
+        setterVisibility = JsonAutoDetect.Visibility.NONE)
+@SuppressWarnings("unused")
 public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements Comparable<T> {
 
     @JsonProperty("id")
@@ -29,10 +34,10 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
     protected Date editDate;
 
     @JsonProperty("published")
-    protected boolean published;
+    protected boolean published = true;
 
     @JsonProperty("deleted")
-    protected boolean deleted;
+    protected boolean deleted = false;
 
     @JsonProperty("createUser")
     protected String createUser;
@@ -245,15 +250,15 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         public int compare(AbstractMetaItem lhs, AbstractMetaItem rhs) {
             if (lhs == null && rhs == null) {
                 return 0;
-            } else if (lhs == null && rhs != null) {
+            } else if (lhs == null) {
                 return -1;
-            } else if (lhs != null && rhs == null) {
+            } else if (rhs == null) {
                 return 1;
             } else if (lhs.lastUsedDate == null && rhs.lastUsedDate == null) {
                 return 0;
             } else if (lhs.lastUsedDate != null && rhs.lastUsedDate == null) {
                 return 1;
-            } else if (lhs.lastUsedDate == null && rhs.lastUsedDate != null) {
+            } else if (lhs.lastUsedDate == null) {
                 return -1;
             } else {
                 return lhs.lastUsedDate.compareTo(rhs.lastUsedDate);

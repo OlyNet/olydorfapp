@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -230,6 +231,8 @@ public class ResourceManager {
                 ResteasyClient client = new ResteasyClientBuilder()
                         .providerFactory(new ResteasyProviderFactory()
                                 .register(JacksonJsonProvider.class))
+                        .connectionPoolSize(4)
+                        .connectionTTL(5, TimeUnit.MINUTES)
                         .httpEngine(engine)
                         .build();
 
@@ -313,7 +316,7 @@ public class ResourceManager {
     }
 
     /**
-     * Tries to fetch a specific item from the server.
+     * Tries to fetch a specific item from the server. Defaults to 3 retries.
      *
      * @param clazz the Class of the item to be fetched. Must be specified within the treeCaches
      *              Map.
@@ -322,8 +325,23 @@ public class ResourceManager {
      * @throws RuntimeException      if clazz is not a valid Class for this operation.
      * @throws NoConnectionException if no internet connection is available.
      */
-    @SuppressWarnings("unchecked")
     private AbstractMetaItem<?> fetchItem(Class clazz, int id) throws NoConnectionException {
+        return fetchItem(clazz, id, 3);
+    }
+
+    /**
+     * Tries to fetch a specific item from the server.
+     *
+     * @param clazz      the Class of the item to be fetched. Must be specified within the treeCaches
+     *                   Map.
+     * @param id         the ID identifying the fetched item.
+     * @param retryCount how many times a fetch should be retried if it failed.
+     * @return the fetched item or <b>null</b> if this operation was not successful.
+     * @throws RuntimeException      if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException if no internet connection is available.
+     */
+    @SuppressWarnings("unchecked")
+    private AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount) throws NoConnectionException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -335,14 +353,19 @@ public class ResourceManager {
         Log.d("fetchItem", methodName);
 
         /* dynamically invoke the correct Method */
-        AbstractMetaItem<?> result;
-        try {
-            Class proxyClass = this.onc.getClass();
-            Method getResource = proxyClass.getMethod(methodName, int.class);
-            result = (AbstractMetaItem) getResource.invoke(this.onc, id);
-        } catch (Exception e) {
-            Log.w("ResourceManager", "Exception during fetch", e);
-            result = null;
+        AbstractMetaItem<?> result = null;
+        for (int i = 1; i <= retryCount; i++) {
+            try {
+                Class proxyClass = this.onc.getClass();
+                Method getResource = proxyClass.getMethod(methodName, int.class);
+                result = (AbstractMetaItem) getResource.invoke(this.onc, id);
+                if (result != null) {
+                    break;
+                }
+            } catch (Exception e) {
+                Log.w("ResourceManager", "Exception during fetch on try " + i, e);
+                result = null;
+            }
         }
 
         /* return the result that may still be null */
@@ -350,7 +373,7 @@ public class ResourceManager {
     }
 
     /**
-     * Tries to fetch all items of a specific type from the server.
+     * Tries to fetch all items of a specific type from the server. Defaults to 3 retries.
      *
      * @param clazz the Class of the items to be fetched. Must be specified within the treeCaches
      *              Map.
@@ -358,8 +381,23 @@ public class ResourceManager {
      * @throws RuntimeException      if clazz is not a valid Class for this operation.
      * @throws NoConnectionException if no internet connection is available.
      */
-    @SuppressWarnings("unchecked")
     private List<AbstractMetaItem<?>> fetchItems(Class clazz) throws NoConnectionException {
+        return fetchItems(clazz, 3);
+    }
+
+    /**
+     * Tries to fetch all items of a specific type from the server.
+     *
+     * @param clazz      the Class of the items to be fetched. Must be specified within the treeCaches
+     *                   Map.
+     * @param retryCount how many times a fetch should be retried if it failed.
+     * @return the fetched items or <b>null</b> if this operation was not successful.
+     * @throws RuntimeException      if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException if no internet connection is available.
+     */
+    @SuppressWarnings("unchecked")
+    private List<AbstractMetaItem<?>> fetchItems(Class clazz, int retryCount)
+            throws NoConnectionException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -371,14 +409,19 @@ public class ResourceManager {
         Log.d("fetchItem", methodName);
 
         /* dynamically invoke the correct Method */
-        List<AbstractMetaItem<?>> result;
-        try {
-            Class proxyClass = this.onc.getClass();
-            Method getResource = proxyClass.getMethod(methodName);
-            result = (List<AbstractMetaItem<?>>) getResource.invoke(this.onc);
-        } catch (Exception e) {
-            Log.w("ResourceManager", "Exception during fetch", e);
-            result = null;
+        List<AbstractMetaItem<?>> result = null;
+        for (int i = 1; i <= retryCount; i++) {
+            try {
+                Class proxyClass = this.onc.getClass();
+                Method getResource = proxyClass.getMethod(methodName);
+                result = (List<AbstractMetaItem<?>>) getResource.invoke(this.onc);
+                if (result != null) {
+                    break;
+                }
+            } catch (Exception e) {
+                Log.w("ResourceManager", "Exception during fetch on try " + i, e);
+                result = null;
+            }
         }
 
         /* return the result that may still be null */
@@ -387,7 +430,7 @@ public class ResourceManager {
 
     /**
      * Tries to fetch the up-to-createDate meta-data information for one specific item from the
-     * server.
+     * server. Defaults to 3 retries.
      *
      * @param clazz the Class of the meta-data to be fetched. Must be specified within the
      *              treeCaches Map.
@@ -398,6 +441,24 @@ public class ResourceManager {
      */
     @SuppressWarnings("unchecked")
     private AbstractMetaItem<?> fetchMetaItem(Class clazz, int id) throws NoConnectionException {
+        return fetchMetaItem(clazz, id, 3);
+    }
+
+    /**
+     * Tries to fetch the up-to-createDate meta-data information for one specific item from the
+     * server.
+     *
+     * @param clazz      the Class of the meta-data to be fetched. Must be specified within the
+     *                   treeCaches Map.
+     * @param id         the id of the item for which the meta-data is to be fetched.
+     * @param retryCount how many times a fetch should be retried if it failed.
+     * @return the meta-data item or <b>null</b> if this operation failed.
+     * @throws RuntimeException      if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException if no internet connection is available.
+     */
+    @SuppressWarnings("unchecked")
+    private AbstractMetaItem<?> fetchMetaItem(Class clazz, int id, int retryCount)
+            throws NoConnectionException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -409,14 +470,19 @@ public class ResourceManager {
         Log.d("fetchMetaItem", methodName);
 
         /* dynamically invoke the correct Method */
-        AbstractMetaItem<?> result;
-        try {
-            Class proxyClass = this.onc.getClass();
-            Method getMetaResource = proxyClass.getMethod(methodName, int.class);
-            result = (AbstractMetaItem<?>) getMetaResource.invoke(this.onc, id);
-        } catch (Exception e) {
-            Log.w("ResourceManager", "Exception during fetch", e);
-            result = null;
+        AbstractMetaItem<?> result = null;
+        for (int i = 1; i <= retryCount; i++) {
+            try {
+                Class proxyClass = this.onc.getClass();
+                Method getMetaResource = proxyClass.getMethod(methodName, int.class);
+                result = (AbstractMetaItem<?>) getMetaResource.invoke(this.onc, id);
+                if (result != null) {
+                    break;
+                }
+            } catch (Exception e) {
+                Log.w("ResourceManager", "Exception during fetch on try " + i, e);
+                result = null;
+            }
         }
 
         /* return the result that may still be null */
@@ -424,7 +490,8 @@ public class ResourceManager {
     }
 
     /**
-     * Tries to fetch the up-to-createDate meta-data information from the server.
+     * Tries to fetch the up-to-createDate meta-data information from the server. Defaults to 3
+     * retries.
      *
      * @param clazz the Class of the meta-data to be fetched. Must be specified within the
      *              treeCaches Map.
@@ -434,6 +501,22 @@ public class ResourceManager {
      */
     @SuppressWarnings("unchecked")
     private List<AbstractMetaItem<?>> fetchMetaItems(Class clazz) throws NoConnectionException {
+        return fetchMetaItems(clazz, 3);
+    }
+
+    /**
+     * Tries to fetch the up-to-createDate meta-data information from the server.
+     *
+     * @param clazz      the Class of the meta-data to be fetched. Must be specified within the
+     *                   treeCaches Map.
+     * @param retryCount how many times a fetch should be retried if it failed.
+     * @return the fetched List of meta-data items or <b>null</b> if this operation failed.
+     * @throws RuntimeException      if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException if no internet connection is available.
+     */
+    @SuppressWarnings("unchecked")
+    private List<AbstractMetaItem<?>> fetchMetaItems(Class clazz, int retryCount)
+            throws NoConnectionException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -444,15 +527,20 @@ public class ResourceManager {
         String methodName = "get" + "Meta" + type.substring(0, 1).toUpperCase() + type.substring(1);
         Log.d("fetchMetaItems", methodName);
 
+        List<AbstractMetaItem<?>> result = null;
+        for (int i = 1; i <= retryCount; i++) {
         /* dynamically invoke the correct Method */
-        List<AbstractMetaItem<?>> result;
-        try {
-            Class proxyClass = this.onc.getClass();
-            Method getMetaResources = proxyClass.getMethod(methodName);
-            result = (List<AbstractMetaItem<?>>) getMetaResources.invoke(this.onc);
-        } catch (Exception e) {
-            Log.w("ResourceManager", "Exception during fetch", e);
-            result = null;
+            try {
+                Class proxyClass = this.onc.getClass();
+                Method getMetaResources = proxyClass.getMethod(methodName);
+                result = (List<AbstractMetaItem<?>>) getMetaResources.invoke(this.onc);
+                if (result != null) {
+                    break;
+                }
+            } catch (Exception e) {
+                Log.w("ResourceManager", "Exception during fetch on try " + i, e);
+                result = null;
+            }
         }
 
         /* return the result that may still be null */
