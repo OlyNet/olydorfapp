@@ -13,8 +13,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import eu.olynet.olydorfapp.model.DailyMealItem;
+import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.FoodItem;
 import eu.olynet.olydorfapp.model.FoodMetaItem;
+import eu.olynet.olydorfapp.model.MealOfTheDayItem;
+import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
 import eu.olynet.olydorfapp.model.NewsItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationItem;
@@ -48,6 +52,23 @@ public interface OlyNetClient {
     @Path("/news")
     public List<NewsItem> getNews();
 
+    /* MealOfTheDay API */
+    @GET
+    @Path("/mealoftheday/meta/{id}")
+    public MealOfTheDayMetaItem getMetaMealoftheday(@PathParam("id") int id);
+
+    @GET
+    @Path("/mealoftheday/meta")
+    public List<MealOfTheDayMetaItem> getMetaMealoftheday();
+
+    @GET
+    @Path("/mealoftheday/{id}")
+    public MealOfTheDayItem getMealoftheday(@PathParam("id") int id);
+
+    @GET
+    @Path("/mealoftheday")
+    public List<MealOfTheDayItem> getMealoftheday();
+
     /* Food API */
     @GET
     @Path("/food/meta/{id}")
@@ -64,6 +85,23 @@ public interface OlyNetClient {
     @GET
     @Path("/food")
     public List<FoodItem> getFood();
+
+    /* DailyMeal API */
+    @GET
+    @Path("/dailymeal/meta/{id}")
+    public DailyMealMetaItem getMetaDailymeal(@PathParam("id") int id);
+
+    @GET
+    @Path("/dailymeal/meta")
+    public List<DailyMealMetaItem> getMetaDailymeal();
+
+    @GET
+    @Path("/dailymeal/{id}")
+    public DailyMealItem getDailymeal(@PathParam("id") int id);
+
+    @GET
+    @Path("/dailymeal")
+    public List<DailyMealItem> getDailymeal();
 
     /* Organization API */
     @GET

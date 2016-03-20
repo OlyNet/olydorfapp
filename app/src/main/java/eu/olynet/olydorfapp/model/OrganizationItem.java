@@ -55,11 +55,10 @@ public class OrganizationItem extends OrganizationMetaItem {
         this.logo = item.logo;
     }
 
-    public OrganizationItem(int id, Date createDate, Date editDate, boolean published,
-                            boolean deleted, String createUser, String editUser, Date date,
-                            String name, String shortname, String website, String description,
-                            byte[] logo) {
-        super(id, createDate, editDate, published, deleted, createUser, editUser, date);
+    public OrganizationItem(int id, Date createDate, Date editDate, String createUser,
+                            String editUser, Date date, String name, String shortname,
+                            String website, String description, byte[] logo) {
+        super(id, createDate, editDate, createUser, editUser, date);
         this.name = name;
         this.shortname = shortname;
         this.website = website;
@@ -115,7 +114,7 @@ public class OrganizationItem extends OrganizationMetaItem {
         result += "shortname = " + this.shortname + "\n";
         result += "website = " + this.website + "\n";
         result += "description = " + this.description + "\n";
-        result += "logo = " + ((logo != null) ? logo.length : 0) + " Byte";
+        result += "image = " + ((logo != null) ? logo.length : 0) + " Byte";
 
         return result;
     }

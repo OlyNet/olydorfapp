@@ -42,16 +42,14 @@ public class OrganizationMetaItem extends AbstractMetaItem<OrganizationMetaItem>
         super(item);
     }
 
-    public OrganizationMetaItem(int id, Date createDate, Date editDate, boolean published,
-                                boolean deleted, String createUser, String editUser, Date date) {
-        super(id, createDate, editDate, published, deleted, createUser, editUser, date);
+    public OrganizationMetaItem(int id, Date createDate, Date editDate, String createUser,
+                                String editUser, Date date) {
+        super(id, createDate, editDate, createUser, editUser, date);
     }
 
     @Override
     public String toString() {
-        String result = super.toString() + "";
-
-        return result;
+        return super.toString();
     }
 
     @Override

@@ -16,13 +16,13 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 
 import java.io.IOException;
 
-import eu.olynet.olydorfapp.model.OrganizationItem;
-import eu.olynet.olydorfapp.model.OrganizationMetaItem;
+import eu.olynet.olydorfapp.model.DailyMealItem;
+import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
  */
-public class OrganizationDeserializer extends JsonDeserializer<OrganizationItem> {
+public class DailyMealDeserializer extends JsonDeserializer<DailyMealItem> {
 
     /**
      * Method that can be called to ask implementation to deserialize
@@ -76,23 +76,23 @@ public class OrganizationDeserializer extends JsonDeserializer<OrganizationItem>
      * @return Deserialized value
      */
     @Override
-    public OrganizationItem deserialize(JsonParser jp, DeserializationContext ctxt)
+    public DailyMealItem deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {
         ResourceManager rm = ResourceManager.getInstance();
 
         JsonNode node = jp.getCodec().readTree(jp);
-        int id = (Integer) node.get("eu.olynet.dorfapp.server.data.model.Organization")
+        int id = (Integer) node.get("eu.olynet.dorfapp.server.data.model.DailyMeal")
                 .numberValue();
         if (id <= 0) {
-            throw new IOException("id=" + id + " does not refer to a valid OrganizationItem");
+            throw new IOException("id=" + id + " does not refer to a valid DailyMealItem");
         }
 
         /* assuming up-to-date meta-data */
-        OrganizationItem org = (OrganizationItem) rm.getItem(OrganizationMetaItem.class, id);
-        if (org == null) {
-            throw new JsonParseException(jp, "getting the OrganizationItem lead to a null value");
+        DailyMealItem dm = (DailyMealItem) rm.getItem(DailyMealMetaItem.class, id);
+        if (dm == null) {
+            throw new JsonParseException(jp, "getting the DailyMealItem lead to a null value");
         } else {
-            return org;
+            return dm;
         }
     }
 

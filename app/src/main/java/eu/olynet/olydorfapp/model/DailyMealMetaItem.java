@@ -1,8 +1,9 @@
-/**
- * Copyright (C) OlyNet e.V. 2016 - All Rights Reserved
+/*
+ * Copyright (c) OlyNet 2016 - All Rights Reserved
  * Unauthorized copying of this file, via any medium is strictly prohibited.
  * Proprietary and confidential
  */
+
 package eu.olynet.olydorfapp.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -15,46 +16,35 @@ import java.util.Date;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
         getterVisibility = JsonAutoDetect.Visibility.NONE,
         setterVisibility = JsonAutoDetect.Visibility.NONE)
-public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
+public class DailyMealMetaItem extends AbstractMetaItem<DailyMealMetaItem> {
 
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
      */
-    public FoodMetaItem() {
+    public DailyMealMetaItem() {
         super();
     }
 
-    public FoodMetaItem(Date lastUsed) {
+    public DailyMealMetaItem(Date lastUsed) {
         super(lastUsed);
     }
 
-    public FoodMetaItem(int id) {
+    public DailyMealMetaItem(int id) {
         super(id);
     }
 
     /**
      * Copy constructor. Performs a shallow copy.
      *
-     * @param item the FoodMetaItem to be copied.
+     * @param item the OrganizationMetaItem to be copied.
      */
-    public FoodMetaItem(FoodMetaItem item) {
+    public DailyMealMetaItem(DailyMealMetaItem item) {
         super(item);
     }
 
-    public FoodMetaItem(int id, Date createDate, Date editDate, String createUser, String editUser,
-                        Date date) {
+    public DailyMealMetaItem(int id, Date createDate, Date editDate, String createUser,
+                             String editUser, Date date) {
         super(id, createDate, editDate, createUser, editUser, date);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (!(obj instanceof FoodMetaItem))
-            return false;
-        FoodMetaItem item = (FoodMetaItem) obj;
-
-        return this.getId() == item.getId();
     }
 
     @Override
@@ -63,7 +53,18 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
     }
 
     @Override
-    public void updateItem(FoodMetaItem updatedItem) throws ItemMismatchException {
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (!(obj instanceof DailyMealMetaItem))
+            return false;
+        DailyMealMetaItem item = (DailyMealMetaItem) obj;
+
+        return this.getId() == item.getId();
+    }
+
+    @Override
+    public void updateItem(DailyMealMetaItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
     }
 }

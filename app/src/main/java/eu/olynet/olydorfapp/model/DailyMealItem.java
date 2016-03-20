@@ -1,11 +1,13 @@
-/**
- * Copyright (C) OlyNet e.V. 2016 - All Rights Reserved
+/*
+ * Copyright (c) OlyNet 2016 - All Rights Reserved
  * Unauthorized copying of this file, via any medium is strictly prohibited.
  * Proprietary and confidential
  */
+
 package eu.olynet.olydorfapp.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -21,21 +23,26 @@ import eu.olynet.olydorfapp.resources.OrganizationSerializer;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
         getterVisibility = JsonAutoDetect.Visibility.NONE,
         setterVisibility = JsonAutoDetect.Visibility.NONE)
-public class NewsItem extends NewsMetaItem {
+@JsonIgnoreProperties("mealsofthedays")
+public class DailyMealItem extends DailyMealMetaItem {
+
 
     @JsonProperty("organization")
     @JsonSerialize(using = OrganizationSerializer.class)
     @JsonDeserialize(using = OrganizationDeserializer.class)
     protected OrganizationItem organization = null;
 
-    @JsonProperty("title")
-    protected String title;
+    @JsonProperty("name")
+    protected String name;
 
-    @JsonProperty("link")
-    protected String link;
+    @JsonProperty("englishName")
+    protected String englishName;
 
-    @JsonProperty("text")
-    protected String text;
+    @JsonProperty("vegetarian")
+    protected boolean vegetarian;
+
+    @JsonProperty("price")
+    protected float price;
 
     @JsonProperty("image")
     protected byte[] image;
@@ -43,32 +50,34 @@ public class NewsItem extends NewsMetaItem {
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
      */
-    public NewsItem() {
+    public DailyMealItem() {
         super();
     }
 
     /**
      * Copy constructor. Performs a shallow copy.
      *
-     * @param item the NewsItem to be copied.
+     * @param item the OrganizationItem to be copied.
      */
-    public NewsItem(NewsItem item) {
+    public DailyMealItem(DailyMealItem item) {
         super(item);
         this.organization = item.organization;
-        this.title = item.title;
-        this.link = item.link;
-        this.text = item.text;
+        this.name = item.name;
+        this.englishName = item.englishName;
+        this.vegetarian = item.vegetarian;
+        this.price = item.price;
         this.image = item.image;
     }
 
-    public NewsItem(int id, Date createDate, Date editDate, String createUser, String editUser,
-                    Date date, OrganizationItem organization, String title, String link,
-                    String text, byte[] image) {
+    public DailyMealItem(int id, Date createDate, Date editDate, String createUser,
+                         String editUser, Date date, OrganizationItem organization, String name,
+                         String englishName, boolean vegetarian, float price, byte[] image) {
         super(id, createDate, editDate, createUser, editUser, date);
         this.organization = organization;
-        this.title = title;
-        this.link = link;
-        this.text = text;
+        this.name = name;
+        this.englishName = englishName;
+        this.vegetarian = vegetarian;
+        this.price = price;
         this.image = image;
     }
 
@@ -80,44 +89,53 @@ public class NewsItem extends NewsMetaItem {
         this.organization = organization;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getLink() {
-        return link;
+    public String getEnglishName() {
+        return englishName;
     }
 
-    public void setLink(String link) {
-        this.link = link;
+    public void setEnglishName(String englishName) {
+        this.englishName = englishName;
     }
 
-    public String getText() {
-        return text;
+    public boolean isVegetarian() {
+        return vegetarian;
     }
 
-    public void setText(String content) {
-        this.text = content;
+    public void setVegetarian(boolean vegetarian) {
+        this.vegetarian = vegetarian;
+    }
+
+    public float getPrice() {
+        return price;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
     }
 
     public byte[] getImage() {
-        return this.image;
+        return image;
     }
 
     public void setImage(byte[] image) {
         this.image = image;
     }
 
-    public void updateItem(NewsItem updatedItem) throws ItemMismatchException {
+    public void updateItem(DailyMealItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
         this.organization = updatedItem.organization;
-        this.title = updatedItem.title;
-        this.link = updatedItem.link;
-        this.text = updatedItem.text;
+        this.name = updatedItem.name;
+        this.englishName = updatedItem.englishName;
+        this.vegetarian = updatedItem.vegetarian;
+        this.price = updatedItem.price;
         this.image = updatedItem.image;
     }
 
@@ -125,9 +143,10 @@ public class NewsItem extends NewsMetaItem {
     public String toString() {
         String result = super.toString() + "\n";
         result += "organization = [[" + this.organization.toString() + "]]" + "\n";
-        result += "title = " + this.title + "\n";
-        result += "link = " + this.link + "\n";
-        result += "text = " + this.text + "\n";
+        result += "name = " + this.name + "\n";
+        result += "englishName = " + this.englishName + "\n";
+        result += "vegetarian = " + this.vegetarian + "\n";
+        result += "price = " + this.price + "\n";
         result += "image = " + ((image != null) ? image.length : 0) + " Byte";
 
         return result;

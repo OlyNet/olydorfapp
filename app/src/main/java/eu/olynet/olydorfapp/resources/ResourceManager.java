@@ -52,7 +52,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.FoodMetaItem;
+import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 
@@ -86,10 +88,13 @@ public class ResourceManager {
         Map<Class, String> initMap = new LinkedHashMap<>();
         initMap.put(NewsMetaItem.class, "news");
         initMap.put(FoodMetaItem.class, "food");
+        initMap.put(DailyMealMetaItem.class, "dailymeal");
         initMap.put(OrganizationMetaItem.class, "organization");
+        initMap.put(MealOfTheDayMetaItem.class, "mealoftheday");
 
         Set<Class> initSet = new LinkedHashSet<>();
         initSet.add(FoodMetaItem.class);
+        initSet.add(DailyMealMetaItem.class);
         initSet.add(OrganizationMetaItem.class);
 
         treeCaches = Collections.unmodifiableMap(initMap);
@@ -691,6 +696,7 @@ public class ResourceManager {
 
             return item;
         } catch (Exception e) {
+            Log.e("ResourceManager", "exception information in case it gets wrapped to often", e);
             throw new RuntimeException("during the getItem() for '" + type + "' with id: " + id, e);
         }
     }
@@ -783,6 +789,7 @@ public class ResourceManager {
                 }
             }
         } catch (Exception e) {
+            Log.e("ResourceManager", "exception information in case it gets wrapped to often", e);
             throw new RuntimeException("during the getItems() for '" + type + "' with ids: "
                     + Arrays.toString(ids.toArray()), e);
         }
@@ -862,6 +869,7 @@ public class ResourceManager {
                 }
             }
         } catch (Exception e) {
+            Log.e("ResourceManager", "exception information in case it gets wrapped to often", e);
             throw new RuntimeException("during the getItems() for '" + type + "'", e);
         }
 
@@ -913,6 +921,7 @@ public class ResourceManager {
                 Constructor<?> cons = clazz.getConstructor(int.class);
                 dummyItem = (AbstractMetaItem<?>) cons.newInstance(id);
             } catch (Exception e) {
+                Log.e("ResourceManager", "exception information in case it gets wrapped to often", e);
                 throw new RuntimeException("dynamic constructor invocation failed", e);
             }
             result = tree.floor(dummyItem);
@@ -1058,6 +1067,8 @@ public class ResourceManager {
                 }
                 result.add(item);
             }
+        } else {
+            result.addAll(preResult);
         }
 
         return result;

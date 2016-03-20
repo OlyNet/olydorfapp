@@ -33,12 +33,6 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
     @JsonProperty("editDate")
     protected Date editDate;
 
-    @JsonProperty("published")
-    protected boolean published = true;
-
-    @JsonProperty("deleted")
-    protected boolean deleted = false;
-
     @JsonProperty("createUser")
     protected String createUser;
 
@@ -57,6 +51,16 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         super();
     }
 
+    protected AbstractMetaItem(Date date, Void nope) {
+        this.id = -1;
+        this.createDate = null;
+        this.editDate = null;
+        this.lastUsedDate = null;
+        this.createUser = null;
+        this.editUser = null;
+        this.date = date;
+    }
+
     /**
      * Dummy-constructor for filtering by lastUsedDate
      *
@@ -67,8 +71,6 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.createDate = null;
         this.editDate = null;
         this.lastUsedDate = lastUsedDate;
-        this.published = false;
-        this.deleted = false;
         this.createUser = null;
         this.editUser = null;
         this.date = null;
@@ -84,8 +86,6 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.createDate = null;
         this.editDate = null;
         this.lastUsedDate = null;
-        this.published = false;
-        this.deleted = false;
         this.createUser = null;
         this.editUser = null;
         this.date = null;
@@ -101,21 +101,17 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.createDate = item.createDate;
         this.editDate = item.editDate;
         this.lastUsedDate = item.lastUsedDate;
-        this.published = item.published;
-        this.deleted = item.deleted;
         this.createUser = item.createUser;
         this.editUser = item.editUser;
         this.date = item.date;
     }
 
-    protected AbstractMetaItem(int id, Date createDate, Date editDate, boolean published,
-                               boolean deleted, String createUser, String editUser, Date date) {
+    protected AbstractMetaItem(int id, Date createDate, Date editDate, String createUser,
+                               String editUser, Date date) {
         this.id = id;
         this.createDate = createDate;
         this.editDate = editDate;
         this.lastUsedDate = new Date(); /* set lastUsedDate to now */
-        this.published = published;
-        this.deleted = deleted;
         this.createUser = createUser;
         this.editUser = editUser;
         this.date = date;
@@ -127,22 +123,6 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
 
     public int getId() {
         return id;
-    }
-
-    public boolean isPublished() {
-        return published;
-    }
-
-    public void setPublished(boolean published) {
-        this.published = published;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
     public String getCreateUser() {
@@ -202,8 +182,6 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
             this.createDate = updatedItem.createDate;
             this.editDate = updatedItem.editDate;
             this.lastUsedDate = new Date();
-            this.published = updatedItem.published;
-            this.deleted = updatedItem.deleted;
             this.createUser = updatedItem.createUser;
             this.editUser = updatedItem.editUser;
             this.date = updatedItem.date;
@@ -222,8 +200,6 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         result += "createDate = " + this.createDate + "\n";
         result += "editDate = " + this.editDate + "\n";
         result += "lastUsedDate = " + this.lastUsedDate + "\n";
-        result += "published = " + this.published + "\n";
-        result += "deleted = " + this.deleted + "\n";
         result += "createUser = " + this.createUser + "\n";
         result += "editUser = " + this.editUser + "\n";
         result += "date = " + this.date;

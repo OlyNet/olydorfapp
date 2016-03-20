@@ -41,9 +41,9 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
         super(item);
     }
 
-    public NewsMetaItem(int id, Date createDate, Date editDate, boolean published, boolean deleted,
-                        String createUser, String editUser, Date date) {
-        super(id, createDate, editDate, published, deleted, createUser, editUser, date);
+    public NewsMetaItem(int id, Date createDate, Date editDate, String createUser, String editUser,
+                        Date date) {
+        super(id, createDate, editDate, createUser, editUser, date);
     }
 
     @Override

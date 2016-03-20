@@ -88,7 +88,7 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
 
         /* Image */
         byte[] image = newsItem.getImage();
-        if (image == null || image.length <= 0) { /* fall back to Organization logo */
+        if (image == null || image.length <= 0) { /* fall back to Organization image */
             image = newsItem.getOrganization().getLogo();
         }
         if (image != null && image.length > 0) { /* finally set the image if one is available */

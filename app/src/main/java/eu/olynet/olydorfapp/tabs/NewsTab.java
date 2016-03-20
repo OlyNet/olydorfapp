@@ -45,7 +45,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.tab_news, container, false);
+        View view = inflater.inflate(R.layout.tab_news, container, false);
 
         /* initiate NewsDataAdapter */
         mAdapter = new NewsDataAdapter(getContext(), new ArrayList<AbstractMetaItem<?>>());
@@ -54,7 +54,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
         final LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
 
         /* initiate RecycleView */
-        RecyclerView mRecyclerView = (RecyclerView) v.findViewById(R.id.news_card_list);
+        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.news_card_list);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -72,10 +72,10 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
         });
 
         /* initiate SwipeRefreshLayout */
-        mRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.news_refresh_layout);
+        mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.news_refresh_layout);
         mRefreshLayout.setOnRefreshListener(this);
 
-        return v;
+        return view;
     }
 
     @Override
@@ -149,6 +149,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
         private final int limit;
 
         public NewsUpdateTask(Action action, int limit) {
+            super();
             this.action = action;
             this.limit = limit;
 

@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) OlyNet 2016 - All Rights Reserved
+  ~ Unauthorized copying of this file, via any medium is strictly prohibited.
+  ~ Proprietary and confidential
+  -->
+
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/news_card_view"
+    android:id="@+id/mealoftheday_card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
@@ -16,59 +22,74 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.makeramen.roundedimageview.RoundedImageView xmlns:rounded_image_view="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/newsCardImage"
+        <TextView
+            android:id="@+id/dailyMealHeadline"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center|left"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:adjustViewBounds="true"
+            android:text="Fraß des Tages (20. März)"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="#9e9e9e" />
+
+        <com.makeramen.roundedimageview.RoundedImageView xmlns:rounded_image_view="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/dailyMealImage"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/dailyMealHeadline"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:adjustViewBounds="true"
-            android:contentDescription="News image"
+            android:contentDescription="Food image"
             android:maxHeight="150dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_account_circle_white_64dp"
             rounded_image_view:riv_corner_radius_bottom_left="0dp"
             rounded_image_view:riv_corner_radius_bottom_right="0dp"
-            rounded_image_view:riv_corner_radius_top_left="4dp"
-            rounded_image_view:riv_corner_radius_top_right="4dp" />
+            rounded_image_view:riv_corner_radius_top_left="0dp"
+            rounded_image_view:riv_corner_radius_top_right="0dp" />
 
         <TextView
-            android:id="@+id/newsCardTitle"
+            android:id="@+id/dailyMealTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/newsCardImage"
+            android:layout_below="@+id/dailyMealImage"
             android:layout_gravity="center|left"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:adjustViewBounds="true"
-            android:text="Toller Titel"
+            android:text="Gnocci mit Gorgonzolasauce"
             android:textSize="20sp"
             android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/newsCardTitle"
-            android:layout_alignStart="@+id/newsCardTitle"
-            android:layout_below="@+id/newsCardTitle"
+            android:layout_alignLeft="@+id/dailyMealTitle"
+            android:layout_alignStart="@+id/dailyMealTitle"
+            android:layout_below="@+id/dailyMealTitle"
             android:weightSum="1.0">
 
             <TextView
-                android:id="@+id/newsCardDate"
+                android:id="@+id/dailyMealPrice"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.3"
-                android:text="01.01.1970"
+                android:layout_weight="0.5"
+                android:text="4,40 €"
                 android:textSize="16sp"
                 android:layout_gravity="bottom|right"
                 android:gravity="left|bottom" />
 
             <TextView
-                android:id="@+id/newsCardOrganization"
+                android:id="@+id/dailyMealCook"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.7"
-                android:text="Studenten im Olympiazentrum e.V. asdfsdf adfgha asdfgasdf gfhjk"
+                android:layout_weight="0.5"
+                android:text="Wilhelmine"
                 android:textSize="16sp"
                 android:layout_gravity="right"
                 android:gravity="bottom|right" />
