@@ -93,10 +93,14 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
         }
         if (image != null && image.length > 0) { /* finally set the image if one is available */
             Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-            DisplayMetrics dm = new DisplayMetrics();
-            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            windowManager.getDefaultDisplay().getMetrics(dm);
-            holder.vImage.setImageBitmap(imageBitmap);
+            if(imageBitmap == null) {
+                holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            } else {
+                DisplayMetrics dm = new DisplayMetrics();
+                WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+                windowManager.getDefaultDisplay().getMetrics(dm);
+                holder.vImage.setImageBitmap(imageBitmap);
+            }
         } else {
             holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
         }

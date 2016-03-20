@@ -101,10 +101,14 @@ public class DailyMealDataAdapter extends RecyclerView.Adapter<DailyMealDataAdap
         }
         if (image != null && image.length > 0) { /* finally set the image if one is available */
             Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-            DisplayMetrics dm = new DisplayMetrics();
-            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-            windowManager.getDefaultDisplay().getMetrics(dm);
-            holder.vImage.setImageBitmap(imageBitmap);
+            if(imageBitmap == null) {
+                holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            } else {
+                DisplayMetrics dm = new DisplayMetrics();
+                WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+                windowManager.getDefaultDisplay().getMetrics(dm);
+                holder.vImage.setImageBitmap(imageBitmap);
+            }
         } else {
             holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
         }
@@ -117,7 +121,7 @@ public class DailyMealDataAdapter extends RecyclerView.Adapter<DailyMealDataAdap
      */
     @Override
     public int getItemCount() {
-        return 1;
+        return item == null ? 0 : 1;
     }
 
     /**
