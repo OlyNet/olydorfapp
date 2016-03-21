@@ -50,7 +50,7 @@ public class DailyMealItem extends DailyMealMetaItem {
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
      */
-    public DailyMealItem() {
+    protected DailyMealItem() {
         super();
     }
 
@@ -70,9 +70,10 @@ public class DailyMealItem extends DailyMealMetaItem {
     }
 
     public DailyMealItem(int id, Date createDate, Date editDate, String createUser,
-                         String editUser, Date date, OrganizationItem organization, String name,
-                         String englishName, boolean vegetarian, float price, byte[] image) {
-        super(id, createDate, editDate, createUser, editUser, date);
+                         String editUser, Date date, Date lastUsedDate,
+                         OrganizationItem organization, String name, String englishName,
+                         boolean vegetarian, float price, byte[] image) {
+        super(id, createDate, editDate, createUser, editUser, date, lastUsedDate);
         this.organization = organization;
         this.name = name;
         this.englishName = englishName;

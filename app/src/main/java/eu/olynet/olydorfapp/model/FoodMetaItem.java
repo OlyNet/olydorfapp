@@ -20,16 +20,8 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
      */
-    public FoodMetaItem() {
+    protected FoodMetaItem() {
         super();
-    }
-
-    public FoodMetaItem(Date lastUsed) {
-        super(lastUsed);
-    }
-
-    public FoodMetaItem(int id) {
-        super(id);
     }
 
     /**
@@ -42,8 +34,8 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
     }
 
     public FoodMetaItem(int id, Date createDate, Date editDate, String createUser, String editUser,
-                        Date date) {
-        super(id, createDate, editDate, createUser, editUser, date);
+                        Date date, Date lastUsedDate) {
+        super(id, createDate, editDate, createUser, editUser, date, lastUsedDate);
     }
 
     @Override

@@ -21,20 +21,8 @@ public class MealOfTheDayMetaItem extends AbstractMetaItem<MealOfTheDayMetaItem>
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
      */
-    public MealOfTheDayMetaItem() {
+    protected MealOfTheDayMetaItem() {
         super();
-    }
-
-    public MealOfTheDayMetaItem(Date date, Void nope) {
-        super(date, nope);
-    }
-
-    public MealOfTheDayMetaItem(Date lastUsed) {
-        super(lastUsed);
-    }
-
-    public MealOfTheDayMetaItem(int id) {
-        super(id);
     }
 
     /**
@@ -47,8 +35,8 @@ public class MealOfTheDayMetaItem extends AbstractMetaItem<MealOfTheDayMetaItem>
     }
 
     public MealOfTheDayMetaItem(int id, Date createDate, Date editDate, String createUser,
-                                String editUser, Date date) {
-        super(id, createDate, editDate, createUser, editUser, date);
+                                String editUser, Date date, Date lastUsedDate) {
+        super(id, createDate, editDate, createUser, editUser, date, lastUsedDate);
     }
 
     @Override

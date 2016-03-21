@@ -337,8 +337,8 @@ public class ResourceManager {
     /**
      * Tries to fetch a specific item from the server.
      *
-     * @param clazz      the Class of the item to be fetched. Must be specified within the treeCaches
-     *                   Map.
+     * @param clazz      the Class of the item to be fetched. Must be specified within the
+     *                   treeCaches Map.
      * @param id         the ID identifying the fetched item.
      * @param retryCount how many times a fetch should be retried if it failed.
      * @return the fetched item or <b>null</b> if this operation was not successful.
@@ -346,7 +346,8 @@ public class ResourceManager {
      * @throws NoConnectionException if no internet connection is available.
      */
     @SuppressWarnings("unchecked")
-    private AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount) throws NoConnectionException {
+    private AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount)
+            throws NoConnectionException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -393,8 +394,8 @@ public class ResourceManager {
     /**
      * Tries to fetch all items of a specific type from the server.
      *
-     * @param clazz      the Class of the items to be fetched. Must be specified within the treeCaches
-     *                   Map.
+     * @param clazz      the Class of the items to be fetched. Must be specified within the
+     *                   treeCaches Map.
      * @param retryCount how many times a fetch should be retried if it failed.
      * @return the fetched items or <b>null</b> if this operation was not successful.
      * @throws RuntimeException      if clazz is not a valid Class for this operation.
@@ -568,7 +569,7 @@ public class ResourceManager {
         Date cutoff = calendar.getTime();
 
         TreeSet<AbstractMetaItem<?>> cachedTree;
-        Comparator<AbstractMetaItem> comparator = new AbstractMetaItem.LastUsedComparator();
+        Comparator<AbstractMetaItem<?>> comparator = new AbstractMetaItem.LastUsedComparator();
 
         /* iterate over all entries in the static treeCaches Map */
         for (Map.Entry<Class, String> entry : treeCaches.entrySet()) {
@@ -577,29 +578,30 @@ public class ResourceManager {
 
             /* skip certain types during the cleanup */
             if (skipDuringCleanup.contains(clazz)) {
-                Log.d("ResourceManager", "[cleanup] '" + type + "' skipped");
+                Log.d("ResourceManager", "cleanup of '" + type + "' skipped");
                 continue;
             }
 
-            Log.d("ResourceManager", "[cleanup] '" + type + "' started");
+            Log.d("ResourceManager", "cleanup of '" + type + "' started");
             try {
                 /* get the TreeSet from the cache */
                 cachedTree = metaTreeCache.get(type);
                 if (cachedTree == null) {
-                    Log.w("ResourceManager", "[cleanup] '" + type + "' failed, tree is null");
+                    Log.w("ResourceManager", "cleanup of '" + type + "' failed, tree is null");
                     continue;
                 }
 
                 /* get a copy of the tree that is sorted by lastUsedDate */
-                TreeSet<AbstractMetaItem> tree = new TreeSet<>(comparator);
+                TreeSet<AbstractMetaItem<?>> tree = new TreeSet<>(comparator);
                 tree.addAll(cachedTree);
 
-                /* dynamically get the dummy-constructor for the current type and create the filter */
-                Constructor<?> cons = clazz.getConstructor(Date.class);
-                AbstractMetaItem filterDummy = AbstractMetaItem.class.cast(cons.newInstance(cutoff));
+                /* create a dummy element with the specific lastUsedDate */
+                AbstractMetaItem<?> filterDummy = new AbstractMetaItem.DummyFactory(clazz)
+                        .setLastUsedDate(cutoff)
+                        .build();
 
                 /* get all items last used on or before the cutoff createDate */
-                Set<AbstractMetaItem> deleteSet = new HashSet<>(tree.headSet(
+                Set<AbstractMetaItem<?>> deleteSet = new HashSet<>(tree.headSet(
                         tree.floor(filterDummy), true));
 
                 /* delete all cached entries of the full objects */
@@ -615,7 +617,7 @@ public class ResourceManager {
             } catch (Exception e) {
                 throw new RuntimeException("cleanup of cached data failed for '" + type + "'", e);
             }
-            Log.d("ResourceManager", "[cleanup] '" + type + "' finished");
+            Log.d("ResourceManager", "cleanup of '" + type + "' finished");
         }
     }
 
@@ -633,6 +635,7 @@ public class ResourceManager {
      *                               whole tree itself is missing.
      * @throws RuntimeException      if some weird Reflection error occurs.
      */
+    @SuppressWarnings("unchecked")
     public AbstractMetaItem<?> getItem(Class<?> clazz, int id) {
         abortIfNotInitialized();
 
@@ -645,8 +648,9 @@ public class ResourceManager {
 
         try {
             /* create a dummy item with the same id */
-            Constructor<?> cons = clazz.getConstructor(int.class);
-            AbstractMetaItem<?> dummyItem = (AbstractMetaItem<?>) cons.newInstance(id);
+            AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz)
+                    .setId(id)
+                    .build();
 
             /* use the dummy item to search for the real item within the tree */
             AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
@@ -716,6 +720,7 @@ public class ResourceManager {
      *                               tree or the whole tree itself is missing.
      * @throws RuntimeException      if some weird Reflection error occurs.
      */
+    @SuppressWarnings("unchecked")
     public List<AbstractMetaItem<?>> getItems(Class<?> clazz, List<Integer> ids,
                                               Comparator<AbstractMetaItem<?>> comparator) {
         abortIfNotInitialized();
@@ -738,8 +743,9 @@ public class ResourceManager {
         try {
             for (int id : ids) {
                 /* create a dummy item with the same id */
-                Constructor<?> cons = clazz.getConstructor(int.class);
-                AbstractMetaItem<?> dummyItem = (AbstractMetaItem<?>) cons.newInstance(id);
+                AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz)
+                        .setId(id)
+                        .build();
 
                 /* use the dummy item to search for the real item within the tree */
                 AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
@@ -916,14 +922,10 @@ public class ResourceManager {
             Log.w("ResourceManager", "fetch from server failed, falling back to cache");
 
             /* create a dummy item with the same id */
-            AbstractMetaItem<?> dummyItem;
-            try {
-                Constructor<?> cons = clazz.getConstructor(int.class);
-                dummyItem = (AbstractMetaItem<?>) cons.newInstance(id);
-            } catch (Exception e) {
-                Log.e("ResourceManager", "exception information in case it gets wrapped to often", e);
-                throw new RuntimeException("dynamic constructor invocation failed", e);
-            }
+            AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz)
+                    .setId(id)
+                    .build();
+
             result = tree.floor(dummyItem);
 
             /* if the returned item does not fit, set it to null */
@@ -938,7 +940,7 @@ public class ResourceManager {
             tree.remove(result);
             tree.add(result);
 
-            Log.d("ResourceManager", "Updating meta-data tree cache of type '" + type + "' with " + id);
+            Log.d("ResourceManager", "Updating meta-data tree cache of type '" + type + "'");
             metaTreeCache.put(type, tree);
         }
 

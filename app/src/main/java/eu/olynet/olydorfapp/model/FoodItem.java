@@ -46,7 +46,7 @@ public class FoodItem extends FoodMetaItem {
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
      */
-    public FoodItem() {
+    protected FoodItem() {
         super();
     }
 
@@ -66,9 +66,9 @@ public class FoodItem extends FoodMetaItem {
     }
 
     public FoodItem(int id, Date createDate, Date editDate, String createUser, String editUser,
-                    Date date, OrganizationItem organization, String name, String englishname,
+                    Date date, Date lastUsedDate, OrganizationItem organization, String name, String englishname,
                     float price, boolean vegetarian, byte[] image) {
-        super(id, createDate, editDate, createUser, editUser, date);
+        super(id, createDate, editDate, createUser, editUser, date, lastUsedDate);
         this.organization = organization;
         this.name = name;
         this.englishname = englishname;

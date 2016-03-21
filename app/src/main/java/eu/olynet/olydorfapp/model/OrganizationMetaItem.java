@@ -21,16 +21,8 @@ public class OrganizationMetaItem extends AbstractMetaItem<OrganizationMetaItem>
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
      */
-    public OrganizationMetaItem() {
+    protected OrganizationMetaItem() {
         super();
-    }
-
-    public OrganizationMetaItem(Date lastUsed) {
-        super(lastUsed);
-    }
-
-    public OrganizationMetaItem(int id) {
-        super(id);
     }
 
     /**
@@ -43,8 +35,8 @@ public class OrganizationMetaItem extends AbstractMetaItem<OrganizationMetaItem>
     }
 
     public OrganizationMetaItem(int id, Date createDate, Date editDate, String createUser,
-                                String editUser, Date date) {
-        super(id, createDate, editDate, createUser, editUser, date);
+                                String editUser, Date date, Date lastUsedDate) {
+        super(id, createDate, editDate, createUser, editUser, date, lastUsedDate);
     }
 
     @Override

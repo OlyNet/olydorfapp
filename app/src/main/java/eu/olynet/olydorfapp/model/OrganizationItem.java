@@ -37,7 +37,7 @@ public class OrganizationItem extends OrganizationMetaItem {
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
      */
-    public OrganizationItem() {
+    protected OrganizationItem() {
         super();
     }
 
@@ -56,9 +56,9 @@ public class OrganizationItem extends OrganizationMetaItem {
     }
 
     public OrganizationItem(int id, Date createDate, Date editDate, String createUser,
-                            String editUser, Date date, String name, String shortname,
-                            String website, String description, byte[] logo) {
-        super(id, createDate, editDate, createUser, editUser, date);
+                            String editUser, Date date, Date lastUsedDate, String name,
+                            String shortname, String website, String description, byte[] logo) {
+        super(id, createDate, editDate, createUser, editUser, date, lastUsedDate);
         this.name = name;
         this.shortname = shortname;
         this.website = website;

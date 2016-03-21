@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.lang.reflect.Constructor;
 import java.util.Comparator;
 import java.util.Date;
 
@@ -47,48 +48,15 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
      */
-    public AbstractMetaItem() {
+    protected AbstractMetaItem() {
         super();
-    }
-
-    protected AbstractMetaItem(Date date, Void nope) {
         this.id = -1;
         this.createDate = null;
         this.editDate = null;
-        this.lastUsedDate = null;
-        this.createUser = null;
-        this.editUser = null;
-        this.date = date;
-    }
-
-    /**
-     * Dummy-constructor for filtering by lastUsedDate
-     *
-     * @param lastUsedDate the Date this item was last used.
-     */
-    protected AbstractMetaItem(Date lastUsedDate) {
-        this.id = -1;
-        this.createDate = null;
-        this.editDate = null;
-        this.lastUsedDate = lastUsedDate;
         this.createUser = null;
         this.editUser = null;
         this.date = null;
-    }
-
-    /**
-     * Dummy-constructor for filtering by ID.
-     *
-     * @param id the ID of the dummy item.
-     */
-    protected AbstractMetaItem(int id) {
-        this.id = id;
-        this.createDate = null;
-        this.editDate = null;
         this.lastUsedDate = null;
-        this.createUser = null;
-        this.editUser = null;
-        this.date = null;
     }
 
     /**
@@ -100,83 +68,148 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.id = item.id;
         this.createDate = item.createDate;
         this.editDate = item.editDate;
-        this.lastUsedDate = item.lastUsedDate;
         this.createUser = item.createUser;
         this.editUser = item.editUser;
         this.date = item.date;
+        this.lastUsedDate = item.lastUsedDate;
     }
 
+    /**
+     * Create a new AbstractMetaItem.
+     *
+     * @param id           the unique id of this item.
+     * @param createDate   the Date this item was created on.
+     * @param editDate     the Date this item was last modified on.
+     * @param createUser   the user that created the item.
+     * @param editUser     the user that last modified this item.
+     * @param date         the Date of this item (meaning depends on the subclass).
+     * @param lastUsedDate the Date this item was last used on.
+     */
     protected AbstractMetaItem(int id, Date createDate, Date editDate, String createUser,
-                               String editUser, Date date) {
+                               String editUser, Date date, Date lastUsedDate) {
         this.id = id;
         this.createDate = createDate;
         this.editDate = editDate;
-        this.lastUsedDate = new Date(); /* set lastUsedDate to now */
         this.createUser = createUser;
         this.editUser = editUser;
         this.date = date;
+        this.lastUsedDate = lastUsedDate;
     }
 
+    /**
+     * @param id the unique id of this item.
+     */
     private void setId(int id) {
         this.id = id;
     }
 
+    /**
+     * @return the unique id of this item.
+     */
     public int getId() {
         return id;
     }
 
-    public String getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(String createUser) {
-        this.createUser = createUser;
-    }
-
-    public String getEditUser() {
-        return editUser;
-    }
-
-    public void setEditUser(String editUser) {
-        this.editUser = editUser;
-    }
-
+    /**
+     * @return the Date this item was created on.
+     */
     public Date getCreateDate() {
         return createDate;
     }
 
+    /**
+     * @param createDate the Date this item was created on.
+     */
     public void setCreateDate(Date createDate) {
         this.createDate = createDate;
     }
 
+    /**
+     * @return the Date this item was last modified on.
+     */
     public Date getEditDate() {
         return editDate;
     }
 
+    /**
+     * @param editDate the Date this item was last modified on.
+     */
     public void setEditDate(Date editDate) {
         this.editDate = editDate;
     }
 
-    public Date getLastUsedDate() {
-        return lastUsedDate;
+    /**
+     * @return the user that created the item.
+     */
+    public String getCreateUser() {
+        return createUser;
     }
 
-    public void setLastUsedDate(Date lastUsedDate) {
-        this.lastUsedDate = lastUsedDate;
+    /**
+     * @param createUser the user that created the item.
+     */
+    public void setCreateUser(String createUser) {
+        this.createUser = createUser;
     }
 
-    public void setLastUsedDate() {
-        this.lastUsedDate = new Date();
+    /**
+     * @return the user that last modified this item.
+     */
+    public String getEditUser() {
+        return editUser;
     }
 
+    /**
+     * @param editUser the user that last modified this item.
+     */
+    public void setEditUser(String editUser) {
+        this.editUser = editUser;
+    }
+
+    /**
+     * @return the Date of this item (meaning depends on the subclass).
+     */
     public Date getDate() {
         return date;
     }
 
+    /**
+     * @param date the Date of this item (meaning depends on the subclass).
+     */
     public void setDate(Date date) {
         this.date = date;
     }
 
+    /**
+     * @return the Date this item was last used on.
+     */
+    public Date getLastUsedDate() {
+        return lastUsedDate;
+    }
+
+    /**
+     * @param lastUsedDate the Date this item was last used on.
+     */
+    public void setLastUsedDate(Date lastUsedDate) {
+        this.lastUsedDate = lastUsedDate;
+    }
+
+    /**
+     * Sets this item's lastUsedDate to now.
+     */
+    public void setLastUsedDate() {
+        this.lastUsedDate = new Date();
+    }
+
+    /**
+     * Updates this AbstractMetaItem with the contents of another one of the same type and same id.
+     * <p/>
+     * <b>IMPORTANT:</b> Every class that inherits from AbstractMetaItem MUST override this function
+     * and call the upper class one!
+     *
+     * @param updatedItem the AbstractMetaItem whose information is to be copied into this.
+     * @throws ItemMismatchException if the items do not match.
+     */
     public void updateItem(T updatedItem) throws ItemMismatchException {
         if (this.equals(updatedItem)) {
             this.createDate = updatedItem.createDate;
@@ -194,6 +227,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
     @Override
     public abstract boolean equals(Object obj);
 
+    @Override
     public String toString() {
         String result = super.toString() + "\n";
         result += "id = " + this.getId() + "\n";
@@ -221,9 +255,9 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
      * Comparator used to order items by their lastUsedDate createDate. Needed for periodic cache
      * cleanup.
      */
-    public static class LastUsedComparator implements Comparator<AbstractMetaItem> {
+    public static class LastUsedComparator implements Comparator<AbstractMetaItem<?>> {
         @Override
-        public int compare(AbstractMetaItem lhs, AbstractMetaItem rhs) {
+        public int compare(AbstractMetaItem<?> lhs, AbstractMetaItem<?> rhs) {
             if (lhs == null && rhs == null) {
                 return 0;
             } else if (lhs == null) {
@@ -261,6 +295,115 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         @Override
         public int compare(AbstractMetaItem<?> lhs, AbstractMetaItem<?> rhs) {
             return -lhs.getDate().compareTo(rhs.getDate());
+        }
+    }
+
+    /**
+     * A factory for creating dummy AbstractMetaItems for filtering purposes.
+     *
+     * @param <T> the specific type of item to be created. Must be a subtype of AbstractMetaItem.
+     */
+    public static class DummyFactory<T extends AbstractMetaItem<T>> {
+
+        private final Class<T> clazz;
+
+        private int id = -1;
+        private Date createDate = null;
+        private Date editDate = null;
+        private String createUser = null;
+        private String editUser = null;
+        private Date date = null;
+        private Date lastUsedDate = null;
+
+        /**
+         * Creates a factory for dummy AbstractMetaItems.
+         *
+         * @param clazz the Class of the AbstractMetaItem to be created.
+         */
+        public DummyFactory(Class<T> clazz) {
+            if (clazz == null) {
+                throw new NullPointerException("clazz cannot be null");
+            }
+            this.clazz = clazz;
+        }
+
+        /**
+         * Constructs the dummy item that was specified by this factory.
+         *
+         * @return the dummy item with the specified fields.
+         */
+        public T build() {
+            try {
+                Constructor<?> cons = clazz.getConstructor(int.class, Date.class, Date.class,
+                        String.class, String.class, Date.class, Date.class);
+                return clazz.cast(cons.newInstance(id, createDate, editDate, createUser, editUser,
+                        date, lastUsedDate));
+            } catch (Exception e) {
+                throw new RuntimeException("dynamic construction failed - " + this.clazz, e);
+            }
+        }
+
+        /**
+         * @param id the ID that the dummy item should have.
+         * @return this factory.
+         */
+        public DummyFactory<T> setId(int id) {
+            this.id = id;
+            return this;
+        }
+
+        /**
+         * @param createDate the createDate that the dummy item should have.
+         * @return this factory.
+         */
+        public DummyFactory<T> setCreateDate(Date createDate) {
+            this.createDate = createDate;
+            return this;
+        }
+
+        /**
+         * @param editDate the editDate that the dummy item should have.
+         * @return this factory.
+         */
+        public DummyFactory<T> setEditDate(Date editDate) {
+            this.editDate = editDate;
+            return this;
+        }
+
+        /**
+         * @param createUser the createUser that the dummy item should have.
+         * @return this factory.
+         */
+        public DummyFactory<T> setCreateUser(String createUser) {
+            this.createUser = createUser;
+            return this;
+        }
+
+        /**
+         * @param editUser the editUser that the dummy item should have.
+         * @return this factory.
+         */
+        public DummyFactory<T> setEditUser(String editUser) {
+            this.editUser = editUser;
+            return this;
+        }
+
+        /**
+         * @param date the date that the dummy item should have.
+         * @return this factory.
+         */
+        public DummyFactory<T> setDate(Date date) {
+            this.date = date;
+            return this;
+        }
+
+        /**
+         * @param lastUsedDate the lastUsedDate that the dummy item should have.
+         * @return this factory.
+         */
+        public DummyFactory<T> setLastUsedDate(Date lastUsedDate) {
+            this.lastUsedDate = lastUsedDate;
+            return this;
         }
     }
 }

@@ -43,7 +43,7 @@ public class NewsItem extends NewsMetaItem {
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
      */
-    public NewsItem() {
+    protected NewsItem() {
         super();
     }
 
@@ -62,9 +62,9 @@ public class NewsItem extends NewsMetaItem {
     }
 
     public NewsItem(int id, Date createDate, Date editDate, String createUser, String editUser,
-                    Date date, OrganizationItem organization, String title, String link,
-                    String text, byte[] image) {
-        super(id, createDate, editDate, createUser, editUser, date);
+                    Date date, Date lastUsedDate, OrganizationItem organization, String title,
+                    String link, String text, byte[] image) {
+        super(id, createDate, editDate, createUser, editUser, date, lastUsedDate);
         this.organization = organization;
         this.title = title;
         this.link = link;

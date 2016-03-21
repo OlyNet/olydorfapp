@@ -20,16 +20,8 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
      */
-    public NewsMetaItem() {
+    protected NewsMetaItem() {
         super();
-    }
-
-    public NewsMetaItem(Date lastUsed) {
-        super(lastUsed);
-    }
-
-    public NewsMetaItem(int id) {
-        super(id);
     }
 
     /**
@@ -42,8 +34,8 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
     }
 
     public NewsMetaItem(int id, Date createDate, Date editDate, String createUser, String editUser,
-                        Date date) {
-        super(id, createDate, editDate, createUser, editUser, date);
+                        Date date, Date lastUsedDate) {
+        super(id, createDate, editDate, createUser, editUser, date, lastUsedDate);
     }
 
     @Override

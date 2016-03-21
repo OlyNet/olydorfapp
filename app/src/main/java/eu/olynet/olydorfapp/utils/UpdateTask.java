@@ -38,21 +38,6 @@ public class UpdateTask extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... nope) {
         ResourceManager rm = ResourceManager.getInstance();
 
-        rm.getTreeOfMetaItems(OrganizationMetaItem.class);
-        rm.getTreeOfMetaItems(DailyMealMetaItem.class);
-        TreeSet<AbstractMetaItem<?>> metaTree = rm.getTreeOfMetaItems(MealOfTheDayMetaItem.class, 0,
-                null, new AbstractMetaItem.DateAscComparator());
-
-        MealOfTheDayMetaItem filterItem = new MealOfTheDayMetaItem(new Date(), null);
-        MealOfTheDayMetaItem metaItem = (MealOfTheDayMetaItem) metaTree.floor(filterItem);
-
-        if(metaItem != null) {
-            MealOfTheDayItem meal = (MealOfTheDayItem) rm.getItem(MealOfTheDayMetaItem.class,
-                    metaItem.getId());
-            Log.e("UpdateTask", meal != null ? meal.toString() : "null");
-        }
-
-
         // TODO: implement view refreshing here
 
         return null;

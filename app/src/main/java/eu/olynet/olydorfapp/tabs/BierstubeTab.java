@@ -13,7 +13,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -122,11 +121,15 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
             rm.getTreeOfMetaItems(OrganizationMetaItem.class);
             rm.getTreeOfMetaItems(DailyMealMetaItem.class);
 
-            /* querying the ResourceManager for the needed data and order it correctly */
-            TreeSet<AbstractMetaItem<?>> metaTree = rm.getTreeOfMetaItems(MealOfTheDayMetaItem.class, 0,
-                    null, new AbstractMetaItem.DateAscComparator());
+            /* querying the ResourceManager for the needed data */
+            TreeSet<AbstractMetaItem<?>> metaTree = rm.getTreeOfMetaItems(MealOfTheDayMetaItem.class,
+                    0, null, new AbstractMetaItem.DateAscComparator());
 
-            MealOfTheDayMetaItem filterItem = new MealOfTheDayMetaItem(new Date(), null);
+            /* filter out the correct meta item */
+            MealOfTheDayMetaItem filterItem = new AbstractMetaItem.DummyFactory<>(
+                    MealOfTheDayMetaItem.class)
+                    .setDate(new Date())
+                    .build();
             MealOfTheDayMetaItem metaItem = (MealOfTheDayMetaItem) metaTree.floor(filterItem);
 
             /* get the correct meal */
@@ -144,6 +147,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
         protected void onPostExecute(AbstractMetaItem<?> result) {
             super.onPostExecute(result);
 
+            /* update the Adapter */
             mAdapter.setItem((MealOfTheDayItem) result);
 
             /* perform the post-load actions */

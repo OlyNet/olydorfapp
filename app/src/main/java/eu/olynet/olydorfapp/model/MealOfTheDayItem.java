@@ -43,7 +43,7 @@ public class MealOfTheDayItem extends MealOfTheDayMetaItem {
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
      */
-    public MealOfTheDayItem() {
+    protected MealOfTheDayItem() {
         super();
     }
 
@@ -61,9 +61,9 @@ public class MealOfTheDayItem extends MealOfTheDayMetaItem {
     }
 
     public MealOfTheDayItem(int id, Date createDate, Date editDate, String createUser,
-                            String editUser, Date date, String cook, float price,
+                            String editUser, Date date, Date lastUsedDate, String cook, float price,
                             DailyMealItem dailyMeal, byte[] image) {
-        super(id, createDate, editDate, createUser, editUser, date);
+        super(id, createDate, editDate, createUser, editUser, date, lastUsedDate);
         this.cook = cook;
         this.price = price;
         this.dailyMeal = dailyMeal;
