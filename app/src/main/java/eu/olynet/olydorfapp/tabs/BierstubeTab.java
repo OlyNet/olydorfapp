@@ -66,18 +66,20 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        loadData();
+        loadData(false);
     }
 
     @Override
     public void onRefresh() {
-        loadData();
+        loadData(true);
     }
 
     /**
      * Call this function to load new data asynchronously.
+     *
+     * @param forceUpdate whether an update of the cached data should be forced.
      */
-    public void loadData() {
+    public void loadData(boolean forceUpdate) {
         /* disable swipe to refresh while already refreshing */
         mRefreshLayout.setEnabled(false);
 
@@ -92,7 +94,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
         }
 
         /* start the AsyncTask that fetches the data */
-        new BierstubeUpdateTask().execute();
+        new BierstubeUpdateTask(forceUpdate).execute();
     }
 
     /**
@@ -109,8 +111,11 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
 
     protected class BierstubeUpdateTask extends AsyncTask<Void, Void, AbstractMetaItem<?>> {
 
-        public BierstubeUpdateTask() {
+        private final boolean forceUpdate;
+
+        public BierstubeUpdateTask(boolean forceUpdate) {
             super();
+            this.forceUpdate = forceUpdate;
         }
 
         @Override
@@ -118,12 +123,12 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
             ResourceManager rm = ResourceManager.getInstance();
 
             /* update OrganizationMetaItem and DailyMealMetaItem trees */
-            rm.getTreeOfMetaItems(OrganizationMetaItem.class);
-            rm.getTreeOfMetaItems(DailyMealMetaItem.class);
+            rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);
+            rm.getTreeOfMetaItems(DailyMealMetaItem.class, forceUpdate);
 
             /* querying the ResourceManager for the needed data */
             TreeSet<AbstractMetaItem<?>> metaTree = rm.getTreeOfMetaItems(MealOfTheDayMetaItem.class,
-                    0, null, new AbstractMetaItem.DateAscComparator());
+                    0, null, new AbstractMetaItem.DateAscComparator(), forceUpdate);
 
             /* filter out the correct meta item */
             MealOfTheDayMetaItem filterItem = new AbstractMetaItem.DummyFactory<>(

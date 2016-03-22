@@ -66,7 +66,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
                 if (dy > 0 && !mRefreshLayout.isRefreshing() && !refreshing &&
                         mLayoutManager.findLastCompletelyVisibleItemPosition() ==
                                 mAdapter.getItemCount() - 2) {
-                    loadData(Action.ADD, DEFAULT_COUNT);
+                    loadData(Action.ADD, DEFAULT_COUNT, false);
                 }
             }
         });
@@ -82,21 +82,22 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        loadData(Action.REPLACE, DEFAULT_COUNT);
+        loadData(Action.REPLACE, DEFAULT_COUNT, false);
     }
 
     @Override
     public void onRefresh() {
-        loadData(Action.REPLACE, DEFAULT_COUNT);
+        loadData(Action.REPLACE, DEFAULT_COUNT, true);
     }
 
     /**
      * Call this function to load new data asynchronously.
      *
-     * @param action what action to perform.
-     * @param limit  how many new items to fetch at most.
+     * @param action      what action to perform.
+     * @param limit       how many new items to fetch at most.
+     * @param forceUpdate whether an update of the cached data should be forced.
      */
-    public void loadData(Action action, int limit) {
+    public void loadData(Action action, int limit, boolean forceUpdate) {
         /* set local refreshing variable */
         refreshing = true;
 
@@ -114,7 +115,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
         }
 
         /* start the AsyncTask that fetches the data */
-        new NewsUpdateTask(action, limit).execute();
+        new NewsUpdateTask(action, limit, forceUpdate).execute();
     }
 
     /**
@@ -147,11 +148,13 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
         private final Action action;
         private final AbstractMetaItem<?> lastItem;
         private final int limit;
+        private final boolean forceUpdate;
 
-        public NewsUpdateTask(Action action, int limit) {
+        public NewsUpdateTask(Action action, int limit, boolean forceUpdate) {
             super();
             this.action = action;
             this.limit = limit;
+            this.forceUpdate = forceUpdate;
 
             /* get the ID of the last item of this view */
             int size = mAdapter.getItemCount();
@@ -167,11 +170,12 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
             ResourceManager rm = ResourceManager.getInstance();
 
             /* update OrganizationMetaItem tree */
-            rm.getTreeOfMetaItems(OrganizationMetaItem.class);
+            rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);
 
             /* querying the ResourceManager for the needed data and order it correctly */
             TreeSet<AbstractMetaItem<?>> resultTree = rm.getTreeOfMetaItems(NewsMetaItem.class,
-                    this.limit, this.lastItem, new AbstractMetaItem.DateDescComparator());
+                    this.limit, this.lastItem, new AbstractMetaItem.DateDescComparator(),
+                    forceUpdate);
             if (resultTree == null || resultTree.isEmpty()) {
                 return new ArrayList<>();
             }

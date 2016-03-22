@@ -10,6 +10,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
@@ -37,6 +38,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -75,6 +77,7 @@ public class ResourceManager {
      * section below.
      *
      * @see eu.olynet.olydorfapp.resources.OlyNetClient
+     * @see eu.olynet.olydorfapp.model.AbstractMetaItemMixIn
      */
     private static final Map<Class, String> treeCaches;
 
@@ -121,12 +124,46 @@ public class ResourceManager {
      */
     private static ResourceManager ourInstance = new ResourceManager();
 
+    /**
+     * Whether this ResourceManager has been properly initiated.
+     */
     private boolean initialized;
+
+    /**
+     * The application Context.
+     */
     private Context context;
+
+    /**
+     * The instanced ResteasyClient. Do not use directly.
+     */
     private OlyNetClient onc;
 
+    /**
+     * The cache holding the meta-data trees. Do not use directly.
+     */
     private DualCache<TreeSet> metaTreeCache;
+
+    /**
+     * The cache holding the full items. Do not use directly.
+     */
     private DualCache<AbstractMetaItem> itemCache;
+
+    /**
+     * The cache holding the cacheLastUpdated Map while the app is not running.
+     */
+    private DualCache<Map> cacheStaleCache;
+
+    /**
+     * Contains the Dates the different metaTreeCaches have been last updated with information from
+     * the server.
+     */
+    private Map<String, Date> cacheLastUpdated;
+
+    /**
+     * The time in minutes after which a cache entry is considered stale.
+     */
+    private static final int MINUTES_UNTIL_CACHE_STALE = 60;
 
     /**
      * @return the instance of the ResourceManager Singleton.
@@ -140,12 +177,13 @@ public class ResourceManager {
      *
      * @param clazz the Class Object.
      * @return the identifying String.
-     * @throws RuntimeException if clazz is not a valid Class for this operation.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      */
     public static String getResourceString(Class clazz) {
         String type = treeCaches.get(clazz);
         if (type == null || type.equals("")) {
-            throw new RuntimeException("Class '" + clazz + "' is not a valid request Object");
+            throw new IllegalArgumentException("Class '" + clazz
+                    + "' is not a valid request Object");
         }
 
         return type;
@@ -164,6 +202,7 @@ public class ResourceManager {
      *
      * @param context the application Context.
      */
+    @SuppressWarnings("unchecked")
     public void init(Context context) {
         if (!initialized) {
             this.context = context.getApplicationContext();
@@ -190,7 +229,23 @@ public class ResourceManager {
             itemCache = new DualCacheBuilder<>("Items", pInfo.versionCode, AbstractMetaItem.class)
                     .useCustomSerializerInRam(5 * 1024 * 1024, itemSerializer)
                     .useCustomSerializerInDisk(200 * 1024 * 1024, true, itemSerializer);
+            cacheStaleCache =
+                    new DualCacheBuilder<>("Stale", pInfo.versionCode, Map.class)
+                            .useDefaultSerializerInRam(5 * 1024 * 1024)
+                            .useDefaultSerializerInDisk(5 * 1024 * 1024, true);
             Log.d("ResourceManager.init", "DualCache setup complete.");
+
+            /* get the lastUpdateCache from cache */
+            cacheLastUpdated = cacheStaleCache.get("stale");
+            if (cacheLastUpdated == null) {
+                Log.w("ResourceManager.init", "cacheStaleCache was null");
+                cacheLastUpdated = new HashMap<>();
+            }
+
+            /* debug the lastUpdateCache status */
+            for (Map.Entry<String, Date> entry : cacheLastUpdated.entrySet()) {
+                Log.d("ResourceManager.init", entry.getKey() + " - " + entry.getValue());
+            }
 
             /*
              * setup ResteasyClient
@@ -312,12 +367,91 @@ public class ResourceManager {
     }
 
     /**
-     * @param type the String identifying a meta-data TreeSet in the cache.
+     * @param clazz the Class of the MetaItem.
      * @return the meta-data TreeSet (can be <b>null</b>)
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      */
     @SuppressWarnings("unchecked")
-    private TreeSet<AbstractMetaItem<?>> getCachedMetaDataTree(String type) {
-        return metaTreeCache.get(type);
+    private TreeSet<AbstractMetaItem<?>> getCachedMetaDataTree(Class<?> clazz) {
+        return metaTreeCache.get(getResourceString(clazz));
+    }
+
+    /**
+     * Sets the cache entry for a specific MetaItem TreeSet.
+     *
+     * @param clazz the Class of the MetaItem.
+     * @param tree  the TreeSet to write to cache. Setting this to <b>null</b> deletes the entry.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     */
+    private void putCachedMetaDataTree(Class<?> clazz, @Nullable TreeSet<AbstractMetaItem<?>> tree) {
+        metaTreeCache.put(getResourceString(clazz), tree);
+    }
+
+    /**
+     * Sets the corresponding cacheLastUpdated Date to now.
+     *
+     * @param clazz the Class of the MetaItem.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     */
+    private void setCacheLastUpdated(Class<?> clazz) {
+        cacheLastUpdated.put(getResourceString(clazz), new Date());
+        cacheStaleCache.put("stale", cacheLastUpdated);
+    }
+
+    /**
+     * Check whether a meta-data TreeSet's cache entry is stale.
+     *
+     * @param clazz the Class of the MetaItem.
+     * @return <b>true</b> if it is stale, <b>false</b> otherwise.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     */
+    private boolean isCacheStale(Class<?> clazz) {
+        Date cacheUpdateDate = cacheLastUpdated.get(getResourceString(clazz));
+        if (cacheUpdateDate == null) {
+            Log.w("ResourceManager", "cacheUpdateDate = null");
+            return true;
+        }
+
+        /* get the latest possible Date where the cache is still considered not to be stale */
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MINUTE, -MINUTES_UNTIL_CACHE_STALE);
+        Date staleDate = calendar.getTime();
+
+        return staleDate.after(cacheUpdateDate);
+    }
+
+    /**
+     * Returns a specific item from the cache.
+     *
+     * @param clazz the Class of the associated MetaItem
+     * @param id    the ID identifying the item.
+     * @return the requested item. Can be <b>null</b> if it is not present in the cache.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     */
+    private AbstractMetaItem<?> getCachedItem(Class<?> clazz, int id) {
+        return this.itemCache.get(getResourceString(clazz) + "_" + id);
+    }
+
+    /**
+     * Updates the cache entry for a specific item.
+     *
+     * @param clazz the Class of the associated MetaItem
+     * @param item  the item to put in the cache. Must not be <b>null</b>.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     */
+    private void putCachedItem(Class<?> clazz, @NonNull AbstractMetaItem<?> item) {
+        this.itemCache.put(getResourceString(clazz) + "_" + item.getId(), item);
+    }
+
+    /**
+     * Deletes a cache entry for a specific item.
+     *
+     * @param clazz the Class of the associated MetaItem
+     * @param id    the unique ID identifying the item.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     */
+    private void deleteCachedItem(Class<?> clazz, int id) {
+        this.itemCache.put(getResourceString(clazz) + "_" + id, null);
     }
 
     /**
@@ -327,8 +461,8 @@ public class ResourceManager {
      *              Map.
      * @param id    the ID identifying the fetched item.
      * @return the fetched item or <b>null</b> if this operation was not successful.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
-     * @throws NoConnectionException if no internet connection is available.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
      */
     private AbstractMetaItem<?> fetchItem(Class clazz, int id) throws NoConnectionException {
         return fetchItem(clazz, id, 3);
@@ -342,8 +476,8 @@ public class ResourceManager {
      * @param id         the ID identifying the fetched item.
      * @param retryCount how many times a fetch should be retried if it failed.
      * @return the fetched item or <b>null</b> if this operation was not successful.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
-     * @throws NoConnectionException if no internet connection is available.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
      */
     @SuppressWarnings("unchecked")
     private AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount)
@@ -384,8 +518,8 @@ public class ResourceManager {
      * @param clazz the Class of the items to be fetched. Must be specified within the treeCaches
      *              Map.
      * @return the fetched items or <b>null</b> if this operation was not successful.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
-     * @throws NoConnectionException if no internet connection is available.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
      */
     private List<AbstractMetaItem<?>> fetchItems(Class clazz) throws NoConnectionException {
         return fetchItems(clazz, 3);
@@ -398,8 +532,8 @@ public class ResourceManager {
      *                   treeCaches Map.
      * @param retryCount how many times a fetch should be retried if it failed.
      * @return the fetched items or <b>null</b> if this operation was not successful.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
-     * @throws NoConnectionException if no internet connection is available.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
      */
     @SuppressWarnings("unchecked")
     private List<AbstractMetaItem<?>> fetchItems(Class clazz, int retryCount)
@@ -442,8 +576,8 @@ public class ResourceManager {
      *              treeCaches Map.
      * @param id    the id of the item for which the meta-data is to be fetched.
      * @return the meta-data item or <b>null</b> if this operation failed.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
-     * @throws NoConnectionException if no internet connection is available.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
      */
     @SuppressWarnings("unchecked")
     private AbstractMetaItem<?> fetchMetaItem(Class clazz, int id) throws NoConnectionException {
@@ -459,8 +593,8 @@ public class ResourceManager {
      * @param id         the id of the item for which the meta-data is to be fetched.
      * @param retryCount how many times a fetch should be retried if it failed.
      * @return the meta-data item or <b>null</b> if this operation failed.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
-     * @throws NoConnectionException if no internet connection is available.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
      */
     @SuppressWarnings("unchecked")
     private AbstractMetaItem<?> fetchMetaItem(Class clazz, int id, int retryCount)
@@ -502,8 +636,8 @@ public class ResourceManager {
      * @param clazz the Class of the meta-data to be fetched. Must be specified within the
      *              treeCaches Map.
      * @return the fetched List of meta-data items or <b>null</b> if this operation failed.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
-     * @throws NoConnectionException if no internet connection is available.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
      */
     @SuppressWarnings("unchecked")
     private List<AbstractMetaItem<?>> fetchMetaItems(Class clazz) throws NoConnectionException {
@@ -517,8 +651,8 @@ public class ResourceManager {
      *                   treeCaches Map.
      * @param retryCount how many times a fetch should be retried if it failed.
      * @return the fetched List of meta-data items or <b>null</b> if this operation failed.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
-     * @throws NoConnectionException if no internet connection is available.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
      */
     @SuppressWarnings("unchecked")
     private List<AbstractMetaItem<?>> fetchMetaItems(Class clazz, int retryCount)
@@ -573,21 +707,20 @@ public class ResourceManager {
 
         /* iterate over all entries in the static treeCaches Map */
         for (Map.Entry<Class, String> entry : treeCaches.entrySet()) {
-            String type = entry.getValue();
             Class<?> clazz = entry.getKey();
 
             /* skip certain types during the cleanup */
             if (skipDuringCleanup.contains(clazz)) {
-                Log.d("ResourceManager", "cleanup of '" + type + "' skipped");
+                Log.d("ResourceManager", "cleanup of '" + clazz + "' skipped");
                 continue;
             }
 
-            Log.d("ResourceManager", "cleanup of '" + type + "' started");
+            Log.d("ResourceManager", "cleanup of '" + clazz + "' started");
             try {
                 /* get the TreeSet from the cache */
-                cachedTree = metaTreeCache.get(type);
+                cachedTree = getCachedMetaDataTree(clazz);
                 if (cachedTree == null) {
-                    Log.w("ResourceManager", "cleanup of '" + type + "' failed, tree is null");
+                    Log.w("ResourceManager", "cleanup of '" + clazz + "' failed, tree is null");
                     continue;
                 }
 
@@ -606,18 +739,18 @@ public class ResourceManager {
 
                 /* delete all cached entries of the full objects */
                 for (AbstractMetaItem metaItem : deleteSet) {
-                    itemCache.put(type + "_" + metaItem.getId(), null);
+                    deleteCachedItem(clazz, metaItem.getId());
                 }
 
                 /* remove all references to deleted items from the meta-tree */
                 tree.removeAll(deleteSet);
 
                 /* write the pruned tree back to cache */
-                metaTreeCache.put(type, tree);
+                putCachedMetaDataTree(clazz, tree);
             } catch (Exception e) {
-                throw new RuntimeException("cleanup of cached data failed for '" + type + "'", e);
+                throw new RuntimeException("cleanup of cached data failed for '" + clazz + "'", e);
             }
-            Log.d("ResourceManager", "cleanup of '" + type + "' finished");
+            Log.d("ResourceManager", "cleanup of '" + clazz + "' finished");
         }
     }
 
@@ -629,19 +762,18 @@ public class ResourceManager {
      * @param id    the ID identifying the fetched item.
      * @return the requested item. This does not necessarily have to be up-to-createDate. If the
      * server cannot be reached in time, a cached version will be returned instead.
-     * @throws IllegalStateException if the ResourceManager has not been initialized correctly.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
-     * @throws RuntimeException      if the ID requested is not present in the meta-data tree or the
-     *                               whole tree itself is missing.
-     * @throws RuntimeException      if some weird Reflection error occurs.
+     * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws RuntimeException         if the ID requested is not present in the meta-data tree or the
+     *                                  whole tree itself is missing.
+     * @throws RuntimeException         if some weird Reflection error occurs.
      */
     @SuppressWarnings("unchecked")
     public AbstractMetaItem<?> getItem(Class<?> clazz, int id) {
         abortIfNotInitialized();
 
         /* get the corresponding meta-data tree */
-        String type = getResourceString(clazz);
-        TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(type);
+        TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(clazz);
         if (tree == null) {
             throw new RuntimeException("meta-data tree for '" + clazz + "' not found");
         }
@@ -655,13 +787,12 @@ public class ResourceManager {
             /* use the dummy item to search for the real item within the tree */
             AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
             if (metaItem == null || metaItem.getId() != id || metaItem.getEditDate() == null) {
-                throw new RuntimeException("meta-data tree of type '" + type
+                throw new RuntimeException("meta-data tree of type '" + clazz
                         + "' does not contain the requested element " + id);
             }
 
             /* check cache and query server on miss or createDate mismatch */
-            String resIdentifier = treeCaches.get(clazz) + "_" + id;
-            AbstractMetaItem<?> item = (AbstractMetaItem<?>) itemCache.get(resIdentifier);
+            AbstractMetaItem<?> item = getCachedItem(clazz, id);
             if (item == null || !item.getEditDate().equals(metaItem.getEditDate())) {
                 Log.i("ResourceManager", "Cached item is outdated, fetch necessary");
                 AbstractMetaItem<?> webItem;
@@ -678,7 +809,7 @@ public class ResourceManager {
                     Log.w("ResourceManager", "Fetch failed for some reason");
                 }
             } else {
-                Log.d("ResourceManager", "Cached item " + id + " of type '" + type +
+                Log.d("ResourceManager", "Cached item " + id + " of type '" + clazz +
                         "' was up-to-createDate, no fetch necessary");
             }
 
@@ -692,16 +823,16 @@ public class ResourceManager {
                 updateItem.invoke(clazz.cast(metaItem), clazz.cast(item));
 
                 /* write cache */
-                Log.d("ResourceManager", "Updating cache for item '" + resIdentifier
-                        + "' and meta-data tree '" + type + "'");
-                itemCache.put(resIdentifier, item);
-                metaTreeCache.put(type, tree);
+                Log.d("ResourceManager", "Updating cache for item with id " + id
+                        + " and meta-data tree '" + clazz + "'");
+                putCachedItem(clazz, item);
+                putCachedMetaDataTree(clazz, tree);
             }
 
             return item;
         } catch (Exception e) {
             Log.e("ResourceManager", "exception information in case it gets wrapped to often", e);
-            throw new RuntimeException("during the getItem() for '" + type + "' with id: " + id, e);
+            throw new RuntimeException("during the getItem() for '" + clazz + "' with id " + id, e);
         }
     }
 
@@ -714,11 +845,11 @@ public class ResourceManager {
      * @param comparator The comparator specifying the ordering of the items. If it is <b>null</b>,
      *                   items will be sorted using their inherent order.
      * @return a List of the requested Items with the specified ordering.
-     * @throws IllegalStateException if the ResourceManager has not been initialized correctly.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
-     * @throws RuntimeException      if one of the IDs requested is not present in the meta-data
-     *                               tree or the whole tree itself is missing.
-     * @throws RuntimeException      if some weird Reflection error occurs.
+     * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws RuntimeException         if one of the IDs requested is not present in the meta-data
+     *                                  tree or the whole tree itself is missing.
+     * @throws RuntimeException         if some weird Reflection error occurs.
      */
     @SuppressWarnings("unchecked")
     public List<AbstractMetaItem<?>> getItems(Class<?> clazz, List<Integer> ids,
@@ -726,8 +857,7 @@ public class ResourceManager {
         abortIfNotInitialized();
 
         /* get the corresponding meta-data tree */
-        String type = getResourceString(clazz);
-        TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(type);
+        TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(clazz);
         if (tree == null) {
             throw new RuntimeException("meta-data tree for '" + clazz + "' not found, creating it");
         }
@@ -750,13 +880,12 @@ public class ResourceManager {
                 /* use the dummy item to search for the real item within the tree */
                 AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
                 if (metaItem == null || metaItem.getId() != id || metaItem.getEditDate() == null) {
-                    throw new RuntimeException("meta-data tree of type '" + type
+                    throw new RuntimeException("meta-data tree of type '" + clazz
                             + "' does not contain the requested element " + id);
                 }
 
-                /* check cache and query server on miss or createDate mismatch */
-                String resIdentifier = treeCaches.get(clazz) + "_" + id;
-                AbstractMetaItem<?> item = (AbstractMetaItem<?>) itemCache.get(resIdentifier);
+                /* check cache and query server on miss or editDate mismatch */
+                AbstractMetaItem<?> item = getCachedItem(clazz, id);
                 if (item == null || !item.getEditDate().equals(metaItem.getEditDate())) {
                     Log.i("ResourceManager", "Cached item is outdated, fetch necessary");
                     AbstractMetaItem<?> webItem;
@@ -773,7 +902,7 @@ public class ResourceManager {
                         Log.w("ResourceManager", "Fetch failed for some reason");
                     }
                 } else {
-                    Log.d("ResourceManager", "Cached item " + id + " of type '" + type +
+                    Log.d("ResourceManager", "Cached item " + id + " of type '" + clazz +
                             "' was up-to-createDate, no fetch necessary");
                 }
 
@@ -787,8 +916,8 @@ public class ResourceManager {
                     updateItem.invoke(clazz.cast(metaItem), clazz.cast(item));
 
                     /* write updated item to cache */
-                    Log.d("ResourceManager", "Updating cache for item '" + resIdentifier + "'");
-                    itemCache.put(resIdentifier, item);
+                    Log.d("ResourceManager", "Updating cache for item " + id + " of type " + clazz);
+                    putCachedItem(clazz, item);
 
                     /* add item to the Collection of items to be returned */
                     itemTree.add(item);
@@ -796,12 +925,12 @@ public class ResourceManager {
             }
         } catch (Exception e) {
             Log.e("ResourceManager", "exception information in case it gets wrapped to often", e);
-            throw new RuntimeException("during the getItems() for '" + type + "' with ids: "
+            throw new RuntimeException("during the getItems() for '" + clazz + "' with ids: "
                     + Arrays.toString(ids.toArray()), e);
         }
 
-        Log.d("ResourceManager", "Updating meta-data tree cache of type '" + type + "'");
-        metaTreeCache.put(type, tree);
+        Log.d("ResourceManager", "Updating meta-data tree cache of type '" + clazz + "'");
+        putCachedMetaDataTree(clazz, tree);
 
         /* convert and return result */
         return new ArrayList<>(itemTree);
@@ -816,16 +945,15 @@ public class ResourceManager {
      * @param clazz the Class of the item to be fetched. Must be specified within the treeCaches
      *              Map.
      * @return a List of the requested Items.
-     * @throws IllegalStateException if the ResourceManager has not been initialized correctly.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
-     * @throws RuntimeException      if some weird Reflection error occurs.
+     * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws RuntimeException         if some weird Reflection error occurs.
      */
     public List<AbstractMetaItem<?>> getItems(Class<?> clazz) {
         abortIfNotInitialized();
 
         /* get the corresponding meta-data tree */
-        String type = getResourceString(clazz);
-        TreeSet<AbstractMetaItem<?>> cachedTree = getCachedMetaDataTree(type);
+        TreeSet<AbstractMetaItem<?>> cachedTree = getCachedMetaDataTree(clazz);
         TreeSet<AbstractMetaItem<?>> tree = new TreeSet<>();
 
         List<AbstractMetaItem<?>> result;
@@ -837,29 +965,30 @@ public class ResourceManager {
 
             /* dynamically create a MetaItem for each Item and add it to the new tree */
             for (AbstractMetaItem<?> item : result) {
-                String resIdentifier = type + "_" + item.getId();
                 Constructor<?> cons = clazz.getConstructor(clazz);
                 AbstractMetaItem<?> metaItem = (AbstractMetaItem<?>) cons.newInstance(item);
                 tree.add(metaItem);
 
                 /* write item to cache */
-                Log.d("ResourceManager", "Updating cache for item '" + resIdentifier + "'");
-                itemCache.put(resIdentifier, item);
+                Log.d("ResourceManager", "Updating cache for item " + item.getId() + " of type "
+                        + clazz);
+                putCachedItem(clazz, item);
             }
 
             /* delete any items that no longer exist */
             if (cachedTree != null) {
                 cachedTree.removeAll(tree);
                 for (AbstractMetaItem<?> metaItem : cachedTree) {
-                    String resIdentifier = type + "_" + metaItem.getId();
-                    Log.d("ResourceManager", "Deleting cached item '" + resIdentifier + "'");
-                    itemCache.put(resIdentifier, null);
+                    Log.d("ResourceManager", "Deleting cached item " + metaItem.getId()
+                            + " of type " + clazz);
+                    deleteCachedItem(clazz, metaItem.getId());
                 }
             }
 
             /* write new meta-data tree to cache */
-            Log.d("ResourceManager", "Updating meta-data tree cache of type '" + type + "'");
-            metaTreeCache.put(type, tree);
+            Log.d("ResourceManager", "Updating meta-data tree cache of type '" + clazz + "'");
+            putCachedMetaDataTree(clazz, tree);
+            setCacheLastUpdated(clazz);
         } catch (NoConnectionException e) {
             if (cachedTree == null) {
                 result = null;
@@ -867,8 +996,7 @@ public class ResourceManager {
                 /* return List of cached items */
                 result = new ArrayList<>();
                 for (AbstractMetaItem<?> metaItem : cachedTree) {
-                    String resIdentifier = type + "_" + metaItem.getId();
-                    AbstractMetaItem<?> item = itemCache.get(resIdentifier);
+                    AbstractMetaItem<?> item = getCachedItem(clazz, metaItem.getId());
                     if (item != null) {
                         result.add(item);
                     }
@@ -876,7 +1004,7 @@ public class ResourceManager {
             }
         } catch (Exception e) {
             Log.e("ResourceManager", "exception information in case it gets wrapped to often", e);
-            throw new RuntimeException("during the getItems() for '" + type + "'", e);
+            throw new RuntimeException("during the getItems() for '" + clazz + "'", e);
         }
 
         return result;
@@ -889,44 +1017,44 @@ public class ResourceManager {
      *              treeCaches Map.
      * @return the requested meta-data. This does not necessarily have to be up-to-createDate. If
      * the server cannot be reached in time, a cached version will be returned instead.
-     * @throws IllegalStateException if the ResourceManager has not been initialized correctly.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
-     * @throws RuntimeException      if some weird Reflection error occured.
+     * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws RuntimeException         if some weird Reflection error occured.
      */
     @SuppressWarnings("unchecked")
-    public AbstractMetaItem<?> getMetaItem(Class clazz, int id) {
+    public AbstractMetaItem<?> getMetaItem(Class<?> clazz, int id, boolean forceUpdate) {
         abortIfNotInitialized();
 
         /* get the corresponding meta-data tree */
-        String type = getResourceString(clazz);
-        TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(type);
-        if (tree == null) {
-            Log.w("ResourceManager", "meta-data tree for '" + clazz + "' not found, creating it");
-            tree = new TreeSet<>();
-        }
-
-        for (AbstractMetaItem<?> item : tree) {
-            Log.w("before", item.toString());
-        }
+        TreeSet<AbstractMetaItem<?>> cachedTree = getCachedMetaDataTree(clazz);
 
         /* fetch the up-to-date meta-data item from the server */
-        AbstractMetaItem<?> result;
-        try {
-            result = fetchMetaItem(clazz, id);
-        } catch (NoConnectionException nce) {
-            result = null;
+        AbstractMetaItem<?> result = null;
+        if (isCacheStale(clazz) || forceUpdate || cachedTree == null) {
+            try {
+                result = fetchMetaItem(clazz, id);
+            } catch (NoConnectionException nce) {
+                result = null;
+            }
+            if (result == null) {
+                Log.w("ResourceManager", "fetch from server failed");
+            }
+        } else {
+            Log.d("ResourceManager", "cache not stale, not querying server");
+        }
+
+        if (cachedTree == null) {
+            Log.w("ResourceManager", "meta-data tree for '" + clazz + "' not found, creating it");
+            cachedTree = new TreeSet<>();
         }
 
         /* try to use a cached item instead */
         if (result == null) {
-            Log.w("ResourceManager", "fetch from server failed, falling back to cache");
-
-            /* create a dummy item with the same id */
+            /* create a dummy item with the same id and use it to search for the requested item */
             AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz)
                     .setId(id)
                     .build();
-
-            result = tree.floor(dummyItem);
+            result = cachedTree.floor(dummyItem);
 
             /* if the returned item does not fit, set it to null */
             if (result == null || result.getId() != id || result.getEditDate() == null) {
@@ -937,11 +1065,11 @@ public class ResourceManager {
         /* update cache */
         if (result != null) {
             result.setLastUsedDate();
-            tree.remove(result);
-            tree.add(result);
+            cachedTree.remove(result);
+            cachedTree.add(result);
 
-            Log.d("ResourceManager", "Updating meta-data tree cache of type '" + type + "'");
-            metaTreeCache.put(type, tree);
+            Log.d("ResourceManager", "Updating meta-data tree cache of type '" + clazz + "'");
+            putCachedMetaDataTree(clazz, cachedTree);
         }
 
         /* return the result, which can still be null */
@@ -955,24 +1083,32 @@ public class ResourceManager {
      *              treeCaches Map.
      * @return the requested meta-data. This does not necessarily have to be up-to-createDate. If
      * the server cannot be reached in time, a cached version will be returned instead.
-     * @throws IllegalStateException if the ResourceManager has not been initialized correctly.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
+     * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      */
     @SuppressWarnings("unchecked")
-    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class clazz) {
+    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, boolean forceUpdate) {
         abortIfNotInitialized();
 
         /* get the corresponding meta-data tree */
-        String type = getResourceString(clazz);
-        TreeSet<AbstractMetaItem<?>> cachedTree = getCachedMetaDataTree(type);
+        TreeSet<AbstractMetaItem<?>> cachedTree = getCachedMetaDataTree(clazz);
 
         /* fetch meta-data from server */
         List<AbstractMetaItem<?>> items = null;
         boolean noConnection = false;
-        try {
-            items = fetchMetaItems(clazz);
-        } catch (NoConnectionException nce) {
-            noConnection = true;
+        boolean generalError = false;
+        if (isCacheStale(clazz) || forceUpdate || cachedTree == null) {
+            try {
+                items = fetchMetaItems(clazz);
+            } catch (NoConnectionException nce) {
+                noConnection = true;
+            }
+
+            if (!noConnection && items == null) {
+                generalError = true;
+            }
+        } else {
+            Log.d("ResourceManager", "cache not stale, not querying server");
         }
 
         TreeSet<AbstractMetaItem<?>> result = new TreeSet<>();
@@ -991,19 +1127,22 @@ public class ResourceManager {
             cachedTree.addAll(result);
 
             /* write cache */
-            metaTreeCache.put(type, cachedTree);
-        } else {
-            /* return cached data instead */
+            putCachedMetaDataTree(clazz, cachedTree);
+            setCacheLastUpdated(clazz);
+        } else { /* return cached data instead */
+
+            /* inform user of problem */
             if (noConnection) {
                 informUser("No internet connection detected, using cached data instead.");
-            } else {
+            } else if (generalError) {
                 informUser("Unable to contact the server, using cached data instead.");
             }
+
             if (cachedTree == null) {
                 Log.w("ResourceManager", "Cached metaTree is null");
                 return null;
             } else {
-                Log.i("ResourceManager", "Cached metaTree size: " + cachedTree.size());
+                Log.d("ResourceManager", "Cached metaTree size: " + cachedTree.size());
                 result.addAll(cachedTree);
             }
         }
@@ -1024,19 +1163,22 @@ public class ResourceManager {
      *                   default ordering.
      * @return the requested meta-data. This does not necessarily have to be up-to-createDate. If
      * the server cannot be reached in time, a cached version will be returned instead.
-     * @throws IllegalStateException if the ResourceManager has not been initialized correctly.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
+     * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      */
-    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class clazz,
+    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz,
                                                            int limit,
                                                            @Nullable AbstractMetaItem<?> after,
                                                            @Nullable Comparator<AbstractMetaItem<?>>
-                                                                   comparator) {
+                                                                   comparator,
+                                                           boolean forceUpdate) {
         abortIfNotInitialized();
 
         /* get the valid meta-data tree */
-        TreeSet<AbstractMetaItem<?>> tempMetaTree = getTreeOfMetaItems(clazz);
-        // FIXME: NPE
+        TreeSet<AbstractMetaItem<?>> tempMetaTree = getTreeOfMetaItems(clazz, forceUpdate);
+        if (tempMetaTree == null) {
+            return null;
+        }
 
         /* prepare the different TreeSets */
         TreeSet<AbstractMetaItem<?>> result;
@@ -1087,14 +1229,15 @@ public class ResourceManager {
      *                   default ordering.
      * @return the requested meta-data. This does not necessarily have to be up-to-createDate. If
      * the server cannot be reached in time, a cached version will be returned instead.
-     * @throws IllegalStateException if the ResourceManager has not been initialized correctly.
-     * @throws RuntimeException      if clazz is not a valid Class for this operation.
+     * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      */
-    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class clazz,
+    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz,
                                                            @Nullable AbstractMetaItem<?> after,
                                                            @Nullable AbstractMetaItem<?> before,
                                                            @Nullable Comparator<AbstractMetaItem<?>>
-                                                                   comparator) {
+                                                                   comparator,
+                                                           boolean forceUpdate) {
         abortIfNotInitialized();
 
         TreeSet<AbstractMetaItem<?>> result = new TreeSet<>(comparator);
