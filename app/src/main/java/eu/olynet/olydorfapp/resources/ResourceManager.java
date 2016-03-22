@@ -72,7 +72,7 @@ public class ResourceManager {
 
     /**
      * The static Map mapping the valid Classes to their corresponding identifier Strings.
-     * <p/>
+     * <p>
      * All items that need to be available via this Class have to be added in the static{...}
      * section below.
      *
@@ -1011,16 +1011,20 @@ public class ResourceManager {
     }
 
     /**
-     * Get meta-data of a specific category from the server (preferably) or the cache.
+     * Get meta-data of a specific category from the server or the cache.
      *
-     * @param clazz the Class of the meta-data to be fetched. Must be specified within the
-     *              treeCaches Map.
+     * @param clazz       the Class of the meta-data to be fetched. Must be specified within the
+     *                    treeCaches Map.
+     * @param id          the id of the specific item that should be returned.
+     * @param forceUpdate whether the meta-data should always fetched from the server.
      * @return the requested meta-data. This does not necessarily have to be up-to-createDate. If
      * the server cannot be reached in time, a cached version will be returned instead.
      * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws RuntimeException         if some weird Reflection error occured.
+     * @deprecated Using this method usually does not make sense. Might be removed soon.
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public AbstractMetaItem<?> getMetaItem(Class<?> clazz, int id, boolean forceUpdate) {
         abortIfNotInitialized();
@@ -1077,10 +1081,11 @@ public class ResourceManager {
     }
 
     /**
-     * Get meta-data of a specific category from the server (preferably) or the cache.
+     * Get meta-data of a specific category from the server or the cache.
      *
-     * @param clazz the Class of the meta-data to be fetched. Must be specified within the
-     *              treeCaches Map.
+     * @param clazz       the Class of the meta-data to be fetched. Must be specified within the
+     *                    treeCaches Map.
+     * @param forceUpdate whether the meta-data should always fetched from the server.
      * @return the requested meta-data. This does not necessarily have to be up-to-createDate. If
      * the server cannot be reached in time, a cached version will be returned instead.
      * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
@@ -1154,13 +1159,14 @@ public class ResourceManager {
      * Returns a certain number of items of a specific type that are all greater (according to the
      * ordering) then a specified element.
      *
-     * @param clazz      the Class of the item to be fetched. Must be specified within the
-     *                   treeCaches Map.
-     * @param after      exclusive lower bound. Can be null or a dummy.
-     * @param limit      Number of elements that are returned. If it is below or equal to zero, no
-     *                   limit is imposed.
-     * @param comparator the Comparator used for ordering the meta-data tree. Can be null for
-     *                   default ordering.
+     * @param clazz       the Class of the item to be fetched. Must be specified within the
+     *                    treeCaches Map.
+     * @param after       exclusive lower bound. Can be null or a dummy.
+     * @param limit       Number of elements that are returned. If it is below or equal to zero, no
+     *                    limit is imposed.
+     * @param comparator  the Comparator used for ordering the meta-data tree. Can be null for
+     *                    default ordering.
+     * @param forceUpdate whether the meta-data should always fetched from the server.
      * @return the requested meta-data. This does not necessarily have to be up-to-createDate. If
      * the server cannot be reached in time, a cached version will be returned instead.
      * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
@@ -1221,12 +1227,13 @@ public class ResourceManager {
     /**
      * Not implemented yet.
      *
-     * @param clazz      the Class of the item to be fetched. Must be specified within the
-     *                   treeCaches Map.
-     * @param after      exclusive lower bound. Can be null or a dummy.
-     * @param before     exclusive upper bound. Can be null or a dummy.
-     * @param comparator Can be null for
-     *                   default ordering.
+     * @param clazz       the Class of the item to be fetched. Must be specified within the
+     *                    treeCaches Map.
+     * @param after       exclusive lower bound. Can be null or a dummy.
+     * @param before      exclusive upper bound. Can be null or a dummy.
+     * @param comparator  Can be null for
+     *                    default ordering.
+     * @param forceUpdate whether the meta-data should always fetched from the server.
      * @return the requested meta-data. This does not necessarily have to be up-to-createDate. If
      * the server cannot be reached in time, a cached version will be returned instead.
      * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.

@@ -7,20 +7,9 @@ package eu.olynet.olydorfapp.utils;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
-import java.util.Date;
-import java.util.List;
-import java.util.TreeSet;
-
 import eu.olynet.olydorfapp.activities.MainActivity;
-import eu.olynet.olydorfapp.model.AbstractMetaItem;
-import eu.olynet.olydorfapp.model.DailyMealMetaItem;
-import eu.olynet.olydorfapp.model.MealOfTheDayItem;
-import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
-import eu.olynet.olydorfapp.model.NewsMetaItem;
-import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resources.ResourceManager;
 
 /**
