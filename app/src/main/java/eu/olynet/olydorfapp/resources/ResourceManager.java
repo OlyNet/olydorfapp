@@ -28,6 +28,7 @@ import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -52,6 +53,7 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.ws.rs.NotFoundException;
 
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
@@ -72,7 +74,7 @@ public class ResourceManager {
 
     /**
      * The static Map mapping the valid Classes to their corresponding identifier Strings.
-     * <p>
+     * <p/>
      * All items that need to be available via this Class have to be added in the static{...}
      * section below.
      *
@@ -502,6 +504,16 @@ public class ResourceManager {
                 if (result != null) {
                     break;
                 }
+            } catch (InvocationTargetException e) {
+                result = null;
+                Throwable cause = e.getCause();
+
+                /* HTTP 404 */
+                if (cause != null && cause instanceof NotFoundException) {
+                    Log.i("ResourceManager", "HTTP 404 for '" + clazz + "' with id " + id, cause);
+                    // TODO: implement proper 404 handling
+                    break;
+                }
             } catch (Exception e) {
                 Log.w("ResourceManager", "Exception during fetch on try " + i, e);
                 result = null;
@@ -556,6 +568,16 @@ public class ResourceManager {
                 Method getResource = proxyClass.getMethod(methodName);
                 result = (List<AbstractMetaItem<?>>) getResource.invoke(this.onc);
                 if (result != null) {
+                    break;
+                }
+            } catch (InvocationTargetException e) {
+                result = null;
+                Throwable cause = e.getCause();
+
+                /* HTTP 404 */
+                if (cause != null && cause instanceof NotFoundException) {
+                    Log.i("ResourceManager", "HTTP 404 for '" + clazz + "'", cause);
+                    // TODO: implement proper 404 handling
                     break;
                 }
             } catch (Exception e) {
@@ -619,6 +641,17 @@ public class ResourceManager {
                 if (result != null) {
                     break;
                 }
+            } catch (InvocationTargetException e) {
+                result = null;
+                Throwable cause = e.getCause();
+
+                /* HTTP 404 */
+                if (cause != null && cause instanceof NotFoundException) {
+                    Log.i("ResourceManager", "HTTP 404 for meta '" + clazz + "' with id " + id,
+                            cause);
+                    // TODO: implement proper 404 handling
+                    break;
+                }
             } catch (Exception e) {
                 Log.w("ResourceManager", "Exception during fetch on try " + i, e);
                 result = null;
@@ -675,6 +708,16 @@ public class ResourceManager {
                 Method getMetaResources = proxyClass.getMethod(methodName);
                 result = (List<AbstractMetaItem<?>>) getMetaResources.invoke(this.onc);
                 if (result != null) {
+                    break;
+                }
+            } catch (InvocationTargetException e) {
+                result = null;
+                Throwable cause = e.getCause();
+
+                /* HTTP 404 */
+                if (cause != null && cause instanceof NotFoundException) {
+                    Log.i("ResourceManager", "HTTP 404 for meta '" + clazz + "'", cause);
+                    // TODO: implement proper 404 handling
                     break;
                 }
             } catch (Exception e) {
@@ -980,7 +1023,7 @@ public class ResourceManager {
                 cachedTree.removeAll(tree);
                 for (AbstractMetaItem<?> metaItem : cachedTree) {
                     Log.d("ResourceManager", "Deleting cached item " + metaItem.getId()
-                            + " of type " + clazz);
+                            + " of type '" + clazz + "'");
                     deleteCachedItem(clazz, metaItem.getId());
                 }
             }
@@ -1123,19 +1166,20 @@ public class ResourceManager {
             /* add all items to the result to be returned */
             result.addAll(items);
 
-            /* insert and update all entries in cached metaDataTree */
-            if (cachedTree == null) {
-                cachedTree = new TreeSet<>();
-            } else {
+            /* delete all no longer existing items */
+            if (cachedTree != null) {
                 cachedTree.removeAll(result);
+                for (AbstractMetaItem<?> metaItem : cachedTree) {
+                    Log.d("ResourceManager", "Deleting cached item " + metaItem.getId()
+                            + " of type '" + clazz + "'");
+                    deleteCachedItem(clazz, metaItem.getId());
+                }
             }
-            cachedTree.addAll(result);
 
             /* write cache */
-            putCachedMetaDataTree(clazz, cachedTree);
+            putCachedMetaDataTree(clazz, result);
             setCacheLastUpdated(clazz);
         } else { /* return cached data instead */
-
             /* inform user of problem */
             if (noConnection) {
                 informUser("No internet connection detected, using cached data instead.");
