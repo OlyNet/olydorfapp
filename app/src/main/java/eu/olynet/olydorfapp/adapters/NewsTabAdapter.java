@@ -27,7 +27,7 @@ import eu.olynet.olydorfapp.model.NewsItem;
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */
-public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHolder> {
+public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHolder> {
 
     private List<AbstractMetaItem<?>> items;
     private Context context;
@@ -54,7 +54,7 @@ public class NewsDataAdapter extends RecyclerView.Adapter<NewsDataAdapter.ViewHo
      * @param context   the Context.
      * @param newsItems the List containing the NewsItems.
      */
-    public NewsDataAdapter(Context context, List<AbstractMetaItem<?>> newsItems) {
+    public NewsTabAdapter(Context context, List<AbstractMetaItem<?>> newsItems) {
         this.context = context;
         this.items = newsItems;
     }

@@ -68,7 +68,7 @@ import eu.olynet.olydorfapp.model.OrganizationMetaItem;
  * has to be initialized with the application Context by calling its <i>init(Context)</i> method
  * prior to use. If this is neglected, a RuntimeException will be thrown.
  *
- * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
+ * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 public class ResourceManager {
 

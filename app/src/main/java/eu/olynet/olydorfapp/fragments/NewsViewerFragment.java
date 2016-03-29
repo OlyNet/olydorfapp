@@ -1,18 +1,10 @@
-/**
- * Copyright (C) OlyNet e.V. 2015 - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited.
- * Proprietary and confidential
- */
-package eu.olynet.olydorfapp.tabs;
+package eu.olynet.olydorfapp.fragments;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +13,6 @@ import java.util.Date;
 import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
-import eu.olynet.olydorfapp.adapters.DailyMealTabAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
@@ -30,36 +21,28 @@ import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resources.ResourceManager;
 
 /**
- * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
+ * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
-public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class NewsViewerFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private SwipeRefreshLayout mRefreshLayout;
-    private DailyMealTabAdapter mAdapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.tab_bierstube, container, false);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-        /* initiate NewsTabAdapter */
-        mAdapter = new DailyMealTabAdapter(getContext(), null);
+        /* instantiate ResourceManager if this has not happened yet */
+        ResourceManager rm = ResourceManager.getInstance();
+        if (!rm.isInitialized()) {
+            rm.init(getContext().getApplicationContext());
+        }
+    }
 
-        /* setup the LayoutManager */
-        final GridLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 1,
-                GridLayoutManager.VERTICAL, false);
-
-        /* initiate RecycleView */
-        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.BierstubeGridRecyclerView);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        /* initiate SwipeRefreshLayout */
-        mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.BierstubeRefreshLayout);
-        mRefreshLayout.setOnRefreshListener(this);
-
-        return view;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.news_view_fragment, container, false);
     }
 
     @Override
@@ -109,12 +92,15 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
         mRefreshLayout.setEnabled(true);
     }
 
-    protected class BierstubeUpdateTask extends AsyncTask<Void, Void, AbstractMetaItem<?>> {
+    protected class NewsViewerAsyncTask extends AsyncTask<Void, Void, AbstractMetaItem<?>> {
 
+        private final int id;
         private final boolean forceUpdate;
 
-        public BierstubeUpdateTask(boolean forceUpdate) {
+
+        public NewsViewerAsyncTask(int id, boolean forceUpdate) {
             super();
+            this.id = id;
             this.forceUpdate = forceUpdate;
         }
 
@@ -159,4 +145,5 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
             onLoadCompleted();
         }
     }
+
 }
