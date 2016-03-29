@@ -13,7 +13,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
-import eu.olynet.olydorfapp.adapters.NewsDataAdapter;
+import eu.olynet.olydorfapp.adapters.NewsTabAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
@@ -39,7 +38,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
     private enum Action {REPLACE, ADD}
 
     private SwipeRefreshLayout mRefreshLayout;
-    private NewsDataAdapter mAdapter;
+    private NewsTabAdapter mAdapter;
 
     private boolean refreshing = false;
 
@@ -48,8 +47,8 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_news, container, false);
 
-        /* initiate NewsDataAdapter */
-        mAdapter = new NewsDataAdapter(getContext(), new ArrayList<AbstractMetaItem<?>>());
+        /* initiate NewsTabAdapter */
+        mAdapter = new NewsTabAdapter(getContext(), new ArrayList<AbstractMetaItem<?>>());
 
         /* setup the LayoutManager */
         final LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());

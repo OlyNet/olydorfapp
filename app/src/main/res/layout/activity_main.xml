@@ -9,34 +9,31 @@
     tools:context=".activities.MainActivity">
 
     <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <include
-        android:id="@+id/tool_bar"
-        layout="@layout/tool_bar"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        />
-
-    <eu.olynet.olydorfapp.sliding.SlidingTabLayout
-        android:id="@+id/tabs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="2dp"
-        android:background="@color/white"/>
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
         android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:layout_weight="1"
-         />
+        android:orientation="vertical">
 
-</LinearLayout>
+        <include
+            android:id="@+id/tool_bar"
+            layout="@layout/tool_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <eu.olynet.olydorfapp.sliding.SlidingTabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:elevation="2dp" />
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+    </LinearLayout>
     <!-- The navigation drawer -->
-    <include
-        layout="@layout/navigation_drawer"/>
+    <include layout="@layout/navigation_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

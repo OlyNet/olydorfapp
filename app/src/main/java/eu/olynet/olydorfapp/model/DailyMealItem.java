@@ -6,6 +6,9 @@
 
 package eu.olynet.olydorfapp.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,7 +29,6 @@ import eu.olynet.olydorfapp.resources.OrganizationSerializer;
 @JsonIgnoreProperties("mealsofthedays")
 public class DailyMealItem extends DailyMealMetaItem {
 
-
     @JsonProperty("organization")
     @JsonSerialize(using = OrganizationSerializer.class)
     @JsonDeserialize(using = OrganizationDeserializer.class)
@@ -46,6 +48,44 @@ public class DailyMealItem extends DailyMealMetaItem {
 
     @JsonProperty("image")
     protected byte[] image;
+
+    /**
+     * CREATOR necessary for the Parcelable interface.
+     */
+    public static final Parcelable.Creator<DailyMealItem> CREATOR =
+            new Parcelable.Creator<DailyMealItem>() {
+
+                public DailyMealItem createFromParcel(Parcel in) {
+                    return new DailyMealItem(in);
+                }
+
+                public DailyMealItem[] newArray(int size) {
+                    return new DailyMealItem[size];
+                }
+            };
+
+    /**
+     * Constructor for creating DailyMealItem from Parcels.
+     *
+     * @param in the Parcel this DailyMealItem is to be created from.
+     */
+    protected DailyMealItem(Parcel in) {
+        super(in);
+        this.organization = in.readParcelable(OrganizationItem.class.getClassLoader());
+        this.name = in.readString();
+        this.englishName = in.readString();
+        this.vegetarian = in.readByte() != 0; /* byte -> boolean */
+        this.price = in.readFloat();
+
+        int imageLength = in.readInt();
+        this.image = new byte[imageLength];
+        if (imageLength <= 0) {
+            in.readByteArray(this.image);
+            this.image = null;
+        } else {
+            in.readByteArray(this.image);
+        }
+    }
 
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
@@ -80,6 +120,31 @@ public class DailyMealItem extends DailyMealMetaItem {
         this.vegetarian = vegetarian;
         this.price = price;
         this.image = image;
+    }
+
+    /**
+     * Flatten this object in to a Parcel.
+     *
+     * @param dest  The Parcel in which the object should be written.
+     * @param flags Additional flags about how the object should be written.
+     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     */
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeParcelable(this.organization, flags);
+        dest.writeString(name);
+        dest.writeString(englishName);
+        dest.writeByte((byte) (vegetarian ? 1 : 0)); /* boolean -> byte */
+        dest.writeFloat(price);
+
+        int imageLength = (image != null ? image.length : 0);
+        dest.writeInt(imageLength);
+        if (imageLength <= 0) {
+            dest.writeByteArray(new byte[0]);
+        } else {
+            dest.writeByteArray(image);
+        }
     }
 
     public OrganizationItem getOrganization() {

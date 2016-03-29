@@ -75,6 +75,10 @@
         <activity
             android:name="eu.olynet.olydorfapp.activities.LaundryQRScannerActivity"
             android:label="@string/app_qr_scanner" />
+
+        <activity
+            android:name="eu.olynet.olydorfapp.activities.NewsViewerActivity"
+            android:label="@string/news_viewer" />
     </application>
 
 </manifest>

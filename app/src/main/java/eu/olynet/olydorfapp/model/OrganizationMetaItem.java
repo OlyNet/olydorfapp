@@ -6,17 +6,44 @@
 
 package eu.olynet.olydorfapp.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import java.util.Date;
 
 /**
- * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
+ * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
         getterVisibility = JsonAutoDetect.Visibility.NONE,
         setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class OrganizationMetaItem extends AbstractMetaItem<OrganizationMetaItem> {
+
+    /**
+     * CREATOR necessary for the Parcelable interface.
+     */
+    public static final Parcelable.Creator<OrganizationMetaItem> CREATOR =
+            new Parcelable.Creator<OrganizationMetaItem>() {
+
+                public OrganizationMetaItem createFromParcel(Parcel in) {
+                    return new OrganizationMetaItem(in);
+                }
+
+                public OrganizationMetaItem[] newArray(int size) {
+                    return new OrganizationMetaItem[size];
+                }
+            };
+
+    /**
+     * Constructor for creating OrganizationMetaItem from Parcels.
+     *
+     * @param in the Parcel this OrganizationMetaItem is to be created from.
+     */
+    protected OrganizationMetaItem(Parcel in) {
+        super(in);
+    }
 
     /**
      * Default constructor for deserialization. <b>Do not use!</b>

@@ -5,6 +5,9 @@
     <string name="QR_scan_return">ScanResult</string>
     <string name="menu_action_refresh">Refresh</string>
 
+
+    <string name="news_viewer">News Viewer</string>
+
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 

@@ -28,7 +28,7 @@ import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */
-public class DailyMealDataAdapter extends RecyclerView.Adapter<DailyMealDataAdapter.ViewHolder> {
+public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapter.ViewHolder> {
 
     private MealOfTheDayItem item;
     private Context context;
@@ -54,7 +54,7 @@ public class DailyMealDataAdapter extends RecyclerView.Adapter<DailyMealDataAdap
      * @param context the Context.
      * @param item    the DailyMealItem.
      */
-    public DailyMealDataAdapter(Context context, MealOfTheDayItem item) {
+    public DailyMealTabAdapter(Context context, MealOfTheDayItem item) {
         this.context = context;
         this.item = item;
     }

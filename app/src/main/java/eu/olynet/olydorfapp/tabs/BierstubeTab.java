@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
-import eu.olynet.olydorfapp.adapters.DailyMealDataAdapter;
+import eu.olynet.olydorfapp.adapters.DailyMealTabAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
@@ -35,15 +35,15 @@ import eu.olynet.olydorfapp.resources.ResourceManager;
 public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private SwipeRefreshLayout mRefreshLayout;
-    private DailyMealDataAdapter mAdapter;
+    private DailyMealTabAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab_bierstube, container, false);
 
-        /* initiate NewsDataAdapter */
-        mAdapter = new DailyMealDataAdapter(getContext(), null);
+        /* initiate NewsTabAdapter */
+        mAdapter = new DailyMealTabAdapter(getContext(), null);
 
         /* setup the LayoutManager */
         final GridLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 1,
