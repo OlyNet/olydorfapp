@@ -5,6 +5,9 @@
  */
 package eu.olynet.olydorfapp.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import java.util.Date;
@@ -16,6 +19,30 @@ import java.util.Date;
         getterVisibility = JsonAutoDetect.Visibility.NONE,
         setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
+
+    /**
+     * CREATOR necessary for the Parcelable interface.
+     */
+    public static final Parcelable.Creator<NewsMetaItem> CREATOR =
+            new Parcelable.Creator<NewsMetaItem>() {
+
+                public NewsMetaItem createFromParcel(Parcel in) {
+                    return new NewsMetaItem(in);
+                }
+
+                public NewsMetaItem[] newArray(int size) {
+                    return new NewsMetaItem[size];
+                }
+            };
+
+    /**
+     * Constructor for creating NewsMetaItems from Parcels.
+     *
+     * @param in the Parcel this NewsMetaItem is to be created from.
+     */
+    protected NewsMetaItem(Parcel in) {
+        super(in);
+    }
 
     /**
      * Default constructor for deserialization. <b>Do not use!</b>

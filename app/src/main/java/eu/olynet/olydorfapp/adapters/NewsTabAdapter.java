@@ -6,6 +6,7 @@
 package eu.olynet.olydorfapp.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +22,8 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import eu.olynet.olydorfapp.R;
+import eu.olynet.olydorfapp.activities.NewsViewerActivity;
+import eu.olynet.olydorfapp.fragments.NewsViewerFragment;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsItem;
 
@@ -35,7 +38,10 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
+        protected NewsItem item;
+
         protected TextView vDate;
         protected TextView vTitle;
         protected TextView vOrganization;
@@ -43,6 +49,22 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
 
         public ViewHolder(View view) {
             super(view);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                /**
+                 * Called when a view has been clicked.
+                 *
+                 * @param v The view that was clicked.
+                 */
+                @Override
+                public void onClick(View v) {
+                    Intent newsViewerIntent = new Intent(context, NewsViewerActivity.class);
+                    newsViewerIntent.setAction(Intent.ACTION_VIEW);
+                    newsViewerIntent.putExtra(NewsViewerFragment.ITEM_KEY, item);
+                    context.startActivity(newsViewerIntent);
+                }
+            });
+
             vOrganization = (TextView) view.findViewById(R.id.newsCardOrganization);
             vDate = (TextView) view.findViewById(R.id.newsCardDate);
             vTitle = (TextView) view.findViewById(R.id.newsCardTitle);
@@ -75,6 +97,9 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
                     + " seem to only contain NewsItems");
         }
         NewsItem newsItem = (NewsItem) items.get(position);
+
+        /* set the correct item in the ViewHolder for the OnClickListener */
+        holder.item = newsItem;
 
         /* Date */
         SimpleDateFormat localFormat = (SimpleDateFormat) android.text.format.DateFormat.getDateFormat(context);

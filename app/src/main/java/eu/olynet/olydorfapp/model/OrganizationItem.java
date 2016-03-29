@@ -6,6 +6,10 @@
 
 package eu.olynet.olydorfapp.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -33,6 +37,43 @@ public class OrganizationItem extends OrganizationMetaItem {
 
     @JsonProperty("logo")
     protected byte[] logo;
+
+    /**
+     * CREATOR necessary for the Parcelable interface.
+     */
+    public static final Parcelable.Creator<OrganizationItem> CREATOR =
+            new Parcelable.Creator<OrganizationItem>() {
+
+                public OrganizationItem createFromParcel(Parcel in) {
+                    return new OrganizationItem(in);
+                }
+
+                public OrganizationItem[] newArray(int size) {
+                    return new OrganizationItem[size];
+                }
+            };
+
+    /**
+     * Constructor for creating OrganizationItem from Parcels.
+     *
+     * @param in the Parcel this OrganizationItem is to be created from.
+     */
+    protected OrganizationItem(Parcel in) {
+        super(in);
+        this.name = in.readString();
+        this.shortname = in.readString();
+        this.website = in.readString();
+        this.description = in.readString();
+
+        int imageLength = in.readInt();
+        this.logo = new byte[imageLength];
+        if (imageLength <= 0) {
+            in.readByteArray(this.logo);
+            this.logo = null;
+        } else {
+            in.readByteArray(this.logo);
+        }
+    }
 
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
@@ -64,6 +105,30 @@ public class OrganizationItem extends OrganizationMetaItem {
         this.website = website;
         this.description = description;
         this.logo = logo;
+    }
+
+    /**
+     * Flatten this object in to a Parcel.
+     *
+     * @param dest  The Parcel in which the object should be written.
+     * @param flags Additional flags about how the object should be written.
+     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     */
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(name);
+        dest.writeString(shortname);
+        dest.writeString(website);
+        dest.writeString(description);
+
+        int imageLength = (logo != null ? logo.length : 0);
+        dest.writeInt(imageLength);
+        if (imageLength <= 0) {
+            dest.writeByteArray(new byte[0]);
+        } else {
+            dest.writeByteArray(logo);
+        }
     }
 
     public String getName() {

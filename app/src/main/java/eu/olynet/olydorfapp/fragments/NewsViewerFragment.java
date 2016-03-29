@@ -1,149 +1,97 @@
 package eu.olynet.olydorfapp.fragments;
 
-import android.os.AsyncTask;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.util.Date;
-import java.util.TreeSet;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import eu.olynet.olydorfapp.R;
-import eu.olynet.olydorfapp.model.AbstractMetaItem;
-import eu.olynet.olydorfapp.model.DailyMealMetaItem;
-import eu.olynet.olydorfapp.model.MealOfTheDayItem;
-import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
-import eu.olynet.olydorfapp.model.OrganizationMetaItem;
-import eu.olynet.olydorfapp.resources.ResourceManager;
+import eu.olynet.olydorfapp.model.NewsItem;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 public class NewsViewerFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
+    public static final String ITEM_KEY = "news_item";
+
     private SwipeRefreshLayout mRefreshLayout;
+    private NewsItem item = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /* instantiate ResourceManager if this has not happened yet */
-        ResourceManager rm = ResourceManager.getInstance();
-        if (!rm.isInitialized()) {
-            rm.init(getContext().getApplicationContext());
+        /* get the NewsItem */
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            this.item = arguments.getParcelable(ITEM_KEY);
+        } else {
+            Log.e("NewsViewerFrag", "arguments is null");
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.news_view_fragment, container, false);
-    }
+        /* inflate the layout for this Fragment */
+        View view = inflater.inflate(R.layout.news_view_fragment, container, false);
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+        /* set SwipeRefreshLayout */
+        mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.news_view_fragment);
+        mRefreshLayout.setOnRefreshListener(this);
+        mRefreshLayout.setEnabled(false); /* disable for now */
 
-        loadData(false);
+        /* set the data */
+        if (item != null) {
+            /* Title */
+            TextView newsTitle = (TextView) view.findViewById(R.id.newsViewTitle);
+            newsTitle.setText(item.getTitle());
+
+            /* Image */
+            ImageView newsImage = (ImageView) view.findViewById(R.id.newsViewImage);
+            byte[] image = item.getImage();
+            if (image == null || image.length <= 0) { /* fall back to Organization image */
+                image = item.getOrganization().getLogo();
+            }
+            if (image != null && image.length > 0) { /* finally set the image if one is available */
+                Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
+                if (imageBitmap == null) {
+                    newsImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+                } else {
+                    DisplayMetrics dm = new DisplayMetrics();
+                    WindowManager windowManager = (WindowManager)
+                            getContext().getSystemService(Context.WINDOW_SERVICE);
+                    windowManager.getDefaultDisplay().getMetrics(dm);
+                    newsImage.setImageBitmap(imageBitmap);
+                }
+            } else {
+                newsImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            }
+
+            /* Content */
+            TextView newsContent = (TextView) view.findViewById(R.id.newsViewContent);
+            newsContent.setText(item.getText());
+        }
+
+        /* return the View */
+        return view;
     }
 
     @Override
     public void onRefresh() {
-        loadData(true);
-    }
-
-    /**
-     * Call this function to load new data asynchronously.
-     *
-     * @param forceUpdate whether an update of the cached data should be forced.
-     */
-    public void loadData(boolean forceUpdate) {
-        /* disable swipe to refresh while already refreshing */
         mRefreshLayout.setEnabled(false);
-
-        /* enable the refreshing animation if and only if it is not already enabled */
-        if (!mRefreshLayout.isRefreshing()) {
-            mRefreshLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    mRefreshLayout.setRefreshing(true);
-                }
-            });
-        }
-
-        /* start the AsyncTask that fetches the data */
-        new BierstubeUpdateTask(forceUpdate).execute();
-    }
-
-    /**
-     * This function must be called whenever the information loading is finished and the View
-     * needs to be refreshed.
-     */
-    private void onLoadCompleted() {
-        mAdapter.notifyDataSetChanged();
-
-        /* disable refreshing animation and enable swipe to refresh again */
-        mRefreshLayout.setRefreshing(false);
-        mRefreshLayout.setEnabled(true);
-    }
-
-    protected class NewsViewerAsyncTask extends AsyncTask<Void, Void, AbstractMetaItem<?>> {
-
-        private final int id;
-        private final boolean forceUpdate;
-
-
-        public NewsViewerAsyncTask(int id, boolean forceUpdate) {
-            super();
-            this.id = id;
-            this.forceUpdate = forceUpdate;
-        }
-
-        @Override
-        protected AbstractMetaItem<?> doInBackground(Void... params) {
-            ResourceManager rm = ResourceManager.getInstance();
-
-            /* update OrganizationMetaItem and DailyMealMetaItem trees */
-            rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);
-            rm.getTreeOfMetaItems(DailyMealMetaItem.class, forceUpdate);
-
-            /* querying the ResourceManager for the needed data */
-            TreeSet<AbstractMetaItem<?>> metaTree = rm.getTreeOfMetaItems(MealOfTheDayMetaItem.class,
-                    0, null, new AbstractMetaItem.DateAscComparator(), forceUpdate);
-
-            /* filter out the correct meta item */
-            MealOfTheDayMetaItem filterItem = new AbstractMetaItem.DummyFactory<>(
-                    MealOfTheDayMetaItem.class)
-                    .setDate(new Date())
-                    .build();
-            MealOfTheDayMetaItem metaItem = (MealOfTheDayMetaItem) metaTree.floor(filterItem);
-
-            /* get the correct meal */
-            MealOfTheDayItem meal = null;
-            if (metaItem != null) {
-                meal = (MealOfTheDayItem) rm.getItem(MealOfTheDayMetaItem.class,
-                        metaItem.getId());
-            }
-
-            /* requesting and returning the result array */
-            return meal;
-        }
-
-        @Override
-        protected void onPostExecute(AbstractMetaItem<?> result) {
-            super.onPostExecute(result);
-
-            /* update the Adapter */
-            mAdapter.setItem((MealOfTheDayItem) result);
-
-            /* perform the post-load actions */
-            onLoadCompleted();
-        }
+        // TODO: implement replacing of this Fragment
     }
 
 }

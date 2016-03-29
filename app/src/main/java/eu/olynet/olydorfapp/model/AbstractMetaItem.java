@@ -5,6 +5,8 @@
  */
 package eu.olynet.olydorfapp.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -23,7 +25,8 @@ import java.util.Date;
         getterVisibility = JsonAutoDetect.Visibility.NONE,
         setterVisibility = JsonAutoDetect.Visibility.NONE)
 @SuppressWarnings("unused")
-public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements Comparable<T> {
+public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements Comparable<T>,
+        Parcelable {
 
     @JsonProperty("id")
     private int id;
@@ -57,6 +60,20 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.editUser = null;
         this.date = null;
         this.lastUsedDate = null;
+    }
+
+    /**
+     * Constructor for creating AbstractMetaItem from Parcels.
+     *
+     * @param in the Parcel this AbstractMetaItem is to be created from.
+     */
+    protected AbstractMetaItem(Parcel in) {
+        this.id = in.readInt();
+        this.createDate = new Date(in.readLong()); /* long -> Date */
+        this.editDate = new Date(in.readLong()); /* long -> Date */
+        this.createUser = in.readString();
+        this.editUser = in.readString();
+        this.lastUsedDate = new Date(in.readLong()); /* long -> Date */
     }
 
     /**
@@ -94,6 +111,35 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.editUser = editUser;
         this.date = date;
         this.lastUsedDate = lastUsedDate;
+    }
+
+    /**
+     * Describe the kinds of special objects contained in this Parcelable's
+     * marshalled representation.
+     *
+     * @return a bitmask indicating the set of special object types marshalled
+     * by the Parcelable.
+     */
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    /**
+     * Flatten this object in to a Parcel.
+     *
+     * @param dest  The Parcel in which the object should be written.
+     * @param flags Additional flags about how the object should be written.
+     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     */
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeLong(createDate.getTime()); /* Date -> long */
+        dest.writeLong(editDate.getTime()); /* Date -> long */
+        dest.writeString(createUser);
+        dest.writeString(editUser);
+        dest.writeLong(lastUsedDate.getTime()); /* Date -> long */
     }
 
     /**

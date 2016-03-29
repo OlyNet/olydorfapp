@@ -5,6 +5,9 @@
  */
 package eu.olynet.olydorfapp.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import java.util.Date;
@@ -16,6 +19,30 @@ import java.util.Date;
         getterVisibility = JsonAutoDetect.Visibility.NONE,
         setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
+
+    /**
+     * CREATOR necessary for the Parcelable interface.
+     */
+    public static final Parcelable.Creator<FoodMetaItem> CREATOR =
+            new Parcelable.Creator<FoodMetaItem>() {
+
+                public FoodMetaItem createFromParcel(Parcel in) {
+                    return new FoodMetaItem(in);
+                }
+
+                public FoodMetaItem[] newArray(int size) {
+                    return new FoodMetaItem[size];
+                }
+            };
+
+    /**
+     * Constructor for creating FoodMetaItem from Parcels.
+     *
+     * @param in the Parcel this FoodMetaItem is to be created from.
+     */
+    protected FoodMetaItem(Parcel in) {
+        super(in);
+    }
 
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
