@@ -41,7 +41,7 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:adjustViewBounds="true"
-            android:text="Toller Titel"
+            android:text="Toller Titel der extrem lang ist und deswegen nicht in eine Zeile passt"
             android:textSize="20sp"
             android:textStyle="bold" />
 
