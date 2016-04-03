@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TreeSet;
 
@@ -140,8 +141,19 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
             /* get the correct meal */
             MealOfTheDayItem meal = null;
             if (metaItem != null) {
-                meal = (MealOfTheDayItem) rm.getItem(MealOfTheDayMetaItem.class,
-                        metaItem.getId());
+                /* verify that this metaItem is indeed for today */
+                Calendar itemDate = Calendar.getInstance();
+                itemDate.setTime(metaItem.getDate());
+                Calendar now = Calendar.getInstance();
+
+                /* fetch the full item only if the date matches */
+                if(itemDate.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
+                        itemDate.get(Calendar.MONTH) == now.get(Calendar.MONTH) &&
+                        itemDate.get(Calendar.DAY_OF_MONTH) == now.get(Calendar.DAY_OF_MONTH)) {
+                    // FIXME: probably broken due to timezone offset (UTC and MEZ/MESZ)
+                    meal = (MealOfTheDayItem) rm.getItem(MealOfTheDayMetaItem.class,
+                            metaItem.getId());
+                }
             }
 
             /* requesting and returning the result array */

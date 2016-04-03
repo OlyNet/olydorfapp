@@ -23,7 +23,6 @@ import com.vincentbrison.openlibraries.android.dualcache.lib.DualCacheLogUtils;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.io.InputStream;
@@ -74,7 +73,7 @@ public class ResourceManager {
 
     /**
      * The static Map mapping the valid Classes to their corresponding identifier Strings.
-     * <p/>
+     * <p>
      * All items that need to be available via this Class have to be added in the static{...}
      * section below.
      *
@@ -168,6 +167,16 @@ public class ResourceManager {
     private static final int MINUTES_UNTIL_CACHE_STALE = 60;
 
     /**
+     * The timeout in seconds after each message to the user.
+     */
+    private static final int TIMEOUT_AFTER_MESSAGE = 15;
+
+    /**
+     * The last time the user has been notified by calling informUser().
+     */
+    private Date lastNotifiedDate = null;
+
+    /**
      * @return the instance of the ResourceManager Singleton.
      */
     public static ResourceManager getInstance() {
@@ -181,7 +190,7 @@ public class ResourceManager {
      * @return the identifying String.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      */
-    public static String getResourceString(Class clazz) {
+    private static String getResourceString(Class clazz) {
         String type = treeCaches.get(clazz);
         if (type == null || type.equals("")) {
             throw new IllegalArgumentException("Class '" + clazz
@@ -298,8 +307,8 @@ public class ResourceManager {
                         .httpEngine(engine)
                         .build();
 
-                ResteasyWebTarget target = client.target("https://wstest.olynet.eu/dorfapp-rest/api");
-                this.onc = target.proxy(OlyNetClient.class);
+                this.onc = client.target("https://wstest.olynet.eu/dorfapp-rest/api")
+                        .proxy(OlyNetClient.class);
 
                 Log.d("ResourceManager.init", "ResteasyClient setup complete.");
             } catch (Exception e) {
@@ -342,13 +351,23 @@ public class ResourceManager {
     private void informUser(final String msg) {
         Log.w("ResourceManager", msg);
 
-        /* inform the user */
-        Handler handler = new Handler(context.getMainLooper());
-        handler.post(new Runnable() {
-            public void run() {
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-            }
-        });
+        /* generate cutoff time */
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.SECOND, -TIMEOUT_AFTER_MESSAGE);
+
+        /* rate limiting */
+        if (lastNotifiedDate == null || lastNotifiedDate.before(c.getTime())) {
+            /* inform the user */
+            Handler handler = new Handler(context.getMainLooper());
+            handler.post(new Runnable() {
+                public void run() {
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            /* update the date */
+            lastNotifiedDate = new Date();
+        }
     }
 
     /**
@@ -465,6 +484,7 @@ public class ResourceManager {
      * @return the fetched item or <b>null</b> if this operation was not successful.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
+     * @throws NotFoundException        if a HTTP 404 has been received.
      */
     private AbstractMetaItem<?> fetchItem(Class clazz, int id) throws NoConnectionException {
         return fetchItem(clazz, id, 3);
@@ -480,6 +500,7 @@ public class ResourceManager {
      * @return the fetched item or <b>null</b> if this operation was not successful.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
+     * @throws NotFoundException        if a HTTP 404 has been received.
      */
     @SuppressWarnings("unchecked")
     private AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount)
@@ -510,12 +531,11 @@ public class ResourceManager {
 
                 /* HTTP 404 */
                 if (cause != null && cause instanceof NotFoundException) {
-                    Log.i("ResourceManager", "HTTP 404 for '" + clazz + "' with id " + id, cause);
-                    // TODO: implement proper 404 handling
-                    break;
+                    Log.i("ResourceManager", "HTTP 404: '" + clazz + "' with id " + id, cause);
+                    throw new NotFoundException("HTTP 404: '" + clazz + "' with id " + id, cause);
                 }
             } catch (Exception e) {
-                Log.w("ResourceManager", "Exception during fetch on try " + i, e);
+                Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
                 result = null;
             }
         }
@@ -576,12 +596,11 @@ public class ResourceManager {
 
                 /* HTTP 404 */
                 if (cause != null && cause instanceof NotFoundException) {
-                    Log.i("ResourceManager", "HTTP 404 for '" + clazz + "'", cause);
-                    // TODO: implement proper 404 handling
-                    break;
+                    Log.e("ResourceManager", "HTTP 404: '" + clazz + "'", cause);
+                    // TODO: implement better logging
                 }
             } catch (Exception e) {
-                Log.w("ResourceManager", "Exception during fetch on try " + i, e);
+                Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
                 result = null;
             }
         }
@@ -647,13 +666,13 @@ public class ResourceManager {
 
                 /* HTTP 404 */
                 if (cause != null && cause instanceof NotFoundException) {
-                    Log.i("ResourceManager", "HTTP 404 for meta '" + clazz + "' with id " + id,
+                    Log.e("ResourceManager", "HTTP 404: meta '" + clazz + "' with id " + id,
                             cause);
-                    // TODO: implement proper 404 handling
+                    // TODO: implement better logging
                     break;
                 }
             } catch (Exception e) {
-                Log.w("ResourceManager", "Exception during fetch on try " + i, e);
+                Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
                 result = null;
             }
         }
@@ -716,12 +735,12 @@ public class ResourceManager {
 
                 /* HTTP 404 */
                 if (cause != null && cause instanceof NotFoundException) {
-                    Log.i("ResourceManager", "HTTP 404 for meta '" + clazz + "'", cause);
-                    // TODO: implement proper 404 handling
+                    Log.i("ResourceManager", "HTTP 404: meta '" + clazz + "'", cause);
+                    // TODO: implement better logging
                     break;
                 }
             } catch (Exception e) {
-                Log.w("ResourceManager", "Exception during fetch on try " + i, e);
+                Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
                 result = null;
             }
         }
@@ -841,6 +860,15 @@ public class ResourceManager {
                 AbstractMetaItem<?> webItem;
                 try {
                     webItem = fetchItem(clazz, id);
+                } catch (NotFoundException e) { /* HTTP 404 */
+                    webItem = null;
+
+                    /* remove the item from the meta-data tree */
+                    if (!tree.remove(dummyItem)) {
+                        /* this should never happen, the item should always be present */
+                        throw new RuntimeException("'" + clazz + "' with id " + id
+                                + "does not exist in the meta-data tree", e);
+                    }
                 } catch (NoConnectionException e) {
                     webItem = null;
                 }
@@ -865,12 +893,15 @@ public class ResourceManager {
                 Method updateItem = clazz.getMethod("updateItem", clazz);
                 updateItem.invoke(clazz.cast(metaItem), clazz.cast(item));
 
-                /* write cache */
+                /* write item to cache */
                 Log.d("ResourceManager", "Updating cache for item with id " + id
                         + " and meta-data tree '" + clazz + "'");
                 putCachedItem(clazz, item);
-                putCachedMetaDataTree(clazz, tree);
             }
+
+            /* write meta-data tree to cache */
+            Log.d("ResourceManager", "Updating meta-data tree cache for '" + clazz + "'");
+            putCachedMetaDataTree(clazz, tree);
 
             return item;
         } catch (Exception e) {
@@ -934,6 +965,15 @@ public class ResourceManager {
                     AbstractMetaItem<?> webItem;
                     try {
                         webItem = fetchItem(clazz, id);
+                    } catch (NotFoundException e) { /* HTTP 404 */
+                        webItem = null;
+
+                        /* remove the item from the meta-data tree */
+                        if (!tree.remove(dummyItem)) {
+                            /* this should never happen, the item should always be present */
+                            throw new RuntimeException("'" + clazz + "' with id " + id
+                                    + "does not exist in the meta-data tree", e);
+                        }
                     } catch (NoConnectionException e) {
                         webItem = null;
                     }
