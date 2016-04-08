@@ -120,21 +120,6 @@ public class ResourceManager {
     }
 
     /**
-     * The file containing the OlyNet e.V. custom Certificate Authority (CA).
-     */
-    private static final String CA_FILE = "olynet_ca.pem";
-
-    /**
-     * The file containing the version-specific user certificate for accessing the server.
-     */
-    private static final String CERTIFICATE_FILE = "app_01.pfx";
-
-    /**
-     * The decryption key for the version-specific user certificate.
-     */
-    private static final char[] CERTIFICATE_KEY = "$gf6yuW$%Cs4".toCharArray();
-
-    /**
      * Singleton instance
      */
     private static ResourceManager ourInstance = new ResourceManager();
@@ -287,7 +272,7 @@ public class ResourceManager {
                  * See:
                  * https://stackoverflow.com/questions/27562666/programmatically-add-a-certificate-authority-while-keeping-android-system-ssl-ce
                  */
-                InputStream ca = this.context.getAssets().open(CA_FILE);
+                InputStream ca = this.context.getAssets().open(Configuration.CA_FILE);
                 KeyStore trustStore = KeyStore.getInstance("PKCS12");
                 trustStore.load(null);
                 Certificate caCert = cf.generateCertificate(ca);
@@ -296,11 +281,12 @@ public class ResourceManager {
                 ca.close();
 
                 /* create a KeyManagerFactory that contains our client certificate */
-                InputStream clientCert = this.context.getAssets().open(CERTIFICATE_FILE);
+                InputStream clientCert = this.context.getAssets().open(
+                        Configuration.CERTIFICATE_FILE);
                 KeyStore keyStore = KeyStore.getInstance("PKCS12");
-                keyStore.load(clientCert, CERTIFICATE_KEY);
+                keyStore.load(clientCert, Configuration.CERTIFICATE_KEY);
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm);
-                kmf.init(keyStore, CERTIFICATE_KEY);
+                kmf.init(keyStore, Configuration.CERTIFICATE_KEY);
                 clientCert.close();
 
                 /* instantiate our SSLContext with the trust store and the key store */
@@ -321,8 +307,7 @@ public class ResourceManager {
                         .httpEngine(engine)
                         .build();
 
-                this.onc = client.target("https://wstest.olynet.eu/dorfapp-rest/api")
-                        .proxy(OlyNetClient.class);
+                this.onc = client.target(Configuration.SERVER_BASE_URL).proxy(OlyNetClient.class);
 
                 Log.d("ResourceManager.init", "ResteasyClient setup complete.");
             } catch (Exception e) {
