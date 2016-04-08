@@ -57,21 +57,21 @@
                 android:id="@+id/newsCardDate"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.3"
-                android:text="01.01.1970"
-                android:textSize="16sp"
                 android:layout_gravity="bottom|right"
-                android:gravity="left|bottom" />
+                android:layout_weight="0.3"
+                android:gravity="left|bottom"
+                android:text="01.01.1970"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/newsCardOrganization"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.7"
-                android:text="Studenten im Olympiazentrum e.V. asdfsdf adfgha asdfgasdf gfhjk"
-                android:textSize="16sp"
                 android:layout_gravity="right"
-                android:gravity="bottom|right" />
+                android:layout_weight="0.7"
+                android:gravity="bottom|right"
+                android:text="Studenten im Olympiazentrum e.V. asdfsdf adfgha asdfgasdf gfhjk"
+                android:textSize="16sp" />
 
         </LinearLayout>
 

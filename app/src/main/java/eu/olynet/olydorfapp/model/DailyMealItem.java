@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import eu.olynet.olydorfapp.resources.OrganizationDeserializer;
@@ -78,11 +79,11 @@ public class DailyMealItem extends DailyMealMetaItem {
         this.price = in.readFloat();
 
         int imageLength = in.readInt();
-        this.image = new byte[imageLength];
-        if (imageLength <= 0) {
-            in.readByteArray(this.image);
+        if (imageLength < 0) {
+            in.readByteArray(new byte[0]);
             this.image = null;
         } else {
+            this.image = new byte[imageLength];
             in.readByteArray(this.image);
         }
     }
@@ -138,7 +139,7 @@ public class DailyMealItem extends DailyMealMetaItem {
         dest.writeByte((byte) (vegetarian ? 1 : 0)); /* boolean -> byte */
         dest.writeFloat(price);
 
-        int imageLength = (image != null ? image.length : 0);
+        int imageLength = (image != null ? image.length : -1);
         dest.writeInt(imageLength);
         if (imageLength <= 0) {
             dest.writeByteArray(new byte[0]);
@@ -203,6 +204,18 @@ public class DailyMealItem extends DailyMealMetaItem {
         this.vegetarian = updatedItem.vegetarian;
         this.price = updatedItem.price;
         this.image = updatedItem.image;
+    }
+
+    @Override
+    public boolean exactlyEquals(AbstractMetaItem<?> another) {
+        return (super.exactlyEquals(another)
+                && this.organization.exactlyEquals(((DailyMealItem) another).organization)
+                && this.name.equals(((DailyMealItem) another).name)
+                && this.englishName.equals(((DailyMealItem) another).englishName)
+                && this.vegetarian == ((DailyMealItem) another).vegetarian
+                && this.price == ((DailyMealItem) another).price
+                && Arrays.equals(this.image, ((DailyMealItem) another).image)
+        );
     }
 
     @Override

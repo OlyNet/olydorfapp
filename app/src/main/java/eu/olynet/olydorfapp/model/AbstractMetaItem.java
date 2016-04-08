@@ -273,6 +273,23 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
     @Override
     public abstract boolean equals(Object obj);
 
+    /**
+     * Checks whether another AbstractMetaItem is exactly the same (i.e. every field is equal) as
+     * this one. The regular equals method only checks the id.
+     *
+     * @param another the other AbstractMetaItem.
+     * @return true if and only if they are exactly equal.
+     */
+    public boolean exactlyEquals(AbstractMetaItem<?> another) {
+        return (this.equals(another)
+                && this.id == another.id
+                && this.createDate.equals(another.createDate)
+                && this.editDate.equals(another.editDate)
+                && this.createUser.equals(another.createUser)
+                && this.editUser.equals(another.editUser)
+                && this.lastUsedDate.equals(another.lastUsedDate));
+    }
+
     @Override
     public String toString() {
         String result = super.toString() + "\n";

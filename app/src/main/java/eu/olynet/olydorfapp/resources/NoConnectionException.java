@@ -8,7 +8,7 @@ package eu.olynet.olydorfapp.resources;
 import java.io.IOException;
 
 /**
- * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
+ * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 public class NoConnectionException extends IOException {
 

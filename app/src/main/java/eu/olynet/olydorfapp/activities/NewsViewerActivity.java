@@ -8,7 +8,7 @@ import eu.olynet.olydorfapp.fragments.NewsViewerFragment;
 import eu.olynet.olydorfapp.resources.ResourceManager;
 
 /**
- * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
+ * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 public class NewsViewerActivity extends AppCompatActivity {
 

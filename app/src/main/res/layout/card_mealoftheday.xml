@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) OlyNet 2016 - All Rights Reserved
   ~ Unauthorized copying of this file, via any medium is strictly prohibited.
   ~ Proprietary and confidential
@@ -30,19 +29,19 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:adjustViewBounds="true"
-            android:text="Fraß des Tages (20. März)"
-            android:textSize="20sp"
-            android:textStyle="bold"
             android:gravity="center"
-            android:textColor="#9e9e9e" />
+            android:text="Fraß des Tages (20. März)"
+            android:textColor="#9e9e9e"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <com.makeramen.roundedimageview.RoundedImageView xmlns:rounded_image_view="http://schemas.android.com/apk/res-auto"
             android:id="@+id/dailyMealImage"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/dailyMealHeadline"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_below="@+id/dailyMealHeadline"
             android:adjustViewBounds="true"
             android:contentDescription="Food image"
             android:maxHeight="150dp"
@@ -78,21 +77,21 @@
                 android:id="@+id/dailyMealPrice"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="4,40 €"
-                android:textSize="16sp"
                 android:layout_gravity="bottom|right"
-                android:gravity="left|bottom" />
+                android:layout_weight="0.5"
+                android:gravity="left|bottom"
+                android:text="4,40 €"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/dailyMealCook"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="Wilhelmine"
-                android:textSize="16sp"
                 android:layout_gravity="right"
-                android:gravity="bottom|right" />
+                android:layout_weight="0.5"
+                android:gravity="bottom|right"
+                android:text="Wilhelmine"
+                android:textSize="16sp" />
 
         </LinearLayout>
 

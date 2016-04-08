@@ -12,7 +12,7 @@ import android.os.PowerManager;
 import android.util.Log;
 
 /**
- * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
+ * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 public class BootReceiver extends BroadcastReceiver {
 

@@ -17,7 +17,7 @@ import java.io.IOException;
 import eu.olynet.olydorfapp.model.OrganizationItem;
 
 /**
- * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
+ * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 public class OrganizationSerializer extends JsonSerializer<OrganizationItem> {
 

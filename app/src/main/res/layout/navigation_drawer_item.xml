@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/NavDrawerRowLayout"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/navigation_drawer_item_height"
-    style="@style/NavDrawerRowLayout">
+    android:layout_height="@dimen/navigation_drawer_item_height">
 
     <eu.olynet.olydorfapp.customViews.TintOnStateImageView
         android:id="@+id/navDrawerItemIcon"
@@ -16,6 +16,6 @@
         android:id="@+id/navDrawerItemText"
         style="@style/NavDrawerRowItemText"
         tools:fontFamily="sans-serif-medium"
-        tools:textColor="@color/nav_drawer_item_text_selected"/>
+        tools:textColor="@color/nav_drawer_item_text_selected" />
 
 </FrameLayout>

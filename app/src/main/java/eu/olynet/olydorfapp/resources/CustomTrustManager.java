@@ -27,7 +27,7 @@ import javax.net.ssl.X509TrustManager;
  * https://stackoverflow.com/questions/27562666/programmatically-add-a-certificate-authority-while-keeping-android-system-ssl-ce
  * http://nelenkov.blogspot.de/2011/12/using-custom-certificate-trust-store-on.html
  *
- * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
+ * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 public class CustomTrustManager implements X509TrustManager {
 

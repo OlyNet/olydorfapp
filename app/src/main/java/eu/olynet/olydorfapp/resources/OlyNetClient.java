@@ -29,7 +29,7 @@ import eu.olynet.olydorfapp.model.OrganizationMetaItem;
  * Every resource that is available via the ResourceManager needs to have a corresponding functions
  * (using the correct name) here.
  *
- * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
+ * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  * @see eu.olynet.olydorfapp.resources.ResourceManager
  */
 @Produces(MediaType.APPLICATION_JSON)

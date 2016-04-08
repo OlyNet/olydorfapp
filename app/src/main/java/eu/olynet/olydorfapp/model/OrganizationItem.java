@@ -8,15 +8,15 @@ package eu.olynet.olydorfapp.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Arrays;
 import java.util.Date;
 
 /**
- * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
+ * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
         getterVisibility = JsonAutoDetect.Visibility.NONE,
@@ -66,11 +66,11 @@ public class OrganizationItem extends OrganizationMetaItem {
         this.description = in.readString();
 
         int imageLength = in.readInt();
-        this.logo = new byte[imageLength];
-        if (imageLength <= 0) {
-            in.readByteArray(this.logo);
+        if (imageLength < 0) {
+            in.readByteArray(new byte[0]);
             this.logo = null;
         } else {
+            this.logo = new byte[imageLength];
             in.readByteArray(this.logo);
         }
     }
@@ -122,7 +122,7 @@ public class OrganizationItem extends OrganizationMetaItem {
         dest.writeString(website);
         dest.writeString(description);
 
-        int imageLength = (logo != null ? logo.length : 0);
+        int imageLength = (logo != null ? logo.length : -1);
         dest.writeInt(imageLength);
         if (imageLength <= 0) {
             dest.writeByteArray(new byte[0]);
@@ -170,6 +170,17 @@ public class OrganizationItem extends OrganizationMetaItem {
         this.website = updatedItem.website;
         this.description = updatedItem.description;
         this.logo = updatedItem.logo;
+    }
+
+    @Override
+    public boolean exactlyEquals(AbstractMetaItem<?> another) {
+        return (super.exactlyEquals(another)
+                && this.name.equals(((OrganizationItem) another).name)
+                && this.shortname.equals(((OrganizationItem) another).shortname)
+                && this.website.equals(((OrganizationItem) another).website)
+                && this.description.equals(((OrganizationItem) another).description)
+                && Arrays.equals(this.logo, ((OrganizationItem) another).logo)
+        );
     }
 
     @Override

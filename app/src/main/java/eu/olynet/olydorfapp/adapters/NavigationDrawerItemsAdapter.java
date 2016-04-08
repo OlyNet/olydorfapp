@@ -6,7 +6,6 @@
 package eu.olynet.olydorfapp.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;

@@ -5,13 +5,13 @@
 
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Tab 2 says Hello :D"
-        android:id="@+id/textView"
+        android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:textColor="@color/OlympiaDarkBlue"
-        android:layout_centerHorizontal="true" />
+        android:text="Tab 2 says Hello :D"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/OlympiaDarkBlue" />
 
 </RelativeLayout>

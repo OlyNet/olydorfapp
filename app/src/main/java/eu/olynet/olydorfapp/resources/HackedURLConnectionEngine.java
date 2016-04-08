@@ -5,8 +5,6 @@
  */
 package eu.olynet.olydorfapp.resources;
 
-import android.util.Log;
-
 import org.jboss.resteasy.client.jaxrs.engines.URLConnectionEngine;
 import org.jboss.resteasy.client.jaxrs.internal.ClientInvocation;
 
@@ -19,7 +17,7 @@ import javax.net.ssl.SSLContext;
 /**
  * Wrapped version of the URLConnectionEngine because it is a piece of shit.
  *
- * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
+ * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 public class HackedURLConnectionEngine extends URLConnectionEngine {
 

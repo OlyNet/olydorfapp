@@ -16,7 +16,7 @@ import android.util.Log;
 import java.util.Calendar;
 
 /**
- * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
+ * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 public class ResourceAlarm extends BroadcastReceiver {
 
