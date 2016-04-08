@@ -16,16 +16,25 @@
 #   public *;
 #}
 
--keep class javax.imageio.IIOImage
+-keepattributes *Annotation*,Signature,InnerClasses
 
--keep public class eu.olynet.olydorfapp.model.*
-
--keep class org.codehaus.jackson.databind.ObjectMapper {
+# Proguard configuration for Jackson 2.x (fasterxml package instead of codehaus package)
+-keep class com.fasterxml.jackson.databind.ObjectMapper {
     public <methods>;
     protected <methods>;
 }
--keep class org.codehaus.jackson.databind.ObjectWriter {
+-keep class com.fasterxml.jackson.databind.ObjectWriter {
     public ** writeValueAsString(**);
 }
 
--keepattributes *Annotation*,Signature,InnerClasses
+# http://stackoverflow.com/questions/29679177/cardview-shadow-not-appearing-in-lollipop-after-obfuscate-with-proguard/29698051
+-keep class android.support.v7.widget.RoundRectDrawable { *; }
+
+# Appcompat
+-keep public class android.support.v7.widget.** { *; }
+-keep public class android.support.v7.internal.widget.** { *; }
+-keep public class android.support.v7.internal.view.menu.** { *; }
+
+-keep public class * extends android.support.v4.view.ActionProvider {
+    public <init>(android.content.Context);
+}

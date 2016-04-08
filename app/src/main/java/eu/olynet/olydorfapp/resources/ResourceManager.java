@@ -83,26 +83,40 @@ public class ResourceManager {
     private static final Map<Class, String> treeCaches;
 
     /**
+     * A static Map mapping the valid Classes to their corresponding locking Objects. Locking on the
+     * Classes directly would also be possible, but could lead to problems if they were also used in
+     * some other place.
+     */
+    private static final Map<Class, Object> lockMap;
+
+    /**
      * All items contained in this Set will be skipped during cleanup operations.
      */
     private static final Set<Class> skipDuringCleanup;
 
     /* statically fill the Map and the Set */
     static {
-        Map<Class, String> initMap = new LinkedHashMap<>();
-        initMap.put(NewsMetaItem.class, "news");
-        initMap.put(FoodMetaItem.class, "food");
-        initMap.put(DailyMealMetaItem.class, "dailymeal");
-        initMap.put(OrganizationMetaItem.class, "organization");
-        initMap.put(MealOfTheDayMetaItem.class, "mealoftheday");
+        Map<Class, String> initTreeCaches = new LinkedHashMap<>();
+        initTreeCaches.put(NewsMetaItem.class, "news");
+        initTreeCaches.put(FoodMetaItem.class, "food");
+        initTreeCaches.put(DailyMealMetaItem.class, "dailymeal");
+        initTreeCaches.put(OrganizationMetaItem.class, "organization");
+        initTreeCaches.put(MealOfTheDayMetaItem.class, "mealoftheday");
 
-        Set<Class> initSet = new LinkedHashSet<>();
-        initSet.add(FoodMetaItem.class);
-        initSet.add(DailyMealMetaItem.class);
-        initSet.add(OrganizationMetaItem.class);
+        Set<Class> initSkipDuringCleanup = new LinkedHashSet<>();
+        initSkipDuringCleanup.add(FoodMetaItem.class);
+        initSkipDuringCleanup.add(DailyMealMetaItem.class);
+        initSkipDuringCleanup.add(OrganizationMetaItem.class);
 
-        treeCaches = Collections.unmodifiableMap(initMap);
-        skipDuringCleanup = Collections.unmodifiableSet(initSet);
+        treeCaches = Collections.unmodifiableMap(initTreeCaches);
+        skipDuringCleanup = Collections.unmodifiableSet(initSkipDuringCleanup);
+
+        /* automatically generate lockMap */
+        Map<Class, Object> initLockMap = new LinkedHashMap<>();
+        for (Class<?> clazz : initTreeCaches.keySet()) {
+            initLockMap.put(clazz, new Object());
+        }
+        lockMap = Collections.unmodifiableMap(initLockMap);
     }
 
     /**
@@ -777,42 +791,45 @@ public class ResourceManager {
                 continue;
             }
 
-            Log.d("ResourceManager", "cleanup of '" + clazz + "' started");
-            try {
-                /* get the TreeSet from the cache */
-                cachedTree = getCachedMetaDataTree(clazz);
-                if (cachedTree == null) {
-                    Log.w("ResourceManager", "cleanup of '" + clazz + "' failed, tree is null");
-                    continue;
+            /* lock for thread-safety */
+            synchronized (lockMap.get(clazz)) {
+                Log.d("ResourceManager", "cleanup of '" + clazz + "' started");
+                try {
+                    /* get the TreeSet from the cache */
+                    cachedTree = getCachedMetaDataTree(clazz);
+                    if (cachedTree == null) {
+                        Log.w("ResourceManager", "cleanup of '" + clazz + "' failed, tree is null");
+                        continue;
+                    }
+
+                    /* get a copy of the tree that is sorted by lastUsedDate */
+                    TreeSet<AbstractMetaItem<?>> tree = new TreeSet<>(comparator);
+                    tree.addAll(cachedTree);
+
+                    /* create a dummy element with the specific lastUsedDate */
+                    AbstractMetaItem<?> filterDummy = new AbstractMetaItem.DummyFactory(clazz)
+                            .setLastUsedDate(cutoff)
+                            .build();
+
+                    /* get all items last used on or before the cutoff createDate */
+                    Set<AbstractMetaItem<?>> deleteSet = new HashSet<>(tree.headSet(
+                            tree.floor(filterDummy), true));
+
+                    /* delete all cached entries of the full objects */
+                    for (AbstractMetaItem metaItem : deleteSet) {
+                        deleteCachedItem(clazz, metaItem.getId());
+                    }
+
+                    /* remove all references to deleted items from the meta-tree */
+                    tree.removeAll(deleteSet);
+
+                    /* write the pruned tree back to cache */
+                    putCachedMetaDataTree(clazz, tree);
+                } catch (Exception e) {
+                    throw new RuntimeException("cleanup of '" + clazz + "' failed", e);
                 }
-
-                /* get a copy of the tree that is sorted by lastUsedDate */
-                TreeSet<AbstractMetaItem<?>> tree = new TreeSet<>(comparator);
-                tree.addAll(cachedTree);
-
-                /* create a dummy element with the specific lastUsedDate */
-                AbstractMetaItem<?> filterDummy = new AbstractMetaItem.DummyFactory(clazz)
-                        .setLastUsedDate(cutoff)
-                        .build();
-
-                /* get all items last used on or before the cutoff createDate */
-                Set<AbstractMetaItem<?>> deleteSet = new HashSet<>(tree.headSet(
-                        tree.floor(filterDummy), true));
-
-                /* delete all cached entries of the full objects */
-                for (AbstractMetaItem metaItem : deleteSet) {
-                    deleteCachedItem(clazz, metaItem.getId());
-                }
-
-                /* remove all references to deleted items from the meta-tree */
-                tree.removeAll(deleteSet);
-
-                /* write the pruned tree back to cache */
-                putCachedMetaDataTree(clazz, tree);
-            } catch (Exception e) {
-                throw new RuntimeException("cleanup of cached data failed for '" + clazz + "'", e);
+                Log.d("ResourceManager", "cleanup of '" + clazz + "' finished");
             }
-            Log.d("ResourceManager", "cleanup of '" + clazz + "' finished");
         }
     }
 
@@ -834,118 +851,15 @@ public class ResourceManager {
     public AbstractMetaItem<?> getItem(Class<?> clazz, int id) {
         abortIfNotInitialized();
 
-        /* get the corresponding meta-data tree */
-        TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(clazz);
-        if (tree == null) {
-            throw new RuntimeException("meta-data tree for '" + clazz + "' not found");
-        }
-
-        try {
-            /* create a dummy item with the same id */
-            AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz)
-                    .setId(id)
-                    .build();
-
-            /* use the dummy item to search for the real item within the tree */
-            AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
-            if (metaItem == null || metaItem.getId() != id || metaItem.getEditDate() == null) {
-                throw new RuntimeException("meta-data tree of type '" + clazz
-                        + "' does not contain the requested element " + id);
+        /* lock for thread-safety */
+        synchronized (lockMap.get(clazz)) {
+            /* get the corresponding meta-data tree */
+            TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(clazz);
+            if (tree == null) {
+                throw new RuntimeException("meta-data tree for '" + clazz + "' not found");
             }
 
-            /* check cache and query server on miss or createDate mismatch */
-            AbstractMetaItem<?> item = getCachedItem(clazz, id);
-            if (item == null || !item.getEditDate().equals(metaItem.getEditDate())) {
-                Log.i("ResourceManager", "Cached item is outdated, fetch necessary");
-                AbstractMetaItem<?> webItem;
-                try {
-                    webItem = fetchItem(clazz, id);
-                } catch (NotFoundException e) { /* HTTP 404 */
-                    webItem = null;
-
-                    /* remove the item from the meta-data tree */
-                    if (!tree.remove(dummyItem)) {
-                        /* this should never happen, the item should always be present */
-                        throw new RuntimeException("'" + clazz + "' with id " + id
-                                + "does not exist in the meta-data tree", e);
-                    }
-                } catch (NoConnectionException e) {
-                    webItem = null;
-                }
-
-                /* return webItem instead of the cached item if successful */
-                if (webItem != null) {
-                    item = webItem;
-                } else {
-                    Log.w("ResourceManager", "Fetch failed for some reason");
-                }
-            } else {
-                Log.d("ResourceManager", "Cached item " + id + " of type '" + clazz +
-                        "' was up-to-createDate, no fetch necessary");
-            }
-
-            /* check if we have some valid item (up-to-createDate or not) */
-            if (item != null) {
-                /* update last used */
-                item.setLastUsedDate();
-
-                /* update meta-data tree */
-                Method updateItem = clazz.getMethod("updateItem", clazz);
-                updateItem.invoke(clazz.cast(metaItem), clazz.cast(item));
-
-                /* write item to cache */
-                Log.d("ResourceManager", "Updating cache for item with id " + id
-                        + " and meta-data tree '" + clazz + "'");
-                putCachedItem(clazz, item);
-            }
-
-            /* write meta-data tree to cache */
-            Log.d("ResourceManager", "Updating meta-data tree cache for '" + clazz + "'");
-            putCachedMetaDataTree(clazz, tree);
-
-            return item;
-        } catch (Exception e) {
-            Log.e("ResourceManager", "exception information in case it gets wrapped to often", e);
-            throw new RuntimeException("during the getItem() for '" + clazz + "' with id " + id, e);
-        }
-    }
-
-    /**
-     * Get a list of items from the server (preferably) or the cache.
-     *
-     * @param clazz      the Class of the item to be fetched. Must be specified within the
-     *                   treeCaches Map.
-     * @param ids        the List of IDs identifying the fetched items.
-     * @param comparator The comparator specifying the ordering of the items. If it is <b>null</b>,
-     *                   items will be sorted using their inherent order.
-     * @return a List of the requested Items with the specified ordering.
-     * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
-     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
-     * @throws RuntimeException         if one of the IDs requested is not present in the meta-data
-     *                                  tree or the whole tree itself is missing.
-     * @throws RuntimeException         if some weird Reflection error occurs.
-     */
-    @SuppressWarnings("unchecked")
-    public List<AbstractMetaItem<?>> getItems(Class<?> clazz, List<Integer> ids,
-                                              Comparator<AbstractMetaItem<?>> comparator) {
-        abortIfNotInitialized();
-
-        /* get the corresponding meta-data tree */
-        TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(clazz);
-        if (tree == null) {
-            throw new RuntimeException("meta-data tree for '" + clazz + "' not found, creating it");
-        }
-
-        /* TreeSet used for ordering */
-        TreeSet<AbstractMetaItem<?>> itemTree;
-        if (comparator != null) {
-            itemTree = new TreeSet<>(comparator);
-        } else {
-            itemTree = new TreeSet<>();
-        }
-
-        try {
-            for (int id : ids) {
+            try {
                 /* create a dummy item with the same id */
                 AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz)
                         .setId(id)
@@ -958,7 +872,7 @@ public class ResourceManager {
                             + "' does not contain the requested element " + id);
                 }
 
-                /* check cache and query server on miss or editDate mismatch */
+                /* check cache and query server on miss or createDate mismatch */
                 AbstractMetaItem<?> item = getCachedItem(clazz, id);
                 if (item == null || !item.getEditDate().equals(metaItem.getEditDate())) {
                     Log.i("ResourceManager", "Cached item is outdated, fetch necessary");
@@ -969,11 +883,7 @@ public class ResourceManager {
                         webItem = null;
 
                         /* remove the item from the meta-data tree */
-                        if (!tree.remove(dummyItem)) {
-                            /* this should never happen, the item should always be present */
-                            throw new RuntimeException("'" + clazz + "' with id " + id
-                                    + "does not exist in the meta-data tree", e);
-                        }
+                        tree.remove(dummyItem);
                     } catch (NoConnectionException e) {
                         webItem = null;
                     }
@@ -998,25 +908,132 @@ public class ResourceManager {
                     Method updateItem = clazz.getMethod("updateItem", clazz);
                     updateItem.invoke(clazz.cast(metaItem), clazz.cast(item));
 
-                    /* write updated item to cache */
-                    Log.d("ResourceManager", "Updating cache for item " + id + " of type " + clazz);
+                    /* write item to cache */
+                    Log.d("ResourceManager", "Updating cache for item with id " + id
+                            + " and meta-data tree '" + clazz + "'");
                     putCachedItem(clazz, item);
-
-                    /* add item to the Collection of items to be returned */
-                    itemTree.add(item);
                 }
+
+                /* write meta-data tree to cache */
+                Log.d("ResourceManager", "Updating meta-data tree cache for '" + clazz + "'");
+                putCachedMetaDataTree(clazz, tree);
+
+                return item;
+            } catch (Exception e) {
+                Log.e("ResourceManager", "exception information if it gets wrapped to often", e);
+                throw new RuntimeException("during the getItem for '" + clazz + "' id " + id, e);
             }
-        } catch (Exception e) {
-            Log.e("ResourceManager", "exception information in case it gets wrapped to often", e);
-            throw new RuntimeException("during the getItems() for '" + clazz + "' with ids: "
-                    + Arrays.toString(ids.toArray()), e);
         }
+    }
 
-        Log.d("ResourceManager", "Updating meta-data tree cache of type '" + clazz + "'");
-        putCachedMetaDataTree(clazz, tree);
+    /**
+     * Get a list of items from the server (preferably) or the cache.
+     *
+     * @param clazz      the Class of the item to be fetched. Must be specified within the
+     *                   treeCaches Map.
+     * @param ids        the List of IDs identifying the fetched items.
+     * @param comparator The comparator specifying the ordering of the items. If it is <b>null</b>,
+     *                   items will be sorted using their inherent order.
+     * @return a List of the requested Items with the specified ordering.
+     * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws RuntimeException         if one of the IDs requested is not present in the meta-data
+     *                                  tree or the whole tree itself is missing.
+     * @throws RuntimeException         if some weird Reflection error occurs.
+     */
+    @SuppressWarnings("unchecked")
+    public List<AbstractMetaItem<?>> getItems(Class<?> clazz, List<Integer> ids,
+                                              Comparator<AbstractMetaItem<?>> comparator) {
+        abortIfNotInitialized();
 
-        /* convert and return result */
-        return new ArrayList<>(itemTree);
+        /* lock for thread-safety */
+        synchronized (lockMap.get(clazz)) {
+            /* get the corresponding meta-data tree */
+            TreeSet<AbstractMetaItem<?>> tree = getCachedMetaDataTree(clazz);
+            if (tree == null) {
+                throw new RuntimeException("meta-data tree for '" + clazz + "' not found, creating it");
+            }
+
+            /* TreeSet used for ordering */
+            TreeSet<AbstractMetaItem<?>> itemTree;
+            if (comparator != null) {
+                itemTree = new TreeSet<>(comparator);
+            } else {
+                itemTree = new TreeSet<>();
+            }
+
+            try {
+                for (int id : ids) {
+                    /* create a dummy item with the same id */
+                    AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz)
+                            .setId(id)
+                            .build();
+
+                    /* use the dummy item to search for the real item within the tree */
+                    AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
+                    if (metaItem == null || metaItem.getId() != id
+                            || metaItem.getEditDate() == null) {
+                        throw new RuntimeException("meta-data tree of type '" + clazz
+                                + "' does not contain the requested element " + id);
+                    }
+
+                    /* check cache and query server on miss or editDate mismatch */
+                    AbstractMetaItem<?> item = getCachedItem(clazz, id);
+                    if (item == null || !item.getEditDate().equals(metaItem.getEditDate())) {
+                        Log.i("ResourceManager", "Cached item is outdated, fetch necessary");
+                        AbstractMetaItem<?> webItem;
+                        try {
+                            webItem = fetchItem(clazz, id);
+                        } catch (NotFoundException e) { /* HTTP 404 */
+                            webItem = null;
+
+                            /* remove the item from the meta-data tree */
+                            tree.remove(dummyItem);
+                        } catch (NoConnectionException e) {
+                            webItem = null;
+                        }
+
+                        /* return webItem instead of the cached item if successful */
+                        if (webItem != null) {
+                            item = webItem;
+                        } else {
+                            Log.w("ResourceManager", "Fetch failed for some reason");
+                        }
+                    } else {
+                        Log.d("ResourceManager", "Cached item " + id + " of type '" + clazz +
+                                "' was up-to-createDate, no fetch necessary");
+                    }
+
+                    /* check if we have some valid item (up-to-createDate or not) */
+                    if (item != null) {
+                        /* update last used */
+                        item.setLastUsedDate();
+
+                        /* update meta-data tree */
+                        Method updateItem = clazz.getMethod("updateItem", clazz);
+                        updateItem.invoke(clazz.cast(metaItem), clazz.cast(item));
+
+                        /* write updated item to cache */
+                        Log.d("ResourceManager", "Updating cache for item " + id + " of type " + clazz);
+                        putCachedItem(clazz, item);
+
+                        /* add item to the Collection of items to be returned */
+                        itemTree.add(item);
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("ResourceManager", "exception information in case it gets wrapped to often", e);
+                throw new RuntimeException("during the getItems() for '" + clazz + "' with ids: "
+                        + Arrays.toString(ids.toArray()), e);
+            }
+
+            Log.d("ResourceManager", "Updating meta-data tree cache of type '" + clazz + "'");
+            putCachedMetaDataTree(clazz, tree);
+
+
+            /* convert and return result */
+            return new ArrayList<>(itemTree);
+        }
     }
 
     /**
@@ -1035,62 +1052,65 @@ public class ResourceManager {
     public List<AbstractMetaItem<?>> getItems(Class<?> clazz) {
         abortIfNotInitialized();
 
+        /* lock for thread-safety */
+        synchronized (lockMap.get(clazz)) {
         /* get the corresponding meta-data tree */
-        TreeSet<AbstractMetaItem<?>> cachedTree = getCachedMetaDataTree(clazz);
-        TreeSet<AbstractMetaItem<?>> tree = new TreeSet<>();
+            TreeSet<AbstractMetaItem<?>> cachedTree = getCachedMetaDataTree(clazz);
+            TreeSet<AbstractMetaItem<?>> tree = new TreeSet<>();
 
-        List<AbstractMetaItem<?>> result;
-        try {
-            result = fetchItems(clazz);
-            if (result == null) {
-                throw new NoConnectionException(); /* dirty way to go to the catch clause */
-            }
+            List<AbstractMetaItem<?>> result;
+            try {
+                result = fetchItems(clazz);
+                if (result == null) {
+                    throw new NoConnectionException(); /* dirty way to go to the catch clause */
+                }
 
             /* dynamically create a MetaItem for each Item and add it to the new tree */
-            for (AbstractMetaItem<?> item : result) {
-                Constructor<?> cons = clazz.getConstructor(clazz);
-                AbstractMetaItem<?> metaItem = (AbstractMetaItem<?>) cons.newInstance(item);
-                tree.add(metaItem);
+                for (AbstractMetaItem<?> item : result) {
+                    Constructor<?> cons = clazz.getConstructor(clazz);
+                    AbstractMetaItem<?> metaItem = (AbstractMetaItem<?>) cons.newInstance(item);
+                    tree.add(metaItem);
 
                 /* write item to cache */
-                Log.d("ResourceManager", "Updating cache for item " + item.getId() + " of type "
-                        + clazz);
-                putCachedItem(clazz, item);
-            }
+                    Log.d("ResourceManager", "Updating cache for item " + item.getId() + " of type "
+                            + clazz);
+                    putCachedItem(clazz, item);
+                }
 
             /* delete any items that no longer exist */
-            if (cachedTree != null) {
-                cachedTree.removeAll(tree);
-                for (AbstractMetaItem<?> metaItem : cachedTree) {
-                    Log.d("ResourceManager", "Deleting cached item " + metaItem.getId()
-                            + " of type '" + clazz + "'");
-                    deleteCachedItem(clazz, metaItem.getId());
-                }
-            }
-
-            /* write new meta-data tree to cache */
-            Log.d("ResourceManager", "Updating meta-data tree cache of type '" + clazz + "'");
-            putCachedMetaDataTree(clazz, tree);
-            setCacheLastUpdated(clazz);
-        } catch (NoConnectionException e) {
-            if (cachedTree == null) {
-                result = null;
-            } else {
-                /* return List of cached items */
-                result = new ArrayList<>();
-                for (AbstractMetaItem<?> metaItem : cachedTree) {
-                    AbstractMetaItem<?> item = getCachedItem(clazz, metaItem.getId());
-                    if (item != null) {
-                        result.add(item);
+                if (cachedTree != null) {
+                    cachedTree.removeAll(tree);
+                    for (AbstractMetaItem<?> metaItem : cachedTree) {
+                        Log.d("ResourceManager", "Deleting cached item " + metaItem.getId()
+                                + " of type '" + clazz + "'");
+                        deleteCachedItem(clazz, metaItem.getId());
                     }
                 }
-            }
-        } catch (Exception e) {
-            Log.e("ResourceManager", "exception information in case it gets wrapped to often", e);
-            throw new RuntimeException("during the getItems() for '" + clazz + "'", e);
-        }
 
-        return result;
+            /* write new meta-data tree to cache */
+                Log.d("ResourceManager", "Updating meta-data tree cache of type '" + clazz + "'");
+                putCachedMetaDataTree(clazz, tree);
+                setCacheLastUpdated(clazz);
+            } catch (NoConnectionException e) {
+                if (cachedTree == null) {
+                    result = null;
+                } else {
+                /* return List of cached items */
+                    result = new ArrayList<>();
+                    for (AbstractMetaItem<?> metaItem : cachedTree) {
+                        AbstractMetaItem<?> item = getCachedItem(clazz, metaItem.getId());
+                        if (item != null) {
+                            result.add(item);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("ResourceManager", "exception information in case it gets wrapped to often", e);
+                throw new RuntimeException("during the getItems() for '" + clazz + "'", e);
+            }
+
+            return result;
+        }
     }
 
     /**
@@ -1112,55 +1132,58 @@ public class ResourceManager {
     public AbstractMetaItem<?> getMetaItem(Class<?> clazz, int id, boolean forceUpdate) {
         abortIfNotInitialized();
 
-        /* get the corresponding meta-data tree */
-        TreeSet<AbstractMetaItem<?>> cachedTree = getCachedMetaDataTree(clazz);
+        /* lock for thread-safety */
+        synchronized (lockMap.get(clazz)) {
+            /* get the corresponding meta-data tree */
+            TreeSet<AbstractMetaItem<?>> cachedTree = getCachedMetaDataTree(clazz);
 
-        /* fetch the up-to-date meta-data item from the server */
-        AbstractMetaItem<?> result = null;
-        if (isCacheStale(clazz) || forceUpdate || cachedTree == null) {
-            try {
-                result = fetchMetaItem(clazz, id);
-            } catch (NoConnectionException nce) {
-                result = null;
+            /* fetch the up-to-date meta-data item from the server */
+            AbstractMetaItem<?> result = null;
+            if (isCacheStale(clazz) || forceUpdate || cachedTree == null) {
+                try {
+                    result = fetchMetaItem(clazz, id);
+                } catch (NoConnectionException nce) {
+                    result = null;
+                }
+                if (result == null) {
+                    Log.w("ResourceManager", "fetch from server failed");
+                }
+            } else {
+                Log.d("ResourceManager", "cache not stale, not querying server");
             }
+
+            if (cachedTree == null) {
+                Log.w("ResourceManager", "meta-data tree for '" + clazz + "' not found, creating it");
+                cachedTree = new TreeSet<>();
+            }
+
+            /* try to use a cached item instead */
             if (result == null) {
-                Log.w("ResourceManager", "fetch from server failed");
+                /* create a dummy item with the same id and use it to search for the requested item */
+                AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz)
+                        .setId(id)
+                        .build();
+                result = cachedTree.floor(dummyItem);
+
+                /* if the returned item does not fit, set it to null */
+                if (result == null || result.getId() != id || result.getEditDate() == null) {
+                    result = null;
+                }
             }
-        } else {
-            Log.d("ResourceManager", "cache not stale, not querying server");
-        }
 
-        if (cachedTree == null) {
-            Log.w("ResourceManager", "meta-data tree for '" + clazz + "' not found, creating it");
-            cachedTree = new TreeSet<>();
-        }
+            /* update cache */
+            if (result != null) {
+                result.setLastUsedDate();
+                cachedTree.remove(result);
+                cachedTree.add(result);
 
-        /* try to use a cached item instead */
-        if (result == null) {
-            /* create a dummy item with the same id and use it to search for the requested item */
-            AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz)
-                    .setId(id)
-                    .build();
-            result = cachedTree.floor(dummyItem);
-
-            /* if the returned item does not fit, set it to null */
-            if (result == null || result.getId() != id || result.getEditDate() == null) {
-                result = null;
+                Log.d("ResourceManager", "Updating meta-data tree cache of type '" + clazz + "'");
+                putCachedMetaDataTree(clazz, cachedTree);
             }
+
+            /* return the result, which can still be null */
+            return result;
         }
-
-        /* update cache */
-        if (result != null) {
-            result.setLastUsedDate();
-            cachedTree.remove(result);
-            cachedTree.add(result);
-
-            Log.d("ResourceManager", "Updating meta-data tree cache of type '" + clazz + "'");
-            putCachedMetaDataTree(clazz, cachedTree);
-        }
-
-        /* return the result, which can still be null */
-        return result;
     }
 
     /**
@@ -1178,65 +1201,68 @@ public class ResourceManager {
     public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, boolean forceUpdate) {
         abortIfNotInitialized();
 
-        /* get the corresponding meta-data tree */
-        TreeSet<AbstractMetaItem<?>> cachedTree = getCachedMetaDataTree(clazz);
+        /* lock for thread-safety */
+        synchronized (lockMap.get(clazz)) {
+            /* get the corresponding meta-data tree */
+            TreeSet<AbstractMetaItem<?>> cachedTree = getCachedMetaDataTree(clazz);
 
-        /* fetch meta-data from server */
-        List<AbstractMetaItem<?>> items = null;
-        boolean noConnection = false;
-        boolean generalError = false;
-        if (isCacheStale(clazz) || forceUpdate || cachedTree == null) {
-            try {
-                items = fetchMetaItems(clazz);
-            } catch (NoConnectionException nce) {
-                noConnection = true;
+            /* fetch meta-data from server */
+            List<AbstractMetaItem<?>> items = null;
+            boolean noConnection = false;
+            boolean generalError = false;
+            if (isCacheStale(clazz) || forceUpdate || cachedTree == null) {
+                try {
+                    items = fetchMetaItems(clazz);
+                } catch (NoConnectionException nce) {
+                    noConnection = true;
+                }
+
+                if (!noConnection && items == null) {
+                    generalError = true;
+                }
+            } else {
+                Log.d("ResourceManager", "cache not stale, not querying server");
             }
 
-            if (!noConnection && items == null) {
-                generalError = true;
-            }
-        } else {
-            Log.d("ResourceManager", "cache not stale, not querying server");
-        }
+            TreeSet<AbstractMetaItem<?>> result = new TreeSet<>();
+            if (items != null) {
+                Log.d("ResourceManager", "Received " + items.size() + " meta-data items from server");
 
-        TreeSet<AbstractMetaItem<?>> result = new TreeSet<>();
-        if (items != null) {
-            Log.d("ResourceManager", "Received " + items.size() + " meta-data items from server");
+                /* add all items to the result to be returned */
+                result.addAll(items);
 
-            /* add all items to the result to be returned */
-            result.addAll(items);
+                /* delete all no longer existing items */
+                if (cachedTree != null) {
+                    cachedTree.removeAll(result);
+                    for (AbstractMetaItem<?> metaItem : cachedTree) {
+                        Log.d("ResourceManager", "Deleting cached item " + metaItem.getId()
+                                + " of type '" + clazz + "'");
+                        deleteCachedItem(clazz, metaItem.getId());
+                    }
+                }
 
-            /* delete all no longer existing items */
-            if (cachedTree != null) {
-                cachedTree.removeAll(result);
-                for (AbstractMetaItem<?> metaItem : cachedTree) {
-                    Log.d("ResourceManager", "Deleting cached item " + metaItem.getId()
-                            + " of type '" + clazz + "'");
-                    deleteCachedItem(clazz, metaItem.getId());
+                /* write cache */
+                putCachedMetaDataTree(clazz, result);
+                setCacheLastUpdated(clazz);
+            } else { /* return cached data instead */
+                /* inform user of problem */
+                if (noConnection) {
+                    informUser("No internet connection detected, using cached data instead.");
+                } else if (generalError) {
+                    informUser("Unable to contact the server, using cached data instead.");
+                }
+
+                if (cachedTree == null) {
+                    Log.w("ResourceManager", "Cached metaTree is null");
+                    return null;
+                } else {
+                    Log.d("ResourceManager", "Cached metaTree size: " + cachedTree.size());
+                    result.addAll(cachedTree);
                 }
             }
 
-            /* write cache */
-            putCachedMetaDataTree(clazz, result);
-            setCacheLastUpdated(clazz);
-        } else { /* return cached data instead */
-            /* inform user of problem */
-            if (noConnection) {
-                informUser("No internet connection detected, using cached data instead.");
-            } else if (generalError) {
-                informUser("Unable to contact the server, using cached data instead.");
-            }
-
-            if (cachedTree == null) {
-                Log.w("ResourceManager", "Cached metaTree is null");
-                return null;
-            } else {
-                Log.d("ResourceManager", "Cached metaTree size: " + cachedTree.size());
-                result.addAll(cachedTree);
-            }
+            return result;
         }
-
-        return result;
     }
 
     /**
@@ -1263,6 +1289,11 @@ public class ResourceManager {
                                                                    comparator,
                                                            boolean forceUpdate) {
         abortIfNotInitialized();
+
+        /*
+         * no locking necessary - the actual work is delegated to getTreeOfMetaItems(clazz,
+         * forceUpdate) which takes care of the locking
+         */
 
         /* get the valid meta-data tree */
         TreeSet<AbstractMetaItem<?>> tempMetaTree = getTreeOfMetaItems(clazz, forceUpdate);
@@ -1331,10 +1362,13 @@ public class ResourceManager {
                                                            boolean forceUpdate) {
         abortIfNotInitialized();
 
-        TreeSet<AbstractMetaItem<?>> result = new TreeSet<>(comparator);
+        /* lock for thread-safety */
+        synchronized (lockMap.get(clazz)) {
+            TreeSet<AbstractMetaItem<?>> result = new TreeSet<>(comparator);
 
-        // TODO: implement meta-data structure management and fetching from server
+            // TODO: implement meta-data structure management and fetching from server
 
-        return result;
+            return result;
+        }
     }
 }
