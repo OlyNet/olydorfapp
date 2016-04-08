@@ -48,7 +48,7 @@ public class CustomTrustManager implements X509TrustManager {
             KeyStoreException {
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(
                 TrustManagerFactory.getDefaultAlgorithm());
-        tmf.init((KeyStore) store);
+        tmf.init(store);
         TrustManager[] trustManagers = tmf.getTrustManagers();
         return (X509TrustManager) trustManagers[0];
     }
@@ -66,7 +66,8 @@ public class CustomTrustManager implements X509TrustManager {
      *                                  empty string.
      */
     @Override
-    public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+    public void checkClientTrusted(X509Certificate[] chain, String authType)
+            throws CertificateException {
         try {
             localTrustManager.checkClientTrusted(chain, authType);
         } catch (CertificateException ce) {
@@ -87,7 +88,8 @@ public class CustomTrustManager implements X509TrustManager {
      *                                  empty string.
      */
     @Override
-    public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+    public void checkServerTrusted(X509Certificate[] chain, String authType)
+            throws CertificateException {
         try {
             localTrustManager.checkServerTrusted(chain, authType);
         } catch (CertificateException ce) {
