@@ -25,8 +25,7 @@ public class BootReceiver extends BroadcastReceiver {
 
         /* setup the ResourceAlarm only if the device just finished booting */
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
-            ResourceAlarm.setupAlarm(context);
-
+            AlarmReceiver.setupAlarm(context);
             Log.d("BootReceiver", "Alarm setup after boot");
         }
 

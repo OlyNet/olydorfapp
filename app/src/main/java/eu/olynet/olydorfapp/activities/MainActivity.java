@@ -32,7 +32,7 @@ import eu.olynet.olydorfapp.customViews.ScrimInsetsFrameLayout;
 import eu.olynet.olydorfapp.resources.BootReceiver;
 import eu.olynet.olydorfapp.resources.ResourceManager;
 import eu.olynet.olydorfapp.sliding.SlidingTabLayout;
-import eu.olynet.olydorfapp.tabs.ViewPagerAdapter;
+import eu.olynet.olydorfapp.adapters.ViewPagerAdapter;
 import eu.olynet.olydorfapp.utils.UpdateTask;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
@@ -41,7 +41,6 @@ import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
  * @author <a href="mailto:simon.domke@olynet.eu>Simon Domke</a>
  */
 public class MainActivity extends AppCompatActivity {
-    // Declaring Your View and Variables
 
     Toolbar toolbar;
     ViewPager pager;
@@ -61,10 +60,10 @@ public class MainActivity extends AppCompatActivity {
 
         init_navigator();
 
-        /* setup the ResourceManager */
+        /* setup ResourceManager */
         ResourceManager rm = ResourceManager.getInstance();
-        if (!rm.isInitialized()) {
-            rm.init(this);
+        if(!rm.isInitialized()) {
+            rm.init(getApplicationContext());
         }
 
         /* enable BootReceiver */
@@ -74,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                 PackageManager.DONT_KILL_APP);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

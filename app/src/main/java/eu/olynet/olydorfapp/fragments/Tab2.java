@@ -1,4 +1,4 @@
-package eu.olynet.olydorfapp.tabs;
+package eu.olynet.olydorfapp.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

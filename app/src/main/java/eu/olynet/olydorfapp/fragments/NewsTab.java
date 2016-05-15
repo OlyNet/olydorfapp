@@ -3,7 +3,7 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited.
  * Proprietary and confidential
  */
-package eu.olynet.olydorfapp.tabs;
+package eu.olynet.olydorfapp.fragments;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -79,6 +79,11 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -143,6 +148,9 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
         refreshing = false;
     }
 
+    /**
+     *
+     */
     protected class NewsUpdateTask extends AsyncTask<Void, Void, List<AbstractMetaItem<?>>> {
 
         private final Action action;

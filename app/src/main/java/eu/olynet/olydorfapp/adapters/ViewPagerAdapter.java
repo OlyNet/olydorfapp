@@ -3,11 +3,16 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited.
  * Proprietary and confidential
  */
-package eu.olynet.olydorfapp.tabs;
+package eu.olynet.olydorfapp.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+
+import eu.olynet.olydorfapp.fragments.BierstubeTab;
+import eu.olynet.olydorfapp.fragments.LaundryTab;
+import eu.olynet.olydorfapp.fragments.NewsTab;
+import eu.olynet.olydorfapp.fragments.Tab2;
 
 /**
  * Created by Edwin on 15/02/2015.

@@ -5,14 +5,11 @@ import android.support.v7.app.AppCompatActivity;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.fragments.NewsViewerFragment;
-import eu.olynet.olydorfapp.resources.ResourceManager;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 public class NewsViewerActivity extends AppCompatActivity {
-
-    private ResourceManager rm;
 
     NewsViewerFragment newsViewerFragment;
 
@@ -20,12 +17,6 @@ public class NewsViewerActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.news_view_activity);
-
-        /* instantiate the ResourceManager if necessary */
-        rm = ResourceManager.getInstance();
-        if (!rm.isInitialized()) {
-            rm.init(getApplicationContext());
-        }
 
         /* setup the Fragment */
         if (findViewById(R.id.news_view_activity_fragment) != null) {

@@ -3,7 +3,7 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited.
  * Proprietary and confidential
  */
-package eu.olynet.olydorfapp.tabs;
+package eu.olynet.olydorfapp.fragments;
 
 import android.app.Activity;
 import android.content.Intent;

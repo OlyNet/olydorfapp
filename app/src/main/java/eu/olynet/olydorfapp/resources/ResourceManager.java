@@ -73,7 +73,7 @@ public class ResourceManager {
 
     /**
      * The static Map mapping the valid Classes to their corresponding identifier Strings.
-     * <p>
+     * <p/>
      * All items that need to be available via this Class have to be added in the static{...}
      * section below.
      *
@@ -1033,7 +1033,9 @@ public class ResourceManager {
      * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws RuntimeException         if some weird Reflection error occurs.
+     * @deprecated Using this method usually does not make sense. Might be removed soon.
      */
+    @Deprecated
     public List<AbstractMetaItem<?>> getItems(Class<?> clazz) {
         abortIfNotInitialized();
 
@@ -1349,11 +1351,8 @@ public class ResourceManager {
 
         /* lock for thread-safety */
         synchronized (lockMap.get(clazz)) {
-            TreeSet<AbstractMetaItem<?>> result = new TreeSet<>(comparator);
-
+            throw new UnsupportedOperationException("not implemented yet");
             // TODO: implement meta-data structure management and fetching from server
-
-            return result;
         }
     }
 }

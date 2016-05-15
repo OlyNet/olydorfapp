@@ -3,7 +3,7 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited.
  * Proprietary and confidential
  */
-package eu.olynet.olydorfapp.tabs;
+package eu.olynet.olydorfapp.fragments;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -110,6 +110,9 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
         mRefreshLayout.setEnabled(true);
     }
 
+    /**
+     *
+     */
     protected class BierstubeUpdateTask extends AsyncTask<Void, Void, AbstractMetaItem<?>> {
 
         private final boolean forceUpdate;
@@ -147,7 +150,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
                 Calendar now = Calendar.getInstance();
 
                 /* fetch the full item only if the date matches */
-                if(itemDate.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
+                if (itemDate.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
                         itemDate.get(Calendar.MONTH) == now.get(Calendar.MONTH) &&
                         itemDate.get(Calendar.DAY_OF_MONTH) == now.get(Calendar.DAY_OF_MONTH)) {
                     // FIXME: probably broken due to timezone offset (UTC and MEZ/MESZ)

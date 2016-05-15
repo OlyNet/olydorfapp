@@ -18,7 +18,7 @@ import java.util.Calendar;
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
-public class ResourceAlarm extends BroadcastReceiver {
+public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -27,9 +27,13 @@ public class ResourceAlarm extends BroadcastReceiver {
         PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ResourceAlarm");
         wl.acquire();
 
-        /* perform the cleanup */
+        /* setup ResourceManager */
         ResourceManager rm = ResourceManager.getInstance();
-        rm.init(context);
+        if (!rm.isInitialized()) {
+            rm.init(context.getApplicationContext());
+        }
+
+        /* perform the cleanup */
         rm.cleanup();
         Log.d("ResourceAlarm", "ResourceManager.cleanup() completed.");
 
@@ -43,7 +47,7 @@ public class ResourceAlarm extends BroadcastReceiver {
         calendar.setTimeInMillis(System.currentTimeMillis());
 
         /* create the PendingIntent */
-        Intent intent = new Intent(context, ResourceAlarm.class);
+        Intent intent = new Intent(context, AlarmReceiver.class);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
         /* setup the AlarmManager */

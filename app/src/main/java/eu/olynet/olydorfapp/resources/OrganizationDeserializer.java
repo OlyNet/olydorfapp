@@ -61,12 +61,12 @@ public class OrganizationDeserializer extends JsonDeserializer<OrganizationItem>
      * This results in the stream pointing to the field name, so that
      * the two conditions align.
      * </p>
-     *
+     * <p/>
      * Post-condition is that the parser will point to the last
      * event that is part of deserialized value (or in case deserialization
      * fails, event that was not recognized or usable, which may be
      * the same event as the one it pointed to upon call).
-     *
+     * <p/>
      * Note that this method is never called for JSON null literal,
      * and thus deserializers need (and should) not check for it.
      *
