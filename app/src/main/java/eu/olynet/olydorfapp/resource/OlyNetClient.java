@@ -3,7 +3,7 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited.
  * Proprietary and confidential
  */
-package eu.olynet.olydorfapp.resources;
+package eu.olynet.olydorfapp.resource;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ import eu.olynet.olydorfapp.model.OrganizationMetaItem;
  * (using the correct name) here.
  *
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
- * @see eu.olynet.olydorfapp.resources.ResourceManager
+ * @see ProductionResourceManager
  */
 @Produces(MediaType.APPLICATION_JSON)
 public interface OlyNetClient {

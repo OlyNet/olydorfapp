@@ -16,9 +16,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Arrays;
 import java.util.Date;
 
-import eu.olynet.olydorfapp.resources.OrganizationDeserializer;
-import eu.olynet.olydorfapp.resources.OrganizationSerializer;
-
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */

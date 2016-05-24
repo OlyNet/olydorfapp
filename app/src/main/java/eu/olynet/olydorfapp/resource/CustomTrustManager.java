@@ -3,7 +3,7 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited.
  * Proprietary and confidential
  */
-package eu.olynet.olydorfapp.resources;
+package eu.olynet.olydorfapp.resource;
 
 import android.util.Log;
 
@@ -24,7 +24,7 @@ import javax.net.ssl.X509TrustManager;
  * custom trust store and falling back to the default trust manager if that fails.
  * <p/>
  * Sources:
- * https://stackoverflow.com/questions/27562666/programmatically-add-a-certificate-authority-while-keeping-android-system-ssl-ce
+ * http://stackoverflow.com/q/27562666/3997552
  * http://nelenkov.blogspot.de/2011/12/using-custom-certificate-trust-store-on.html
  *
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
@@ -60,10 +60,11 @@ public class CustomTrustManager implements X509TrustManager {
      *
      * @param chain    the certificate chain to validate.
      * @param authType the authentication type used.
-     * @throws CertificateException     if the certificate chain can't be validated or isn't trusted.
+     * @throws CertificateException     if the certificate chain can't be validated or isn't
+     *                                  trusted.
      * @throws IllegalArgumentException if the specified certificate chain is empty or {@code null},
-     *                                  or if the specified authentication type is {@code null} or an
-     *                                  empty string.
+     *                                  or if the specified authentication type is {@code null} or
+     *                                  an empty string.
      */
     @Override
     public void checkClientTrusted(X509Certificate[] chain, String authType)
@@ -82,10 +83,11 @@ public class CustomTrustManager implements X509TrustManager {
      *
      * @param chain    the certificate chain to validate.
      * @param authType the key exchange algorithm name.
-     * @throws CertificateException     if the certificate chain can't be validated or isn't trusted.
+     * @throws CertificateException     if the certificate chain can't be validated or isn't
+     *                                  trusted.
      * @throws IllegalArgumentException if the specified certificate chain is empty or {@code null},
-     *                                  or if the specified authentication type is {@code null} or an
-     *                                  empty string.
+     *                                  or if the specified authentication type is {@code null} or
+     *                                  an empty string.
      */
     @Override
     public void checkServerTrusted(X509Certificate[] chain, String authType)

@@ -4,7 +4,7 @@
  * Proprietary and confidential
  */
 
-package eu.olynet.olydorfapp.resources;
+package eu.olynet.olydorfapp.resource;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

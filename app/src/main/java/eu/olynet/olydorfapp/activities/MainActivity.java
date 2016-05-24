@@ -29,8 +29,8 @@ import android.widget.ListView;
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.NavigationDrawerItemsAdapter;
 import eu.olynet.olydorfapp.customViews.ScrimInsetsFrameLayout;
-import eu.olynet.olydorfapp.resources.BootReceiver;
-import eu.olynet.olydorfapp.resources.ResourceManager;
+import eu.olynet.olydorfapp.receiver.BootReceiver;
+import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 import eu.olynet.olydorfapp.sliding.SlidingTabLayout;
 import eu.olynet.olydorfapp.adapters.ViewPagerAdapter;
 import eu.olynet.olydorfapp.utils.UpdateTask;
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         init_navigator();
 
         /* setup ResourceManager */
-        ResourceManager rm = ResourceManager.getInstance();
+        ProductionResourceManager rm = ProductionResourceManager.getInstance();
         if(!rm.isInitialized()) {
             rm.init(getApplicationContext());
         }

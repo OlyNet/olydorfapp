@@ -38,9 +38,9 @@ public class TintOnStateImageView extends ImageView
     }
 
     /**
-     * Create, bind and set up the resources
+     * Create, bind and set up the resource
      *
-     * @param context is the context to get the resources from
+     * @param context is the context to get the resource from
      * @param attributeSet is the attributeSet
      * @param defStyle is the style
      */

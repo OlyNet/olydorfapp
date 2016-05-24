@@ -1,4 +1,4 @@
-package eu.olynet.olydorfapp.resources;
+package eu.olynet.olydorfapp.resource;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>

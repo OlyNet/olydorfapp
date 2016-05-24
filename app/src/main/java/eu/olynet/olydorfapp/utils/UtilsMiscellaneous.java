@@ -18,7 +18,7 @@ public class UtilsMiscellaneous
     /**
      * Returns the size in pixels of an attribute dimension
      *
-     * @param context the context to get the resources from
+     * @param context the context to get the resource from
      * @param attr is the attribute dimension we want to know the size from
      *
      * @return the size in pixels of an attribute dimension

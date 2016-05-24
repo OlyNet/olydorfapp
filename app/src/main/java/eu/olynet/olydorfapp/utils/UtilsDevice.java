@@ -18,7 +18,7 @@ public class UtilsDevice
     /**
      * Returns the screen width in pixels
      *
-     * @param context is the context to get the resources
+     * @param context is the context to get the resource
      *
      * @return the screen width in pixels
      */

@@ -4,7 +4,7 @@
  * Proprietary and confidential
  */
 
-package eu.olynet.olydorfapp.resources;
+package eu.olynet.olydorfapp.model;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;

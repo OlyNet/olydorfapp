@@ -26,7 +26,7 @@ import eu.olynet.olydorfapp.adapters.NewsTabAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
-import eu.olynet.olydorfapp.resources.ResourceManager;
+import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
@@ -175,7 +175,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
 
         @Override
         protected List<AbstractMetaItem<?>> doInBackground(Void... params) {
-            ResourceManager rm = ResourceManager.getInstance();
+            ProductionResourceManager rm = ProductionResourceManager.getInstance();
 
             /* update OrganizationMetaItem tree */
             rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);

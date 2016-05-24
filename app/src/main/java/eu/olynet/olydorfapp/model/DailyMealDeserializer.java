@@ -4,7 +4,7 @@
  * Proprietary and confidential
  */
 
-package eu.olynet.olydorfapp.resources;
+package eu.olynet.olydorfapp.model;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -18,6 +18,7 @@ import java.io.IOException;
 
 import eu.olynet.olydorfapp.model.DailyMealItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
+import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
@@ -78,7 +79,7 @@ public class DailyMealDeserializer extends JsonDeserializer<DailyMealItem> {
     @Override
     public DailyMealItem deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {
-        ResourceManager rm = ResourceManager.getInstance();
+        ProductionResourceManager rm = ProductionResourceManager.getInstance();
 
         JsonNode node = jp.getCodec().readTree(jp);
         int id = (Integer) node.get("eu.olynet.dorfapp.server.data.model.DailyMeal")

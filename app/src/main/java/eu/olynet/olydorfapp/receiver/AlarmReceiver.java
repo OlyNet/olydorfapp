@@ -3,7 +3,7 @@
  * Unauthorized copying of this file, via any medium is strictly prohibited.
  * Proprietary and confidential
  */
-package eu.olynet.olydorfapp.resources;
+package eu.olynet.olydorfapp.receiver;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -14,6 +14,8 @@ import android.os.PowerManager;
 import android.util.Log;
 
 import java.util.Calendar;
+
+import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
@@ -28,7 +30,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         wl.acquire();
 
         /* setup ResourceManager */
-        ResourceManager rm = ResourceManager.getInstance();
+        ProductionResourceManager rm = ProductionResourceManager.getInstance();
         if (!rm.isInitialized()) {
             rm.init(context.getApplicationContext());
         }

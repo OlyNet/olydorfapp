@@ -28,7 +28,7 @@ import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
-import eu.olynet.olydorfapp.resources.ResourceManager;
+import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
@@ -124,7 +124,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
 
         @Override
         protected AbstractMetaItem<?> doInBackground(Void... params) {
-            ResourceManager rm = ResourceManager.getInstance();
+            ProductionResourceManager rm = ProductionResourceManager.getInstance();
 
             /* update OrganizationMetaItem and DailyMealMetaItem trees */
             rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);
