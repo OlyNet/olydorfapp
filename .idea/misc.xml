@@ -27,7 +27,7 @@
       </value>
     </option>
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+  <component name="ProjectLevelVcsManager" settingsEditedManually="$RELEASE_BUILD$">
     <OptionsSetting value="$RELEASE_BUILD$" id="Add" />
     <OptionsSetting value="$RELEASE_BUILD$" id="Remove" />
     <OptionsSetting value="$RELEASE_BUILD$" id="Checkout" />
@@ -37,7 +37,7 @@
     <ConfirmationsSetting value="0" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="$RELEASE_BUILD$" assert-keyword="$RELEASE_BUILD$" jdk-15="$RELEASE_BUILD$" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" default="$RELEASE_BUILD$" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

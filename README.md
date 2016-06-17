@@ -7,4 +7,5 @@ Setup
 -----
 
 The current version is developed on Android Studio 2.1.1 with a targeted SDK of 23 and
-a minimum required SDK version of 16 (Android 4.1).
+a minimum required SDK version of 16 (Android 4.1). It uses the version 2.1.2 of the
+Android Gradle plugin.
