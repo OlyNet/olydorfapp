@@ -32,9 +32,6 @@ public class NewsItem extends NewsMetaItem {
     @JsonProperty("title")
     protected String title;
 
-    @JsonProperty("link")
-    protected String link;
-
     @JsonProperty("text")
     protected String text;
 
@@ -65,7 +62,6 @@ public class NewsItem extends NewsMetaItem {
         super(in);
         this.organization = in.readParcelable(OrganizationItem.class.getClassLoader());
         this.title = in.readString();
-        this.link = in.readString();
         this.text = in.readString();
 
         int imageLength = in.readInt();
@@ -94,18 +90,16 @@ public class NewsItem extends NewsMetaItem {
         super(item);
         this.organization = item.organization;
         this.title = item.title;
-        this.link = item.link;
         this.text = item.text;
         this.image = item.image;
     }
 
     public NewsItem(int id, Date createDate, Date editDate, String createUser, String editUser,
-                    Date date, Date lastUsedDate, OrganizationItem organization, String title,
-                    String link, String text, byte[] image) {
-        super(id, createDate, editDate, createUser, editUser, date, lastUsedDate);
+                    Date date, String link, Date lastUsedDate, OrganizationItem organization,
+                    String title, String text, byte[] image) {
+        super(id, createDate, editDate, createUser, editUser, date, link, lastUsedDate);
         this.organization = organization;
         this.title = title;
-        this.link = link;
         this.text = text;
         this.image = image;
     }
@@ -122,7 +116,6 @@ public class NewsItem extends NewsMetaItem {
         super.writeToParcel(dest, flags);
         dest.writeParcelable(this.organization, flags);
         dest.writeString(title);
-        dest.writeString(link);
         dest.writeString(text);
 
         int imageLength = (image != null ? image.length : -1);
@@ -150,14 +143,6 @@ public class NewsItem extends NewsMetaItem {
         this.title = title;
     }
 
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
-    }
-
     public String getText() {
         return text;
     }
@@ -178,7 +163,6 @@ public class NewsItem extends NewsMetaItem {
         super.updateItem(updatedItem);
         this.organization = updatedItem.organization;
         this.title = updatedItem.title;
-        this.link = updatedItem.link;
         this.text = updatedItem.text;
         this.image = updatedItem.image;
     }
@@ -188,7 +172,6 @@ public class NewsItem extends NewsMetaItem {
         return (super.exactlyEquals(another)
                 && this.organization.exactlyEquals(((NewsItem) another).organization)
                 && this.title.equals(((NewsItem) another).title)
-                && this.link.equals(((NewsItem) another).link)
                 && this.text.equals(((NewsItem) another).text)
                 && Arrays.equals(this.image, ((NewsItem) another).image)
         );
@@ -199,7 +182,6 @@ public class NewsItem extends NewsMetaItem {
         String result = super.toString() + "\n";
         result += "organization = [[" + this.organization.toString() + "]]" + "\n";
         result += "title = " + this.title + "\n";
-        result += "link = " + this.link + "\n";
         result += "text = " + this.text + "\n";
         result += "image = " + ((image != null) ? image.length : 0) + " Byte";
 

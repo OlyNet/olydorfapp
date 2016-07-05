@@ -98,9 +98,9 @@ public class MealOfTheDayItem extends MealOfTheDayMetaItem {
     }
 
     public MealOfTheDayItem(int id, Date createDate, Date editDate, String createUser,
-                            String editUser, Date date, Date lastUsedDate, String cook, float price,
-                            DailyMealItem dailyMeal, byte[] image) {
-        super(id, createDate, editDate, createUser, editUser, date, lastUsedDate);
+                            String editUser, Date date, String link, Date lastUsedDate, String cook,
+                            float price, DailyMealItem dailyMeal, byte[] image) {
+        super(id, createDate, editDate, createUser, editUser, date, link, lastUsedDate);
         this.cook = cook;
         this.price = price;
         this.dailyMeal = dailyMeal;

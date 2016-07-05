@@ -64,8 +64,8 @@ public class DailyMealMetaItem extends AbstractMetaItem<DailyMealMetaItem> {
     }
 
     public DailyMealMetaItem(int id, Date createDate, Date editDate, String createUser,
-                             String editUser, Date date, Date lastUsedDate) {
-        super(id, createDate, editDate, createUser, editUser, date, lastUsedDate);
+                             String editUser, Date date, String link, Date lastUsedDate) {
+        super(id, createDate, editDate, createUser, editUser, date, link, lastUsedDate);
     }
 
     @Override

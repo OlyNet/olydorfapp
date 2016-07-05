@@ -46,6 +46,9 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
     @JsonProperty("date")
     protected Date date = null;
 
+    @JsonProperty("link")
+    protected String link = null;
+
     protected Date lastUsedDate = new Date();
 
     /**
@@ -59,6 +62,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.createUser = null;
         this.editUser = null;
         this.date = null;
+        this.link = null;
         this.lastUsedDate = null;
     }
 
@@ -73,6 +77,8 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.editDate = new Date(in.readLong()); /* long -> Date */
         this.createUser = in.readString();
         this.editUser = in.readString();
+        this.date = new Date(in.readLong()); /* long -> Date */
+        this.link = in.readString();
         this.lastUsedDate = new Date(in.readLong()); /* long -> Date */
     }
 
@@ -88,6 +94,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.createUser = item.createUser;
         this.editUser = item.editUser;
         this.date = item.date;
+        this.link = item.link;
         this.lastUsedDate = item.lastUsedDate;
     }
 
@@ -103,13 +110,14 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
      * @param lastUsedDate the Date this item was last used on.
      */
     protected AbstractMetaItem(int id, Date createDate, Date editDate, String createUser,
-                               String editUser, Date date, Date lastUsedDate) {
+                               String editUser, Date date, String link, Date lastUsedDate) {
         this.id = id;
         this.createDate = createDate;
         this.editDate = editDate;
         this.createUser = createUser;
         this.editUser = editUser;
         this.date = date;
+        this.link = link;
         this.lastUsedDate = lastUsedDate;
     }
 
@@ -139,6 +147,8 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         dest.writeLong(editDate.getTime()); /* Date -> long */
         dest.writeString(createUser);
         dest.writeString(editUser);
+        dest.writeLong(date.getTime()); /* Date -> long */
+        dest.writeString(link);
         dest.writeLong(lastUsedDate.getTime()); /* Date -> long */
     }
 
@@ -227,6 +237,20 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
     }
 
     /**
+     * @return the link of this item as a String (if present).
+     */
+    public String getLink() {
+        return link;
+    }
+
+    /**
+     * @param link the link of this item as a String.
+     */
+    public void setLink(String link) {
+        this.link = link;
+    }
+
+    /**
      * @return the Date this item was last used on.
      */
     public Date getLastUsedDate() {
@@ -264,6 +288,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
             this.createUser = updatedItem.createUser;
             this.editUser = updatedItem.editUser;
             this.date = updatedItem.date;
+            this.link = updatedItem.link;
         } else {
             throw new ItemMismatchException(this.toString() + "cannot be overwritten by "
                     + updatedItem.toString());
@@ -284,13 +309,27 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
      * @return true if and only if they are exactly equal.
      */
     public boolean exactlyEquals(AbstractMetaItem<?> another) {
-        return (this.equals(another)
+        boolean equal = (this.equals(another)
                 && this.id == another.id
                 && this.createDate.equals(another.createDate)
                 && this.editDate.equals(another.editDate)
                 && this.createUser.equals(another.createUser)
                 && this.editUser.equals(another.editUser)
                 && this.lastUsedDate.equals(another.lastUsedDate));
+
+        if (this.date == null) {
+            equal &= another.date == null;
+        } else {
+            equal &= this.date.equals(another.date);
+        }
+
+        if (this.link == null) {
+            equal &= another.link == null;
+        } else {
+            equal &= this.link.equals(another.link);
+        }
+
+        return equal;
     }
 
     @Override
@@ -302,7 +341,8 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         result += "lastUsedDate = " + this.lastUsedDate + "\n";
         result += "createUser = " + this.createUser + "\n";
         result += "editUser = " + this.editUser + "\n";
-        result += "date = " + this.date;
+        result += "date = " + this.date + "\n";
+        result += "link = " + this.link;
 
         return result;
     }
@@ -380,6 +420,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         private String editUser = null;
         private Date date = null;
         private Date lastUsedDate = null;
+        private String link = null;
 
         /**
          * Creates a factory for dummy AbstractMetaItems.
@@ -460,6 +501,15 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
          */
         public DummyFactory<T> setDate(Date date) {
             this.date = date;
+            return this;
+        }
+
+        /**
+         * @param link the link that the dummy item should have.
+         * @return this factory.
+         */
+        public DummyFactory<T> setLink(String link) {
+            this.link = link;
             return this;
         }
 

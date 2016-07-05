@@ -31,12 +31,12 @@ public class ModelParcellingTests {
     private static final byte[] largeImage = new byte[1024 * 1024];
 
     private static final OrganizationItem dummyOrganizationItem = new OrganizationItem(786,
-            new Date(), new Date(), "create", "edit", new Date(), new Date(), "Dummy Organization",
-            "dummy", "http://example.com", "A dummy OrganizationItem for testing purposes",
-            largeImage);
+            new Date(), new Date(), "create", "edit", new Date(), null, new Date(),
+            "Dummy Organization", "dummy", "http://example.com",
+            "A dummy OrganizationItem for testing purposes", largeImage);
 
     private static final DailyMealItem dummyDailyMealItem = new DailyMealItem(3546, new Date(),
-            new Date(), "create", "edit", new Date(), new Date(), dummyOrganizationItem,
+            new Date(), "create", "edit", new Date(), null, new Date(), dummyOrganizationItem,
             "Geiles Essen", "Fancy food", false, 3.4f, largeImage);
 
     private static final String dummyText = "Lorem ipsum dolor sit amet, consetetur sadipscing " +
@@ -60,8 +60,8 @@ public class ModelParcellingTests {
     @Test
     public void testOrganizationItem() {
         OrganizationItem original1 = new OrganizationItem(786, new Date(), new Date(), "create",
-                "edit", new Date(), new Date(), "Dummy Organization", "dummy", "http://example.com",
-                dummyText, nullImage);
+                "edit", new Date(), null, new Date(), "Dummy Organization", "dummy",
+                "http://example.com", dummyText, nullImage);
         Parcel parcel1 = Parcel.obtain();
         original1.writeToParcel(parcel1, 0);
         parcel1.setDataPosition(0);
@@ -69,8 +69,8 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed1.exactlyEquals(original1));
 
         OrganizationItem original2 = new OrganizationItem(4567, new Date(), new Date(), "create",
-                "edit", new Date(), new Date(), "Dummy Organization", "dummy", "http://example.com",
-                dummyText, emptyImage);
+                "edit", new Date(), null, new Date(), "Dummy Organization", "dummy",
+                "http://example.com", dummyText, emptyImage);
         Parcel parcel2 = Parcel.obtain();
         original2.writeToParcel(parcel2, 0);
         parcel2.setDataPosition(0);
@@ -78,8 +78,8 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed2.exactlyEquals(original2));
 
         OrganizationItem original3 = new OrganizationItem(5768, new Date(), new Date(), "create",
-                "edit", new Date(), new Date(), "Dummy Organization", "dummy", "http://example.com",
-                dummyText, smallImage);
+                "edit", new Date(), null, new Date(), "Dummy Organization", "dummy",
+                "http://example.com", dummyText, smallImage);
         Parcel parcel3 = Parcel.obtain();
         original3.writeToParcel(parcel3, 0);
         parcel3.setDataPosition(0);
@@ -87,8 +87,8 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed3.exactlyEquals(original3));
 
         OrganizationItem original4 = new OrganizationItem(324, new Date(), new Date(), "create",
-                "edit", new Date(), new Date(), "Dummy Organization", "dummy", "http://example.com",
-                dummyText, smallImage);
+                "edit", new Date(), null, new Date(), "Dummy Organization", "dummy",
+                "http://example.com", dummyText, smallImage);
         Parcel parcel4 = Parcel.obtain();
         original4.writeToParcel(parcel4, 0);
         parcel4.setDataPosition(0);
@@ -99,8 +99,8 @@ public class ModelParcellingTests {
     @Test
     public void testDailyMealItem() {
         DailyMealItem original1 = new DailyMealItem(48765, new Date(), new Date(), "create", "edit",
-                new Date(), new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food", true,
-                3.4f, nullImage);
+                new Date(), null, new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food",
+                true, 3.4f, nullImage);
         Parcel parcel1 = Parcel.obtain();
         original1.writeToParcel(parcel1, 0);
         parcel1.setDataPosition(0);
@@ -108,8 +108,8 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed1.exactlyEquals(original1));
 
         DailyMealItem original2 = new DailyMealItem(39734, new Date(), new Date(), "create", "edit",
-                new Date(), new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food", false,
-                3.4f, emptyImage);
+                new Date(), null, new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food",
+                false, 3.4f, emptyImage);
         Parcel parcel2 = Parcel.obtain();
         original2.writeToParcel(parcel2, 0);
         parcel2.setDataPosition(0);
@@ -117,8 +117,8 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed2.exactlyEquals(original2));
 
         DailyMealItem original3 = new DailyMealItem(67899, new Date(), new Date(), "create", "edit",
-                new Date(), new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food", true,
-                3.4f, smallImage);
+                new Date(), null, new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food",
+                true, 3.4f, smallImage);
         Parcel parcel3 = Parcel.obtain();
         original3.writeToParcel(parcel3, 0);
         parcel3.setDataPosition(0);
@@ -126,8 +126,8 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed3.exactlyEquals(original3));
 
         DailyMealItem original4 = new DailyMealItem(3546, new Date(), new Date(), "create", "edit",
-                new Date(), new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food", false,
-                3.4f, largeImage);
+                new Date(), null, new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food",
+                false, 3.4f, largeImage);
         Parcel parcel4 = Parcel.obtain();
         original4.writeToParcel(parcel4, 0);
         parcel4.setDataPosition(0);
@@ -138,8 +138,8 @@ public class ModelParcellingTests {
     @Test
     public void testFoodItem() {
         FoodItem original1 = new FoodItem(45678, new Date(), new Date(), "create", "edit",
-                new Date(), new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food", true,
-                3.4f, nullImage);
+                new Date(), null, new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food",
+                true, 3.4f, nullImage);
         Parcel parcel1 = Parcel.obtain();
         original1.writeToParcel(parcel1, 0);
         parcel1.setDataPosition(0);
@@ -147,8 +147,8 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed1.exactlyEquals(original1));
 
         FoodItem original2 = new FoodItem(456, new Date(), new Date(), "create", "edit",
-                new Date(), new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food", false,
-                3.4f, emptyImage);
+                new Date(), null, new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food",
+                false, 3.4f, emptyImage);
         Parcel parcel2 = Parcel.obtain();
         original2.writeToParcel(parcel2, 0);
         parcel2.setDataPosition(0);
@@ -156,8 +156,8 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed2.exactlyEquals(original2));
 
         FoodItem original3 = new FoodItem(7857, new Date(), new Date(), "create", "edit",
-                new Date(), new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food", true,
-                3.4f, smallImage);
+                new Date(), null, new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food",
+                true, 3.4f, smallImage);
         Parcel parcel3 = Parcel.obtain();
         original3.writeToParcel(parcel3, 0);
         parcel3.setDataPosition(0);
@@ -165,8 +165,8 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed3.exactlyEquals(original3));
 
         FoodItem original4 = new FoodItem(22134, new Date(), new Date(), "create", "edit",
-                new Date(), new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food", false,
-                3.4f, largeImage);
+                new Date(), null, new Date(), dummyOrganizationItem, "Geiles Essen", "Fancy food",
+                false, 3.4f, largeImage);
         Parcel parcel4 = Parcel.obtain();
         original4.writeToParcel(parcel4, 0);
         parcel4.setDataPosition(0);
@@ -177,7 +177,7 @@ public class ModelParcellingTests {
     @Test
     public void testMealOfTheDayItem() {
         MealOfTheDayItem original1 = new MealOfTheDayItem(456783, new Date(), new Date(), "create",
-                "edit", new Date(), new Date(), "cook", 3.4f, dummyDailyMealItem, nullImage);
+                "edit", new Date(), null, new Date(), "cook", 3.4f, dummyDailyMealItem, nullImage);
         Parcel parcel1 = Parcel.obtain();
         original1.writeToParcel(parcel1, 0);
         parcel1.setDataPosition(0);
@@ -185,7 +185,7 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed1.exactlyEquals(original1));
 
         MealOfTheDayItem original2 = new MealOfTheDayItem(2345, new Date(), new Date(), "create",
-                "edit", new Date(), new Date(), "cook", 3.4f, dummyDailyMealItem, emptyImage);
+                "edit", new Date(), null, new Date(), "cook", 3.4f, dummyDailyMealItem, emptyImage);
         Parcel parcel2 = Parcel.obtain();
         original2.writeToParcel(parcel2, 0);
         parcel2.setDataPosition(0);
@@ -193,7 +193,7 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed2.exactlyEquals(original2));
 
         MealOfTheDayItem original3 = new MealOfTheDayItem(12351, new Date(), new Date(), "create",
-                "edit", new Date(), new Date(), "cook", 3.4f, dummyDailyMealItem, smallImage);
+                "edit", new Date(), null, new Date(), "cook", 3.4f, dummyDailyMealItem, smallImage);
         Parcel parcel3 = Parcel.obtain();
         original3.writeToParcel(parcel3, 0);
         parcel3.setDataPosition(0);
@@ -201,7 +201,7 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed3.exactlyEquals(original3));
 
         MealOfTheDayItem original4 = new MealOfTheDayItem(84, new Date(), new Date(), "create",
-                "edit", new Date(), new Date(), "cook", 3.4f, dummyDailyMealItem, largeImage);
+                "edit", new Date(), null, new Date(), "cook", 3.4f, dummyDailyMealItem, largeImage);
         Parcel parcel4 = Parcel.obtain();
         original4.writeToParcel(parcel4, 0);
         parcel4.setDataPosition(0);
@@ -212,7 +212,7 @@ public class ModelParcellingTests {
     @Test
     public void testNewsItem() {
         NewsItem original1 = new NewsItem(134251324, new Date(), new Date(), "create", "edit",
-                new Date(), new Date(), dummyOrganizationItem, "Title", "http://example.com",
+                new Date(), "http://example.com", new Date(), dummyOrganizationItem, "Title",
                 dummyText, nullImage);
         Parcel parcel1 = Parcel.obtain();
         original1.writeToParcel(parcel1, 0);
@@ -221,7 +221,7 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed1.exactlyEquals(original1));
 
         NewsItem original2 = new NewsItem(456873, new Date(), new Date(), "create", "edit",
-                new Date(), new Date(), dummyOrganizationItem, "Title", "http://example.com",
+                new Date(), "http://example.com",new Date(), dummyOrganizationItem, "Title",
                 dummyText, emptyImage);
         Parcel parcel2 = Parcel.obtain();
         original2.writeToParcel(parcel2, 0);
@@ -230,7 +230,7 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed2.exactlyEquals(original2));
 
         NewsItem original3 = new NewsItem(789064, new Date(), new Date(), "create", "edit",
-                new Date(), new Date(), dummyOrganizationItem, "Title", "http://example.com",
+                new Date(), "http://example.com", new Date(), dummyOrganizationItem, "Title",
                 dummyText, smallImage);
         Parcel parcel3 = Parcel.obtain();
         original3.writeToParcel(parcel3, 0);
@@ -239,7 +239,7 @@ public class ModelParcellingTests {
         Assert.assertTrue(reconstructed3.exactlyEquals(original3));
 
         NewsItem original4 = new NewsItem(2345, new Date(), new Date(), "create", "edit",
-                new Date(), new Date(), dummyOrganizationItem, "Title", "http://example.com",
+                new Date(), "http://example.com", new Date(), dummyOrganizationItem, "Title",
                 dummyText, largeImage);
         Parcel parcel4 = Parcel.obtain();
         original4.writeToParcel(parcel4, 0);

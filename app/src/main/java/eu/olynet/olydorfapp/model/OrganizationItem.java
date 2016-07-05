@@ -10,6 +10,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import java.util.Date;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
         getterVisibility = JsonAutoDetect.Visibility.NONE,
         setterVisibility = JsonAutoDetect.Visibility.NONE)
+@JsonIgnoreProperties({"food"})
 public class OrganizationItem extends OrganizationMetaItem {
 
     @JsonProperty("name")
@@ -97,9 +99,9 @@ public class OrganizationItem extends OrganizationMetaItem {
     }
 
     public OrganizationItem(int id, Date createDate, Date editDate, String createUser,
-                            String editUser, Date date, Date lastUsedDate, String name,
+                            String editUser, Date date, String link, Date lastUsedDate, String name,
                             String shortname, String website, String description, byte[] logo) {
-        super(id, createDate, editDate, createUser, editUser, date, lastUsedDate);
+        super(id, createDate, editDate, createUser, editUser, date, link, lastUsedDate);
         this.name = name;
         this.shortname = shortname;
         this.website = website;
