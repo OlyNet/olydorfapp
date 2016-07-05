@@ -10,6 +10,8 @@ import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.util.Date;
 
 /**
@@ -79,6 +81,11 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
         NewsMetaItem item = (NewsMetaItem) obj;
 
         return this.getId() == item.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(16373, 849455).append(this.getId()).build();
     }
 
     @Override

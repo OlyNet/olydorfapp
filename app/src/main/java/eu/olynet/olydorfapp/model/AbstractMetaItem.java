@@ -273,6 +273,9 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
     @Override
     public abstract boolean equals(Object obj);
 
+    @Override
+    public abstract int hashCode();
+
     /**
      * Checks whether another AbstractMetaItem is exactly the same (i.e. every field is equal) as
      * this one. The regular equals method only checks the id.
