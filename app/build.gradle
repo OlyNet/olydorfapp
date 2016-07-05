@@ -12,7 +12,7 @@ android {
         if (System.getenv("BUILD_NUMBER") != null && !System.getenv("BUILD_NUMBER").equals("")) {
             versionCode Integer.parseInt(System.getenv("BUILD_NUMBER"))
         } else {
-            versionCode 11
+            versionCode 12
         }
         /* append either the Jenkins build number or 'local' */
         versionName "0.1"
