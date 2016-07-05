@@ -77,7 +77,8 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         this.editDate = new Date(in.readLong()); /* long -> Date */
         this.createUser = in.readString();
         this.editUser = in.readString();
-        this.date = new Date(in.readLong()); /* long -> Date */
+        long tmpDate = in.readLong();
+        this.date = tmpDate == -1 ? null : new Date(tmpDate); /* long -> Date */
         this.link = in.readString();
         this.lastUsedDate = new Date(in.readLong()); /* long -> Date */
     }
@@ -147,7 +148,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         dest.writeLong(editDate.getTime()); /* Date -> long */
         dest.writeString(createUser);
         dest.writeString(editUser);
-        dest.writeLong(date.getTime()); /* Date -> long */
+        dest.writeLong(date == null ? -1 : date.getTime()); /* Date -> long */
         dest.writeString(link);
         dest.writeLong(lastUsedDate.getTime()); /* Date -> long */
     }
@@ -419,8 +420,8 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         private String createUser = null;
         private String editUser = null;
         private Date date = null;
-        private Date lastUsedDate = null;
         private String link = null;
+        private Date lastUsedDate = null;
 
         /**
          * Creates a factory for dummy AbstractMetaItems.
@@ -442,9 +443,9 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         public T build() {
             try {
                 Constructor<?> cons = clazz.getConstructor(int.class, Date.class, Date.class,
-                        String.class, String.class, Date.class, Date.class);
+                        String.class, String.class, Date.class, String.class, Date.class);
                 return clazz.cast(cons.newInstance(id, createDate, editDate, createUser, editUser,
-                        date, lastUsedDate));
+                        date, link, lastUsedDate));
             } catch (Exception e) {
                 throw new RuntimeException("dynamic construction failed - " + this.clazz, e);
             }
