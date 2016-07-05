@@ -84,6 +84,8 @@ dependencies {
     // Came with sample :-P
     compile 'de.hdodenhof:circleimageview:1.2.2'
     compile 'com.mcxiaoke.volley:library:1.0.15'
+    // Apache Commons
+    compile 'org.apache.commons:commons-lang3:3.4'
     // RESTEasy support
     compile 'com.fasterxml.jackson.core:jackson-core:2.7.3'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
