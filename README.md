@@ -10,3 +10,7 @@ The current version is developed on Android Studio 2.1.1 with a targeted SDK of 
 a minimum required SDK version of 16 (Android 4.1). It uses the version 2.1.2 of the
 Android Gradle plugin.
 
+Build
+-----
+For the build you also need the contents of the 'olydorfapp-android-build' repository. It takes care of automatically generating a valid client certificate as well as the Rest configuration.
+
