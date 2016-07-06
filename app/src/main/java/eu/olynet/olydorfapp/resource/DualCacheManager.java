@@ -104,6 +104,14 @@ public class DualCacheManager extends AbstractCacheManager {
     }
 
     @Override
+    public void invalidate() {
+        metaTreeCache.invalidate();
+        itemCache.invalidate();
+        cacheStaleCache.invalidate();
+        cacheLastUpdated = new HashMap<>();
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public TreeSet<AbstractMetaItem<?>> getCachedMetaDataTree(Class<?> clazz) {
         return metaTreeCache.get(ResourceManager.getResourceString(clazz));

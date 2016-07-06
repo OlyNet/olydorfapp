@@ -118,6 +118,7 @@ public class ProductionRestManager extends RestManager {
                 throw new NoConnectionException("No internet connection detected");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw new NoConnectionException("No internet connection detected", e);
         }
     }

@@ -145,6 +145,13 @@ public class ProductionResourceManager extends ResourceManager {
         }
     }
 
+    /**
+     * Invalidates the cache.
+     */
+    public void invalidateCache() {
+        cache.invalidate();
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public void cleanup() {

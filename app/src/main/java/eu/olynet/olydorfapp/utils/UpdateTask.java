@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import eu.olynet.olydorfapp.activities.MainActivity;
+import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
@@ -27,6 +28,8 @@ public class UpdateTask extends AsyncTask<Void, Void, Void> {
 
         // TODO: implement view refreshing here
 
+        ProductionResourceManager.getInstance().invalidateCache();
+
         return null;
 
     }
@@ -34,7 +37,7 @@ public class UpdateTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void nope) {
         // Give some feedback on the UI.
-        Toast.makeText(mCon, "Finished complex background function!",
+        Toast.makeText(mCon, "Invalidated the cache!",
                 Toast.LENGTH_LONG).show();
 
         // Change the menu back

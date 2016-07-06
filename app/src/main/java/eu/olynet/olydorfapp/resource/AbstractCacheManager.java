@@ -39,6 +39,11 @@ public abstract class AbstractCacheManager {
     protected abstract void init();
 
     /**
+     * Invalidates the cache.
+     */
+    public abstract void invalidate();
+
+    /**
      * @param clazz the Class of the MetaItem.
      * @return the meta-data TreeSet (can be <b>null</b>)
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
