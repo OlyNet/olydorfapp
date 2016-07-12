@@ -13,9 +13,11 @@ import android.support.multidex.MultiDex;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,9 +48,6 @@ public class MainActivity extends AppCompatActivity {
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
-    final CharSequence Titles[] = {"News", "Veranstaltungen", "Bierstube", "OlyDisco", "The O(n)ly",
-            "Waschraum"};
-    final int Numboftabs = Titles.length;
     private Menu optionsMenu;
 
     @Override
@@ -56,9 +55,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        init_slider();
+        /* setup the ActionBar */
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
 
-        init_navigator();
+        initSlider(ViewPagerAdapter.Category.HOME);
+
+        initNavigator();
 
         /* setup ResourceManager */
         ProductionResourceManager rm = ProductionResourceManager.getInstance();
@@ -100,20 +103,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void init_slider() {
-        // Creating The Toolbar and setting it as the Toolbar for the activity
-
-        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        setSupportActionBar(toolbar);
-
+    private void initSlider(ViewPagerAdapter.Category category) {
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
-        adapter = new ViewPagerAdapter(getSupportFragmentManager(), Titles, Numboftabs);
+        adapter = new ViewPagerAdapter(getSupportFragmentManager(), category);
 
         // Assigning ViewPager View and setting the adapter
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
-        // Assiging the Sliding Tab Layout View
+        // Assigning the Sliding Tab Layout View
         tabs = (SlidingTabLayout) findViewById(R.id.tabs);
         tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
 
@@ -128,6 +126,11 @@ public class MainActivity extends AppCompatActivity {
         // Setting the ViewPager For the SlidingTabsLayout
         tabs.setViewPager(pager);
 
+        ActionBar ab = getSupportActionBar();
+        if(ab != null) {
+            ab.setTitle(category.title);
+        }
+
     }
 
     private DrawerLayout mDrawerLayout;
@@ -135,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
     private ScrimInsetsFrameLayout mScrimInsetsFrameLayout;
     private ListView mDrawerList;
 
-    private void init_navigator() {
+    private void initNavigator() {
         // Navigation Drawer
         mDrawerLayout = (DrawerLayout) findViewById(R.id.main_activity_DrawerLayout);
         mDrawerLayout.setStatusBarBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.primaryDark));
@@ -149,8 +152,23 @@ public class MainActivity extends AppCompatActivity {
         mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                mDrawerLayout.closeDrawer(mDrawerList);
+                switch(position) {
+                    case 0:
+                        initSlider(ViewPagerAdapter.Category.HOME);
+                        break;
+                    case 1:
+                        initSlider(ViewPagerAdapter.Category.BIERSTUBE);
+                        break;
+                    case 2:
+                        initSlider(ViewPagerAdapter.Category.OLYNET);
+                        break;
+                    case 3:
+                        initSlider(ViewPagerAdapter.Category.LAUNDRY);
+                        break;
+                    default:
+                        Log.e("onItemClick", "Unknown position " + position);
+                }
+                mDrawerLayout.closeDrawers();
             }
         });
 
@@ -165,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
         };
 
-        mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
+        mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -182,7 +200,6 @@ public class MainActivity extends AppCompatActivity {
 
         mScrimInsetsFrameLayout.getLayoutParams().width = Math.min(possibleMinDrawerWidth, maxDrawerWidth);
         // Set the first item as selected for the first time
-        getSupportActionBar().setTitle(R.string.toolbar_title_home);
 
     }
 

@@ -3,7 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/NavDrawerRowLayout"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/navigation_drawer_item_height">
+    android:layout_height="@dimen/navigation_drawer_item_height"
+    android:clickable="false"
+    android:focusable="false"
+    android:focusableInTouchMode="false">
 
     <eu.olynet.olydorfapp.customViews.TintOnStateImageView
         android:id="@+id/navDrawerItemIcon"

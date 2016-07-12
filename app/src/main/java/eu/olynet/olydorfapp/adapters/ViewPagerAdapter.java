@@ -9,59 +9,102 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import eu.olynet.olydorfapp.fragments.BierstubeTab;
+import eu.olynet.olydorfapp.fragments.DummyTab;
 import eu.olynet.olydorfapp.fragments.LaundryTab;
 import eu.olynet.olydorfapp.fragments.NewsTab;
-import eu.olynet.olydorfapp.fragments.Tab2;
 
 /**
- * Created by Edwin on 15/02/2015.
+ * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
-    CharSequence Titles[]; // This will Store the Titles of the Tabs which are Going to be passed when ViewPagerAdapter is created
-    int NumbOfTabs; // Store the number of tabs, this will also be passed when the ViewPagerAdapter is created
+    public enum Category {
+        HOME("Home"), BIERSTUBE("Die Bierstube"), OLYNET("OlyNet e.V."), LAUNDRY("Waschraum");
 
+        public final String title;
 
-    // Build a Constructor and assign the passed Values to appropriate values in the class
-    public ViewPagerAdapter(FragmentManager fm, CharSequence mTitles[], int mNumbOfTabsumb) {
+        private Category(String title) {
+            this.title = title;
+        }
+    }
+
+    private static class Tab {
+
+        public final Class<? extends Fragment> clazz;
+        public final CharSequence title;
+
+        public Tab(Class<? extends Fragment> clazz, CharSequence title) {
+            this.clazz = clazz;
+            this.title = title;
+        }
+    }
+
+    public static final Map<Category, List<Tab>> tabNames;
+
+    static {
+        Map<Category, List<Tab>> tmpTabNames = new LinkedHashMap<>();
+
+        List<Tab> homeTabs = new ArrayList<>();
+        homeTabs.add(new Tab(NewsTab.class, "News"));
+        tmpTabNames.put(Category.HOME, homeTabs);
+
+        List<Tab> bierstubeTabs = new ArrayList<>();
+        bierstubeTabs.add(new Tab(DummyTab.class, "Allgemein"));
+        bierstubeTabs.add(new Tab(NewsTab.class, "News"));
+        bierstubeTabs.add(new Tab(BierstubeTab.class, "Speisen"));
+        tmpTabNames.put(Category.BIERSTUBE, bierstubeTabs);
+
+        List<Tab> olynetTabs = new ArrayList<>();
+        olynetTabs.add(new Tab(DummyTab.class, "Allgemein"));
+        olynetTabs.add(new Tab(NewsTab.class, "News"));
+        olynetTabs.add(new Tab(DummyTab.class, "Mitmachen"));
+        tmpTabNames.put(Category.OLYNET, olynetTabs);
+
+        List<Tab> laundryTabs = new ArrayList<>();
+        laundryTabs.add(new Tab(LaundryTab.class, "Informationen"));
+        tmpTabNames.put(Category.LAUNDRY, laundryTabs);
+
+        tabNames = Collections.unmodifiableMap(tmpTabNames);
+    }
+
+    private final List<Tab> tabs;
+
+    /**
+     * Create a new ViewPagerAdapter
+     *
+     * @param fm       the FragmentManager.
+     * @param category the selected Category.
+     */
+    public ViewPagerAdapter(FragmentManager fm, Category category) {
         super(fm);
 
-        this.Titles = mTitles;
-        this.NumbOfTabs = mNumbOfTabsumb;
-
+        this.tabs = tabNames.get(category);
     }
 
-    //This method return the fragment for the every position in the View Pager
     @Override
     public Fragment getItem(int position) {
-
-        if (position == 0) // if the position is 0 we are returning the First tab
-        {
-            return new NewsTab();
-        } else if (position == 2) {
-            return new BierstubeTab();
-        } else if (position == 5) {
-            return new LaundryTab();
-        } else             // As we are having 2 tabs if the position is now 0 it must be 1 so we are returning second tab
-        {
-            Tab2 tab2 = new Tab2();
-            return tab2;
+        Class<? extends Fragment> clazz = tabs.get(position).clazz;
+        try {
+            return clazz.cast(clazz.getConstructor().newInstance());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
     }
-
-    // This method return the titles for the Tabs in the Tab Strip
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return Titles[position];
+        return this.tabs.get(position).title;
     }
-
-    // This method return the Number of tabs for the tabs Strip
 
     @Override
     public int getCount() {
-        return NumbOfTabs;
+        return this.tabs.size();
     }
 }

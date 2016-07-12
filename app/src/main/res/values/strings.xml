@@ -22,6 +22,7 @@
     <string name="navDrawerBierstubeEntry">Die Bierstube</string>
     <string name="navDrawerDiscoEntry">OlyDisco</string>
     <string name="navDrawerLoungeEntry">The O(n)ly</string>
+    <string name="navDrawerOlynetEntry">OlyNet e.V.</string>
     <string name="navDrawerLaundryEntry">Laundry room</string>
 
     <string name="nav_drawer_item_explore">Explore</string>

@@ -23,25 +23,26 @@ import eu.olynet.olydorfapp.customViews.TintOnStateImageView;
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */
 public class NavigationDrawerItemsAdapter extends BaseAdapter {
-    final private Context context;
+
     final private LayoutInflater inflater;
     private List<Pair<Integer, String>> navDrawerItems;
 
     public NavigationDrawerItemsAdapter(Context context) {
-        this.context = context;
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         navDrawerItems = new ArrayList<>();
         // Home item
         navDrawerItems.add(Pair.create(R.drawable.ic_home_white_24dp, context.getResources().getString(R.string.navDrawerHomeEntry)));
         // Events item
-        navDrawerItems.add(Pair.create(R.drawable.ic_event_white_24dp, context.getResources().getString(R.string.navDrawerEventsEntry)));
+//        navDrawerItems.add(Pair.create(R.drawable.ic_event_white_24dp, context.getResources().getString(R.string.navDrawerEventsEntry)));
         // Bierstube item
         navDrawerItems.add(Pair.create(R.drawable.ic_local_dining_white_24dp, context.getResources().getString(R.string.navDrawerBierstubeEntry)));
         // Disco item
-        navDrawerItems.add(Pair.create(R.drawable.ic_favorite_white_24dp, context.getResources().getString(R.string.navDrawerDiscoEntry)));
+//        navDrawerItems.add(Pair.create(R.drawable.ic_favorite_white_24dp, context.getResources().getString(R.string.navDrawerDiscoEntry)));
         // Lounge item
-        navDrawerItems.add(Pair.create(R.drawable.ic_local_bar_white_24dp, context.getResources().getString(R.string.navDrawerLoungeEntry)));
+//        navDrawerItems.add(Pair.create(R.drawable.ic_local_bar_white_24dp, context.getResources().getString(R.string.navDrawerLoungeEntry)));
+        // OlyNet item
+        navDrawerItems.add(Pair.create(R.drawable.ic_favorite_white_24dp, context.getResources().getString(R.string.navDrawerOlynetEntry)));
         // Laundry item
         navDrawerItems.add(Pair.create(R.drawable.ic_local_laundry_service_white_24dp, context.getResources().getString(R.string.navDrawerLaundryEntry)));
     }

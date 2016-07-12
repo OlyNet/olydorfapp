@@ -16,7 +16,7 @@
             android:id="@+id/main_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/OlympiaBlue"
+            android:background="@color/OlympiaDarkBlue"
             android:elevation="4dp"
             android:theme="@style/Base.ThemeOverlay.AppCompat.Dark" />
 
