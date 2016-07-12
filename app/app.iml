@@ -128,14 +128,14 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="jboss-annotations-api_1.2_spec-1.0.0.Final" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="runner-0.3" level="project" />
-    <orderEntry type="library" exported="" name="commons-io-2.1" level="project" />
     <orderEntry type="library" exported="" name="library-1.0.15" level="project" />
+    <orderEntry type="library" exported="" name="commons-io-2.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-base-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="jackson-jaxrs-json-provider-2.7.3" level="project" />
     <orderEntry type="library" exported="" name="support-v4-24.0.0" level="project" />
     <orderEntry type="library" exported="" name="animated-vector-drawable-24.0.0" level="project" />
-    <orderEntry type="library" exported="" name="core-3.2.1" level="project" />
     <orderEntry type="library" exported="" name="jackson-annotations-2.7.3" level="project" />
+    <orderEntry type="library" exported="" name="core-3.2.1" level="project" />
     <orderEntry type="library" exported="" name="disklrucache-2.0.2" level="project" />
     <orderEntry type="library" exported="" name="design-24.0.0" level="project" />
     <orderEntry type="library" exported="" name="core-1.8.4" level="project" />
@@ -145,8 +145,8 @@
     <orderEntry type="library" exported="" scope="TEST" name="objenesis-2.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="multidex-instrumentation-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-24.0.0" level="project" />
-    <orderEntry type="library" exported="" name="resteasy-jaxrs-3.0.16.Final" level="project" />
     <orderEntry type="library" exported="" name="activation-1.1.1" level="project" />
+    <orderEntry type="library" exported="" name="resteasy-jaxrs-3.0.16.Final" level="project" />
     <orderEntry type="library" exported="" name="play-services-gcm-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="jcip-annotations-1.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-basement-9.2.0" level="project" />
