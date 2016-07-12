@@ -22,14 +22,12 @@ import eu.olynet.olydorfapp.customViews.TintOnStateImageView;
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */
-public class NavigationDrawerItemsAdapter extends BaseAdapter
-{
+public class NavigationDrawerItemsAdapter extends BaseAdapter {
     final private Context context;
     final private LayoutInflater inflater;
     private List<Pair<Integer, String>> navDrawerItems;
 
-    public NavigationDrawerItemsAdapter(Context context)
-    {
+    public NavigationDrawerItemsAdapter(Context context) {
         this.context = context;
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -65,8 +63,9 @@ public class NavigationDrawerItemsAdapter extends BaseAdapter
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if(convertView == null)
+        if (convertView == null) {
             convertView = inflater.inflate(R.layout.navigation_drawer_item, null);
+        }
         // Retrieve the text view control and set the name to the String part of our pair list
         TextView itemName = (TextView) convertView.findViewById(R.id.navDrawerItemText);
         itemName.setText(navDrawerItems.get(position).second);

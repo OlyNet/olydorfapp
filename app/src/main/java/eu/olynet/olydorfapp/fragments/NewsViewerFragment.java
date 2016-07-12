@@ -45,7 +45,7 @@ public class NewsViewerFragment extends Fragment implements SwipeRefreshLayout.O
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         /* inflate the layout for this Fragment */
-        View view = inflater.inflate(R.layout.news_view_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_news_viewer, container, false);
 
         /* set SwipeRefreshLayout */
         mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.news_view_fragment);

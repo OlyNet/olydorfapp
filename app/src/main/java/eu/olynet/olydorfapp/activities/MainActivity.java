@@ -28,11 +28,11 @@ import android.widget.ListView;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.NavigationDrawerItemsAdapter;
+import eu.olynet.olydorfapp.adapters.ViewPagerAdapter;
 import eu.olynet.olydorfapp.customViews.ScrimInsetsFrameLayout;
 import eu.olynet.olydorfapp.receiver.BootReceiver;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 import eu.olynet.olydorfapp.sliding.SlidingTabLayout;
-import eu.olynet.olydorfapp.adapters.ViewPagerAdapter;
 import eu.olynet.olydorfapp.utils.UpdateTask;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         /* setup ResourceManager */
         ProductionResourceManager rm = ProductionResourceManager.getInstance();
-        if(!rm.isInitialized()) {
+        if (!rm.isInitialized()) {
             rm.init(getApplicationContext());
         }
 
@@ -84,34 +84,27 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_refresh) {
-            // Do animation start
-            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            ImageView iv = (ImageView) inflater.inflate(R.layout.ic_refresh, null);
-            Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate_refresh);
-            rotation.setRepeatCount(Animation.INFINITE);
-            iv.startAnimation(rotation);
-            item.setActionView(iv);
-            new UpdateTask(this).execute();
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                // Do animation start
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                ImageView iv = (ImageView) inflater.inflate(R.layout.ic_refresh, null);
+                Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate_refresh);
+                rotation.setRepeatCount(Animation.INFINITE);
+                iv.startAnimation(rotation);
+                item.setActionView(iv);
+                new UpdateTask(this).execute();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
-
 
     private void init_slider() {
         // Creating The Toolbar and setting it as the Toolbar for the activity
 
-        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
-
 
         // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
         adapter = new ViewPagerAdapter(getSupportFragmentManager(), Titles, Numboftabs);
@@ -161,19 +154,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mActionBarDrawerToggle = new ActionBarDrawerToggle
-                (
-                        this,
-                        mDrawerLayout,
-                        toolbar,
-                        R.string.navigation_drawer_opened,
-                        R.string.navigation_drawer_closed
-                ) {
+        mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
+                R.string.navigation_drawer_opened, R.string.navigation_drawer_closed) {
+
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 // Disables the burger/arrow animation by default
                 super.onDrawerSlide(drawerView, 0);
             }
+
         };
 
         mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
