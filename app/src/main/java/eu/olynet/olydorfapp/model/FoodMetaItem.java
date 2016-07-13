@@ -18,24 +18,24 @@ import java.util.Date;
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
-        getterVisibility = JsonAutoDetect.Visibility.NONE,
-        setterVisibility = JsonAutoDetect.Visibility.NONE)
+                getterVisibility = JsonAutoDetect.Visibility.NONE,
+                setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
 
     /**
      * CREATOR necessary for the Parcelable interface.
      */
-    public static final Parcelable.Creator<FoodMetaItem> CREATOR =
-            new Parcelable.Creator<FoodMetaItem>() {
+    public static final Parcelable.Creator<FoodMetaItem> CREATOR
+            = new Parcelable.Creator<FoodMetaItem>() {
 
-                public FoodMetaItem createFromParcel(Parcel in) {
-                    return new FoodMetaItem(in);
-                }
+        public FoodMetaItem createFromParcel(Parcel in) {
+            return new FoodMetaItem(in);
+        }
 
-                public FoodMetaItem[] newArray(int size) {
-                    return new FoodMetaItem[size];
-                }
-            };
+        public FoodMetaItem[] newArray(int size) {
+            return new FoodMetaItem[size];
+        }
+    };
 
     /**
      * Constructor for creating FoodMetaItem from Parcels.
@@ -69,10 +69,12 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
+        if (obj == null) {
             return false;
-        if (!(obj instanceof FoodMetaItem))
+        }
+        if (!(obj instanceof FoodMetaItem)) {
             return false;
+        }
         FoodMetaItem item = (FoodMetaItem) obj;
 
         return this.getId() == item.getId();

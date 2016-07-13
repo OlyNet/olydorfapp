@@ -38,47 +38,42 @@ import eu.olynet.olydorfapp.model.AbstractMetaItem;
 public class ProductionResourceManager extends ResourceManager {
 
     /**
+     * The timeout in seconds after each message to the user.
+     */
+    private static final int TIMEOUT_AFTER_MESSAGE = 15;
+    /**
      * Singleton instance
      */
     private static ProductionResourceManager ourInstance = new ProductionResourceManager();
-
     /**
      * The RestManager.
      */
     private RestManager rest = null;
-
     /**
      * The CacheManager.
      */
     private AbstractCacheManager cache = null;
-
     /**
      * The application Context.
      */
     private Context context;
-
-    /**
-     * The timeout in seconds after each message to the user.
-     */
-    private static final int TIMEOUT_AFTER_MESSAGE = 15;
-
     /**
      * The last time the user has been notified by calling informUser().
      */
     private Date lastNotifiedDate = null;
 
     /**
-     * @return the instance of the ResourceManager Singleton.
-     */
-    public static ProductionResourceManager getInstance() {
-        return ourInstance;
-    }
-
-    /**
      * Empty constructor. The real work is done by the init() method.
      */
     private ProductionResourceManager() {
         super();
+    }
+
+    /**
+     * @return the instance of the ResourceManager Singleton.
+     */
+    public static ProductionResourceManager getInstance() {
+        return ourInstance;
     }
 
     @Override
@@ -112,10 +107,12 @@ public class ProductionResourceManager extends ResourceManager {
      * @throws IllegalStateException if this is not the case.
      */
     private void abortIfNotInitialized() {
-        if (!isInitialized())
+        if (!isInitialized()) {
             throw new IllegalStateException("The ResourceManager has not been initialized." +
-                    "Initialize it by calling 'ResourceManager.getInstance().init(this); '"
-                    + "in the MainActivity's onCreate()!");
+                                            "Initialize it by calling 'ResourceManager" +
+                                            ".getInstance().init(this); '" +
+                                            "in the MainActivity's onCreate()!");
+        }
     }
 
     /**
@@ -191,13 +188,12 @@ public class ProductionResourceManager extends ResourceManager {
                     tree.addAll(cachedTree);
 
                     /* create a dummy element with the specific lastUsedDate */
-                    AbstractMetaItem<?> filterDummy = new AbstractMetaItem.DummyFactory(clazz)
-                            .setLastUsedDate(cutoff)
-                            .build();
+                    AbstractMetaItem<?> filterDummy = new AbstractMetaItem.DummyFactory(
+                            clazz).setLastUsedDate(cutoff).build();
 
                     /* get all items last used on or before the cutoff createDate */
-                    Set<AbstractMetaItem<?>> deleteSet = new HashSet<>(tree.headSet(
-                            tree.floor(filterDummy), true));
+                    Set<AbstractMetaItem<?>> deleteSet = new HashSet<>(
+                            tree.headSet(tree.floor(filterDummy), true));
 
                     /* delete all cached entries of the full objects */
                     for (AbstractMetaItem metaItem : deleteSet) {
@@ -232,15 +228,14 @@ public class ProductionResourceManager extends ResourceManager {
 
             try {
                 /* create a dummy item with the same id */
-                AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz)
-                        .setId(id)
-                        .build();
+                AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz).setId(id)
+                                                                                        .build();
 
                 /* use the dummy item to search for the real item within the tree */
                 AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
                 if (metaItem == null || metaItem.getId() != id || metaItem.getEditDate() == null) {
-                    throw new RuntimeException("meta-data tree of type '" + clazz
-                            + "' does not contain the requested element " + id);
+                    throw new RuntimeException("meta-data tree of type '" + clazz +
+                                               "' does not contain the requested element " + id);
                 }
 
                 /* check cache and query server on miss or createDate mismatch */
@@ -267,7 +262,7 @@ public class ProductionResourceManager extends ResourceManager {
                     }
                 } else {
                     Log.d("ResourceManager", "Cached item " + id + " of type '" + clazz +
-                            "' was up-to-createDate, no fetch necessary");
+                                             "' was up-to-createDate, no fetch necessary");
                 }
 
                 /* check if we have some valid item (up-to-createDate or not) */
@@ -280,8 +275,9 @@ public class ProductionResourceManager extends ResourceManager {
                     updateItem.invoke(clazz.cast(metaItem), clazz.cast(item));
 
                     /* write item to cache */
-                    Log.d("ResourceManager", "Updating cache for item with id " + id
-                            + " and meta-data tree '" + clazz + "'");
+                    Log.d("ResourceManager",
+                          "Updating cache for item with id " + id + " and meta-data tree '" +
+                          clazz + "'");
                     this.cache.putCachedItem(clazz, item);
                 }
 
@@ -308,8 +304,8 @@ public class ProductionResourceManager extends ResourceManager {
             /* get the corresponding meta-data tree */
             TreeSet<AbstractMetaItem<?>> tree = this.cache.getCachedMetaDataTree(clazz);
             if (tree == null) {
-                throw new RuntimeException("meta-data tree for '" + clazz
-                        + "' not found, creating it");
+                throw new RuntimeException(
+                        "meta-data tree for '" + clazz + "' not found, creating it");
             }
 
             /* TreeSet used for ordering */
@@ -323,16 +319,16 @@ public class ProductionResourceManager extends ResourceManager {
             try {
                 for (int id : ids) {
                     /* create a dummy item with the same id */
-                    AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz)
-                            .setId(id)
-                            .build();
+                    AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz).setId(
+                            id).build();
 
                     /* use the dummy item to search for the real item within the tree */
                     AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
-                    if (metaItem == null || metaItem.getId() != id
-                            || metaItem.getEditDate() == null) {
-                        throw new RuntimeException("meta-data tree of type '" + clazz
-                                + "' does not contain the requested element " + id);
+                    if (metaItem == null || metaItem.getId() != id ||
+                        metaItem.getEditDate() == null) {
+                        throw new RuntimeException("meta-data tree of type '" + clazz +
+                                                   "' does not contain the requested element " +
+                                                   id);
                     }
 
                     /* check cache and query server on miss or editDate mismatch */
@@ -359,7 +355,7 @@ public class ProductionResourceManager extends ResourceManager {
                         }
                     } else {
                         Log.d("ResourceManager", "Cached item " + id + " of type '" + clazz +
-                                "' was up-to-createDate, no fetch necessary");
+                                                 "' was up-to-createDate, no fetch necessary");
                     }
 
                     /* check if we have some valid item (up-to-createDate or not) */
@@ -372,8 +368,8 @@ public class ProductionResourceManager extends ResourceManager {
                         updateItem.invoke(clazz.cast(metaItem), clazz.cast(item));
 
                         /* write updated item to cache */
-                        Log.d("ResourceManager", "Updating cache for item " + id + " of type "
-                                + clazz);
+                        Log.d("ResourceManager",
+                              "Updating cache for item " + id + " of type " + clazz);
                         this.cache.putCachedItem(clazz, item);
 
                         /* add item to the Collection of items to be returned */
@@ -382,9 +378,9 @@ public class ProductionResourceManager extends ResourceManager {
                 }
             } catch (Exception e) {
                 Log.e("ResourceManager", "exception information in case it gets wrapped to often",
-                        e);
-                throw new RuntimeException("during the getItems() for '" + clazz + "' with ids: "
-                        + Arrays.toString(ids.toArray()), e);
+                      e);
+                throw new RuntimeException("during the getItems() for '" + clazz + "' with ids: " +
+                                           Arrays.toString(ids.toArray()), e);
             }
 
             Log.d("ResourceManager", "Updating meta-data tree cache of type '" + clazz + "'");
@@ -426,8 +422,8 @@ public class ProductionResourceManager extends ResourceManager {
 
             TreeSet<AbstractMetaItem<?>> result = new TreeSet<>();
             if (items != null) {
-                Log.d("ResourceManager", "Received " + items.size()
-                        + " meta-data items from server");
+                Log.d("ResourceManager",
+                      "Received " + items.size() + " meta-data items from server");
 
                 /* add all items to the result to be returned */
                 result.addAll(items);
@@ -436,8 +432,9 @@ public class ProductionResourceManager extends ResourceManager {
                 if (cachedTree != null) {
                     cachedTree.removeAll(result);
                     for (AbstractMetaItem<?> metaItem : cachedTree) {
-                        Log.d("ResourceManager", "Deleting cached item " + metaItem.getId()
-                                + " of type '" + clazz + "'");
+                        Log.d("ResourceManager",
+                              "Deleting cached item " + metaItem.getId() + " of type '" + clazz +
+                              "'");
                         this.cache.deleteCachedItem(clazz, metaItem.getId());
                     }
                 }
@@ -467,10 +464,10 @@ public class ProductionResourceManager extends ResourceManager {
     }
 
     @Override
-    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz,
-                                                           int limit,
+    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, int limit,
                                                            @Nullable AbstractMetaItem<?> after,
-                                                           @Nullable Comparator<AbstractMetaItem<?>>
+                                                           @Nullable
+                                                           Comparator<AbstractMetaItem<?>>
                                                                    comparator,
                                                            boolean forceUpdate) {
         abortIfNotInitialized();
@@ -504,8 +501,7 @@ public class ProductionResourceManager extends ResourceManager {
 
         /* remove everything before (and including) the 'after' AbstractMetaItem if it exists */
         if (after != null) {
-            preResult.removeAll(sortedMetaTree.headSet(
-                    sortedMetaTree.floor(after), true));
+            preResult.removeAll(sortedMetaTree.headSet(sortedMetaTree.floor(after), true));
         }
 
         /* only take a specified number of items from the results */
@@ -528,7 +524,8 @@ public class ProductionResourceManager extends ResourceManager {
     public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz,
                                                            @Nullable AbstractMetaItem<?> after,
                                                            @Nullable AbstractMetaItem<?> before,
-                                                           @Nullable Comparator<AbstractMetaItem<?>>
+                                                           @Nullable
+                                                           Comparator<AbstractMetaItem<?>>
                                                                    comparator,
                                                            boolean forceUpdate) {
         abortIfNotInitialized();

@@ -22,34 +22,20 @@ import java.util.Date;
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
-        getterVisibility = JsonAutoDetect.Visibility.NONE,
-        setterVisibility = JsonAutoDetect.Visibility.NONE)
+                getterVisibility = JsonAutoDetect.Visibility.NONE,
+                setterVisibility = JsonAutoDetect.Visibility.NONE)
 @SuppressWarnings("unused")
-public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements Comparable<T>,
-        Parcelable {
+public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
+        implements Comparable<T>, Parcelable {
 
-    @JsonProperty("id")
-    private int id;
-
-    @JsonProperty("createDate")
-    protected Date createDate;
-
-    @JsonProperty("editDate")
-    protected Date editDate;
-
-    @JsonProperty("createUser")
-    protected String createUser;
-
-    @JsonProperty("editUser")
-    protected String editUser;
-
-    @JsonProperty("date")
-    protected Date date = null;
-
-    @JsonProperty("link")
-    protected String link = null;
-
+    @JsonProperty("createDate") protected Date createDate;
+    @JsonProperty("editDate") protected Date editDate;
+    @JsonProperty("createUser") protected String createUser;
+    @JsonProperty("editUser") protected String editUser;
+    @JsonProperty("date") protected Date date = null;
+    @JsonProperty("link") protected String link = null;
     protected Date lastUsedDate = new Date();
+    @JsonProperty("id") private int id;
 
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
@@ -154,17 +140,17 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
     }
 
     /**
-     * @param id the unique id of this item.
-     */
-    private void setId(int id) {
-        this.id = id;
-    }
-
-    /**
      * @return the unique id of this item.
      */
     public int getId() {
         return id;
+    }
+
+    /**
+     * @param id the unique id of this item.
+     */
+    private void setId(int id) {
+        this.id = id;
     }
 
     /**
@@ -291,8 +277,8 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
             this.date = updatedItem.date;
             this.link = updatedItem.link;
         } else {
-            throw new ItemMismatchException(this.toString() + "cannot be overwritten by "
-                    + updatedItem.toString());
+            throw new ItemMismatchException(
+                    this.toString() + "cannot be overwritten by " + updatedItem.toString());
         }
     }
 
@@ -310,13 +296,12 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
      * @return true if and only if they are exactly equal.
      */
     public boolean exactlyEquals(AbstractMetaItem<?> another) {
-        boolean equal = (this.equals(another)
-                && this.id == another.id
-                && this.createDate.equals(another.createDate)
-                && this.editDate.equals(another.editDate)
-                && this.createUser.equals(another.createUser)
-                && this.editUser.equals(another.editUser)
-                && this.lastUsedDate.equals(another.lastUsedDate));
+        boolean equal = (this.equals(another) && this.id == another.id &&
+                         this.createDate.equals(another.createDate) &&
+                         this.editDate.equals(another.editDate) &&
+                         this.createUser.equals(another.createUser) &&
+                         this.editUser.equals(another.editUser) &&
+                         this.lastUsedDate.equals(another.lastUsedDate));
 
         if (this.date == null) {
             equal &= another.date == null;
@@ -350,12 +335,13 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
 
     @Override
     public int compareTo(@NonNull T another) {
-        if (this.getId() < another.getId())
+        if (this.getId() < another.getId()) {
             return -1;
-        else if (this.getId() == another.getId())
+        } else if (this.getId() == another.getId()) {
             return 0;
-        else
+        } else {
             return 1;
+        }
     }
 
     /**
@@ -443,9 +429,11 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>> implements
         public T build() {
             try {
                 Constructor<?> cons = clazz.getConstructor(int.class, Date.class, Date.class,
-                        String.class, String.class, Date.class, String.class, Date.class);
-                return clazz.cast(cons.newInstance(id, createDate, editDate, createUser, editUser,
-                        date, link, lastUsedDate));
+                                                           String.class, String.class, Date.class,
+                                                           String.class, Date.class);
+                return clazz.cast(
+                        cons.newInstance(id, createDate, editDate, createUser, editUser, date, link,
+                                         lastUsedDate));
             } catch (Exception e) {
                 throw new RuntimeException("dynamic construction failed - " + this.clazz, e);
             }

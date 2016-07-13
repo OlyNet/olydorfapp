@@ -60,8 +60,7 @@ public class OlyNetRestManager extends RestManager {
             ca.close();
 
             /* create a KeyManagerFactory that contains our client certificate */
-            InputStream clientCert = this.context.getAssets().open(
-                    Configuration.CERTIFICATE_FILE);
+            InputStream clientCert = this.context.getAssets().open(Configuration.CERTIFICATE_FILE);
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
             keyStore.load(clientCert, Configuration.CERTIFICATE_KEY);
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm);
@@ -164,7 +163,8 @@ public class OlyNetRestManager extends RestManager {
      * @throws NotFoundException        if a HTTP 404 has been received.
      */
     @Override
-    public AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount) throws NoConnectionException {
+    public AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount) throws
+                                                                              NoConnectionException {
         return null;
     }
 
@@ -193,7 +193,8 @@ public class OlyNetRestManager extends RestManager {
      * @throws NoConnectionException    if no internet connection is available.
      */
     @Override
-    public List<AbstractMetaItem<?>> fetchItems(Class clazz, int retryCount) throws NoConnectionException {
+    public List<AbstractMetaItem<?>> fetchItems(Class clazz, int retryCount) throws
+                                                                             NoConnectionException {
         return null;
     }
 
@@ -226,7 +227,8 @@ public class OlyNetRestManager extends RestManager {
      * @throws NoConnectionException    if no internet connection is available.
      */
     @Override
-    public AbstractMetaItem<?> fetchMetaItem(Class clazz, int id, int retryCount) throws NoConnectionException {
+    public AbstractMetaItem<?> fetchMetaItem(Class clazz, int id, int retryCount) throws
+                                                                                  NoConnectionException {
         return null;
     }
 
@@ -256,7 +258,8 @@ public class OlyNetRestManager extends RestManager {
      * @throws NoConnectionException    if no internet connection is available.
      */
     @Override
-    public List<AbstractMetaItem<?>> fetchMetaItems(Class clazz, int retryCount) throws NoConnectionException {
+    public List<AbstractMetaItem<?>> fetchMetaItems(Class clazz, int retryCount) throws
+                                                                                 NoConnectionException {
         return null;
     }
 }

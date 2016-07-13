@@ -26,30 +26,26 @@ import eu.olynet.olydorfapp.model.AbstractMetaItem;
 public class DualCacheManager extends AbstractCacheManager {
 
     /**
+     * The time in minutes after which a cache entry is considered stale.
+     */
+    private static final int MINUTES_UNTIL_CACHE_STALE = 60;
+    /**
      * The cache holding the meta-data trees. Do not use directly.
      */
     private DualCache<TreeSet> metaTreeCache;
-
     /**
      * The cache holding the full items. Do not use directly.
      */
     private DualCache<AbstractMetaItem> itemCache;
-
     /**
      * The cache holding the cacheLastUpdated Map while the app is not running.
      */
     private DualCache<Map> cacheStaleCache;
-
     /**
      * Contains the Dates the different metaTreeCaches have been last updated with information from
      * the server.
      */
     private Map<String, Date> cacheLastUpdated;
-
-    /**
-     * The time in minutes after which a cache entry is considered stale.
-     */
-    private static final int MINUTES_UNTIL_CACHE_STALE = 60;
 
     /**
      * Sets up a DualCacheManager
@@ -65,8 +61,8 @@ public class DualCacheManager extends AbstractCacheManager {
         /* dynamically get the PackageInformation */
         PackageInfo pInfo;
         try {
-            pInfo = this.context.getPackageManager().getPackageInfo(
-                    this.context.getPackageName(), 0);
+            pInfo = this.context.getPackageManager()
+                                .getPackageInfo(this.context.getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
             return;
@@ -76,18 +72,23 @@ public class DualCacheManager extends AbstractCacheManager {
         DualCacheLogUtils.enableLog();
         DualCacheContextUtils.setContext(this.context);
         CacheSerializer<TreeSet> treeSerializer = new CacheSerializer<>(TreeSet.class);
-        metaTreeCache = new DualCacheBuilder<>("MetaTrees", pInfo.versionCode, TreeSet.class)
-                .useCustomSerializerInRam(5 * 1024 * 1024, treeSerializer)
-                .useCustomSerializerInDisk(10 * 1024 * 1024, true, treeSerializer);
-        CacheSerializer<AbstractMetaItem> itemSerializer =
-                new CacheSerializer<>(AbstractMetaItem.class);
-        itemCache = new DualCacheBuilder<>("Items", pInfo.versionCode, AbstractMetaItem.class)
-                .useCustomSerializerInRam(5 * 1024 * 1024, itemSerializer)
-                .useCustomSerializerInDisk(200 * 1024 * 1024, true, itemSerializer);
-        cacheStaleCache =
-                new DualCacheBuilder<>("Stale", pInfo.versionCode, Map.class)
-                        .useDefaultSerializerInRam(5 * 1024 * 1024)
-                        .useDefaultSerializerInDisk(5 * 1024 * 1024, true);
+        metaTreeCache = new DualCacheBuilder<>("MetaTrees", pInfo.versionCode,
+                                               TreeSet.class).useCustomSerializerInRam(
+                5 * 1024 * 1024, treeSerializer)
+                                                             .useCustomSerializerInDisk(
+                                                                     10 * 1024 * 1024, true,
+                                                                     treeSerializer);
+        CacheSerializer<AbstractMetaItem> itemSerializer = new CacheSerializer<>(
+                AbstractMetaItem.class);
+        itemCache = new DualCacheBuilder<>("Items", pInfo.versionCode,
+                                           AbstractMetaItem.class).useCustomSerializerInRam(
+                5 * 1024 * 1024, itemSerializer)
+                                                                  .useCustomSerializerInDisk(
+                                                                          200 * 1024 * 1024, true,
+                                                                          itemSerializer);
+        cacheStaleCache = new DualCacheBuilder<>("Stale", pInfo.versionCode,
+                                                 Map.class).useDefaultSerializerInRam(
+                5 * 1024 * 1024).useDefaultSerializerInDisk(5 * 1024 * 1024, true);
         Log.d("ResourceManager.init", "DualCache setup complete.");
 
         /* get the lastUpdateCache from cache */

@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    package="eu.olynet.olydorfapp">
+          package="eu.olynet.olydorfapp">
 
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
-    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera"/>
 
     <!-- Required permissions for GCM -->
     <permission
         android:name="eu.olynet.olydorfapp.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
-    <uses-permission android:name="eu.olynet.olydorfapp.permission.C2D_MESSAGE" />
+        android:protectionLevel="signature"/>
+    <uses-permission android:name="eu.olynet.olydorfapp.permission.C2D_MESSAGE"/>
 
     <application
         android:name="android.support.multidex.MultiDexApplication"
@@ -58,8 +57,8 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
@@ -67,7 +66,7 @@
             android:name=".receiver.BootReceiver"
             android:enabled="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
 
@@ -81,7 +80,7 @@
             android:parentActivityName="eu.olynet.olydorfapp.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="eu.olynet.olydorfapp.activities.MainActivity" />
+                android:value="eu.olynet.olydorfapp.activities.MainActivity"/>
         </activity>
 
         <activity
@@ -90,7 +89,7 @@
             android:parentActivityName="eu.olynet.olydorfapp.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="eu.olynet.olydorfapp.activities.MainActivity" />
+                android:value="eu.olynet.olydorfapp.activities.MainActivity"/>
         </activity>
     </application>
 

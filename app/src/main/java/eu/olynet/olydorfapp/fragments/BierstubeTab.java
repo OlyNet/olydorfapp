@@ -5,6 +5,7 @@
  */
 package eu.olynet.olydorfapp.fragments;
 
+import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,6 +24,7 @@ import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.DailyMealTabAdapter;
+import eu.olynet.olydorfapp.databinding.TabBierstubeBinding;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
@@ -35,23 +37,28 @@ import eu.olynet.olydorfapp.resource.ProductionResourceManager;
  */
 public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
+    TabBierstubeBinding binding;
     private SwipeRefreshLayout mRefreshLayout;
     private DailyMealTabAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.tab_bierstube, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.tab_bierstube, container, false);
+        View view = binding.getRoot();
+        binding.setEmpty(false);
 
         /* initiate NewsTabAdapter */
         mAdapter = new DailyMealTabAdapter(getContext(), null);
 
         /* setup the LayoutManager */
         final GridLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 1,
-                GridLayoutManager.VERTICAL, false);
+                                                                       GridLayoutManager.VERTICAL,
+                                                                       false);
 
         /* initiate RecycleView */
-        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.BierstubeGridRecyclerView);
+        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(
+                R.id.BierstubeGridRecyclerView);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -105,6 +112,9 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
     private void onLoadCompleted() {
         mAdapter.notifyDataSetChanged();
 
+        /* display empty message if necessary */
+        binding.setEmpty(mAdapter.getItemCount() == 0);
+
         /* disable refreshing animation and enable swipe to refresh again */
         mRefreshLayout.setRefreshing(false);
         mRefreshLayout.setEnabled(true);
@@ -131,14 +141,16 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
             rm.getTreeOfMetaItems(DailyMealMetaItem.class, forceUpdate);
 
             /* querying the ResourceManager for the needed data */
-            TreeSet<AbstractMetaItem<?>> metaTree = rm.getTreeOfMetaItems(MealOfTheDayMetaItem.class,
-                    0, null, new AbstractMetaItem.DateAscComparator(), forceUpdate);
+            TreeSet<AbstractMetaItem<?>> metaTree = rm.getTreeOfMetaItems(
+                    MealOfTheDayMetaItem.class, 0, null, new AbstractMetaItem.DateAscComparator(),
+                    forceUpdate);
+            if (metaTree == null) {
+                return null;
+            }
 
             /* filter out the correct meta item */
             MealOfTheDayMetaItem filterItem = new AbstractMetaItem.DummyFactory<>(
-                    MealOfTheDayMetaItem.class)
-                    .setDate(new Date())
-                    .build();
+                    MealOfTheDayMetaItem.class).setDate(new Date()).build();
             MealOfTheDayMetaItem metaItem = (MealOfTheDayMetaItem) metaTree.floor(filterItem);
 
             /* get the correct meal */
@@ -151,11 +163,11 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
 
                 /* fetch the full item only if the date matches */
                 if (itemDate.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
-                        itemDate.get(Calendar.MONTH) == now.get(Calendar.MONTH) &&
-                        itemDate.get(Calendar.DAY_OF_MONTH) == now.get(Calendar.DAY_OF_MONTH)) {
+                    itemDate.get(Calendar.MONTH) == now.get(Calendar.MONTH) &&
+                    itemDate.get(Calendar.DAY_OF_MONTH) == now.get(Calendar.DAY_OF_MONTH)) {
                     // FIXME: probably broken due to timezone offset (UTC and MEZ/MESZ)
                     meal = (MealOfTheDayItem) rm.getItem(MealOfTheDayMetaItem.class,
-                            metaItem.getId());
+                                                         metaItem.getId());
                 }
             }
 

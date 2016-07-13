@@ -5,35 +5,41 @@
     <string name="QR_scan_return">ScanResult</string>
     <string name="menu_action_refresh">Refresh</string>
 
-
     <string name="news_viewer">OlydorfApp News Viewer</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
     <!-- Toolbar titles -->
-    <string name="toolbar_title_home">Home</string>
-    <string name="toolbar_title_explore">Explore</string>
-    <string name="other_activity">Other Activity</string>
+    <string name="toolbarTitleHome">Home</string>
+    <string name="toolbarTitleExplore">Explore</string>
 
     <!-- Navigation Drawer -->
     <string name="navDrawerHomeEntry">Home</string>
-    <string name="navDrawerEventsEntry">Events</string>
     <string name="navDrawerBierstubeEntry">Die Bierstube</string>
     <string name="navDrawerDiscoEntry">OlyDisco</string>
     <string name="navDrawerLoungeEntry">The O(n)ly</string>
     <string name="navDrawerOlynetEntry">OlyNet e.V.</string>
     <string name="navDrawerLaundryEntry">Laundry room</string>
+    <string name="navDrawerAboutEntry">About</string>
+    <string name="navDrawerHelpEntry">Help</string>
 
-    <string name="nav_drawer_item_explore">Explore</string>
-    <string name="nav_drawer_help_and_feedback"><![CDATA[Help & feedback]]></string>
-    <string name="nav_drawer_about">About</string>
+    <!-- Tab titles -->
+    <string name="tabTitleNews">News</string>
+    <string name="tabTitleGeneral">General</string>
+    <string name="tabTitleMenu">Menu</string>
+    <string name="tabTitleJoinUs">Join us!</string>
+    <string name="tabTitleAbout">About</string>
+    <string name="tabTitleEvents">Events</string>
+
+
+    <string name="emptyList">Nothing yet :(</string>
     <string name="navigation_drawer_opened">The navigation drawer is opened</string>
     <string name="navigation_drawer_closed">The navigation drawer is closed</string>
     <string name="tag_nav_drawer_main_entry">nav_drawer_main_entry</string>
     <string name="tag_nav_drawer_special_entry">nav_drawer_special_entry</string>
-    <string name="tools_text_account_information_username">Username</string>
-    <string name="tools_text_account_information_email">user@mail.com</string>
+    <string name="tools_text_account_information_username">Max Mustermann</string>
+    <string name="tools_text_account_information_email">max.mustermann@olynet.eu</string>
 
     <!-- Typeface names -->
     <string name="typeface_roboto_regular">Roboto-Regular</string>

@@ -22,6 +22,21 @@ import eu.olynet.olydorfapp.resource.ProductionResourceManager;
  */
 public class AlarmReceiver extends BroadcastReceiver {
 
+    public static void setupAlarm(Context context) {
+        /* setup the Calendar with the current time */
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        /* create the PendingIntent */
+        Intent intent = new Intent(context, AlarmReceiver.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+        /* setup the AlarmManager */
+        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        alarmMgr.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis() + 1000 * 10,
+                                     AlarmManager.INTERVAL_DAY, alarmIntent);
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         /* acquire a wake-lock to prevent the device from going to sleep during the cleanup */
@@ -41,20 +56,5 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         /* release the wake-lock */
         wl.release();
-    }
-
-    public static void setupAlarm(Context context) {
-        /* setup the Calendar with the current time */
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-
-        /* create the PendingIntent */
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-
-        /* setup the AlarmManager */
-        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmMgr.setInexactRepeating(AlarmManager.RTC, calendar.getTimeInMillis() + 1000 * 10,
-                AlarmManager.INTERVAL_DAY, alarmIntent);
     }
 }

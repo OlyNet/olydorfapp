@@ -37,8 +37,7 @@ public class UpdateTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void nope) {
         // Give some feedback on the UI.
-        Toast.makeText(mCon, "Invalidated the cache!",
-                Toast.LENGTH_LONG).show();
+        Toast.makeText(mCon, "Invalidated the cache!", Toast.LENGTH_LONG).show();
 
         // Change the menu back
         ((MainActivity) mCon).resetUpdating();

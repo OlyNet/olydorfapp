@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/news_view_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -25,7 +27,7 @@
                 android:layout_alignParentTop="true"
                 android:text="New Text"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <ImageView
                 android:id="@+id/newsViewImage"
@@ -36,7 +38,7 @@
                 android:layout_below="@+id/newsViewTitle"
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
-                android:src="@drawable/ic_account_circle_white_64dp" />
+                android:src="@drawable/ic_account_circle_white_64dp"/>
 
             <TextView
                 android:id="@+id/newsViewContent"
@@ -45,7 +47,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/newsViewImage"
-                android:text="New Text" />
+                android:text="New Text"/>
 
         </RelativeLayout>
 

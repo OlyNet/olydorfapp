@@ -4,12 +4,14 @@
 
     <!--Scrim insets vie that allows the drawer the be behind the status bar and visible -->
     <declare-styleable name="ScrimInsetsView">
-        <attr name="insetForegroundOld" format="reference|color" />
+        <attr name="insetForegroundOld"
+              format="reference|color"/>
     </declare-styleable>
 
     <!-- ColorState to be used in the TinOnImageView view -->
     <declare-styleable name="TintOnStateImageView">
-        <attr name="colorStateList" format="reference|color" />
+        <attr name="colorStateList"
+              format="reference|color"/>
     </declare-styleable>
 
 </resources>

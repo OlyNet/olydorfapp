@@ -44,7 +44,9 @@ public class NewsViewerActivity extends AppCompatActivity {
             newsViewerFragment.setArguments(getIntent().getExtras());
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.news_view_activity_fragment, newsViewerFragment).commit();
+                                       .replace(R.id.news_view_activity_fragment,
+                                                newsViewerFragment)
+                                       .commit();
         }
     }
 

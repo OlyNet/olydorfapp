@@ -63,8 +63,8 @@ public abstract class RestManager {
      * @throws NoConnectionException    if no internet connection is available.
      * @throws NotFoundException        if a HTTP 404 has been received.
      */
-    public abstract AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount)
-            throws NoConnectionException;
+    public abstract AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount) throws
+                                                                                       NoConnectionException;
 
     /**
      * Tries to fetch all items of a specific type from the server. Defaults to 3 retries.
@@ -87,8 +87,8 @@ public abstract class RestManager {
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
      */
-    public abstract List<AbstractMetaItem<?>> fetchItems(Class clazz, int retryCount)
-            throws NoConnectionException;
+    public abstract List<AbstractMetaItem<?>> fetchItems(Class clazz, int retryCount) throws
+                                                                                      NoConnectionException;
 
     /**
      * Tries to fetch the up-to-createDate meta-data information for one specific item from the
@@ -101,8 +101,8 @@ public abstract class RestManager {
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
      */
-    public abstract AbstractMetaItem<?> fetchMetaItem(Class clazz, int id)
-            throws NoConnectionException;
+    public abstract AbstractMetaItem<?> fetchMetaItem(Class clazz, int id) throws
+                                                                           NoConnectionException;
 
     /**
      * Tries to fetch the up-to-createDate meta-data information for one specific item from the
@@ -116,8 +116,8 @@ public abstract class RestManager {
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
      */
-    public abstract AbstractMetaItem<?> fetchMetaItem(Class clazz, int id, int retryCount)
-            throws NoConnectionException;
+    public abstract AbstractMetaItem<?> fetchMetaItem(Class clazz, int id, int retryCount) throws
+                                                                                           NoConnectionException;
 
     /**
      * Tries to fetch the up-to-createDate meta-data information from the server. Defaults to 3
@@ -129,8 +129,8 @@ public abstract class RestManager {
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
      */
-    public abstract List<AbstractMetaItem<?>> fetchMetaItems(Class clazz)
-            throws NoConnectionException;
+    public abstract List<AbstractMetaItem<?>> fetchMetaItems(Class clazz) throws
+                                                                          NoConnectionException;
 
     /**
      * Tries to fetch the up-to-createDate meta-data information from the server.
@@ -142,8 +142,8 @@ public abstract class RestManager {
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
      */
-    public abstract List<AbstractMetaItem<?>> fetchMetaItems(Class clazz, int retryCount)
-            throws NoConnectionException;
+    public abstract List<AbstractMetaItem<?>> fetchMetaItems(Class clazz, int retryCount) throws
+                                                                                          NoConnectionException;
 
 
 }

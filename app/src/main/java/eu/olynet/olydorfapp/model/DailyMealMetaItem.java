@@ -19,24 +19,24 @@ import java.util.Date;
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
-        getterVisibility = JsonAutoDetect.Visibility.NONE,
-        setterVisibility = JsonAutoDetect.Visibility.NONE)
+                getterVisibility = JsonAutoDetect.Visibility.NONE,
+                setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class DailyMealMetaItem extends AbstractMetaItem<DailyMealMetaItem> {
 
     /**
      * CREATOR necessary for the Parcelable interface.
      */
-    public static final Parcelable.Creator<DailyMealMetaItem> CREATOR =
-            new Parcelable.Creator<DailyMealMetaItem>() {
+    public static final Parcelable.Creator<DailyMealMetaItem> CREATOR
+            = new Parcelable.Creator<DailyMealMetaItem>() {
 
-                public DailyMealMetaItem createFromParcel(Parcel in) {
-                    return new DailyMealMetaItem(in);
-                }
+        public DailyMealMetaItem createFromParcel(Parcel in) {
+            return new DailyMealMetaItem(in);
+        }
 
-                public DailyMealMetaItem[] newArray(int size) {
-                    return new DailyMealMetaItem[size];
-                }
-            };
+        public DailyMealMetaItem[] newArray(int size) {
+            return new DailyMealMetaItem[size];
+        }
+    };
 
     /**
      * Constructor for creating DailyMealMetaItem from Parcels.
@@ -75,10 +75,12 @@ public class DailyMealMetaItem extends AbstractMetaItem<DailyMealMetaItem> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
+        if (obj == null) {
             return false;
-        if (!(obj instanceof DailyMealMetaItem))
+        }
+        if (!(obj instanceof DailyMealMetaItem)) {
             return false;
+        }
         DailyMealMetaItem item = (DailyMealMetaItem) obj;
 
         return this.getId() == item.getId();

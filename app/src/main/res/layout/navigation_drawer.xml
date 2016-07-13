@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<eu.olynet.olydorfapp.customViews.ScrimInsetsFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<eu.olynet.olydorfapp.customViews.ScrimInsetsFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_activity_navigation_drawer_rootLayout"
     style="@style/ScrimInsetsLayout"
@@ -30,7 +31,7 @@
                     android:layout_height="match_parent"
                     android:background="@drawable/image_nav_drawer_account_background"
                     android:scaleType="centerCrop"
-                    tools:ignore="ContentDescription" />
+                    tools:ignore="ContentDescription"/>
 
             </FrameLayout>
 
@@ -56,7 +57,7 @@
                         android:id="@+id/navigation_drawer_account_information_display_name"
                         style="@style/NavDrawerAccountInfoText"
                         android:text="@string/tools_text_account_information_username"
-                        tools:fontFamily="sans-serif-medium" />
+                        tools:fontFamily="sans-serif-medium"/>
 
                 </LinearLayout>
 
@@ -65,7 +66,7 @@
                     android:layout_width="@dimen/navigation_drawer_profile_image_size"
                     android:layout_height="@dimen/navigation_drawer_profile_image_size"
                     android:layout_above="@id/navigation_drawer_account_information"
-                    android:src="@drawable/ic_account_circle_white_64dp" />
+                    android:src="@drawable/ic_account_circle_white_64dp"/>
 
             </RelativeLayout>
 
@@ -101,7 +102,7 @@
                 android:layout_below="@id/navDrawerItemsListView"
                 android:orientation="vertical">
 
-                <include layout="@layout/navigation_drawer_divider" />
+                <include layout="@layout/navigation_drawer_divider"/>
 
                 <FrameLayout
                     android:id="@+id/navigation_drawer_items_list_linearLayout_help_and_feedback"
@@ -112,13 +113,13 @@
                         android:id="@+id/navigation_drawer_items_list_icon_help_and_feedback"
                         style="@style/NavDrawerRowItemIcon"
                         android:src="@drawable/ic_help_white_24dp"
-                        tools:ignore="ContentDescription" />
+                        tools:ignore="ContentDescription"/>
 
                     <TextView
                         android:id="@+id/navigation_drawer_items_textView_help_and_feedback"
                         style="@style/NavDrawerRowItemText"
-                        android:text="Help"
-                        tools:fontFamily="sans-serif-medium" />
+                        android:text="@string/navDrawerHelpEntry"
+                        tools:fontFamily="sans-serif-medium"/>
 
                 </FrameLayout>
 
@@ -131,13 +132,13 @@
                         android:id="@+id/navigation_drawer_items_list_icon_about"
                         style="@style/NavDrawerRowItemIcon"
                         android:src="@drawable/ic_info_white_24dp"
-                        tools:ignore="ContentDescription" />
+                        tools:ignore="ContentDescription"/>
 
                     <TextView
                         android:id="@+id/navigation_drawer_items_textView_about"
                         style="@style/NavDrawerRowItemText"
-                        android:text="About"
-                        tools:fontFamily="sans-serif-medium" />
+                        android:text="@string/navDrawerAboutEntry"
+                        tools:fontFamily="sans-serif-medium"/>
 
                 </FrameLayout>
 

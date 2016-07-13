@@ -35,43 +35,6 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
     private List<AbstractMetaItem<?>> items;
     private Context context;
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
-    public class ViewHolder extends RecyclerView.ViewHolder {
-
-        protected NewsItem item;
-
-        protected TextView vDate;
-        protected TextView vTitle;
-        protected TextView vOrganization;
-        protected ImageView vImage;
-
-        public ViewHolder(View view) {
-            super(view);
-
-            view.setOnClickListener(new View.OnClickListener() {
-                /**
-                 * Called when a view has been clicked.
-                 *
-                 * @param v The view that was clicked.
-                 */
-                @Override
-                public void onClick(View v) {
-                    Intent newsViewerIntent = new Intent(context, NewsViewerActivity.class);
-                    newsViewerIntent.setAction(Intent.ACTION_VIEW);
-                    newsViewerIntent.putExtra(NewsViewerFragment.ITEM_KEY, item);
-                    context.startActivity(newsViewerIntent);
-                }
-            });
-
-            vOrganization = (TextView) view.findViewById(R.id.newsCardOrganization);
-            vDate = (TextView) view.findViewById(R.id.newsCardDate);
-            vTitle = (TextView) view.findViewById(R.id.newsCardTitle);
-            vImage = (ImageView) view.findViewById(R.id.newsCardImage);
-        }
-    }
-
     /**
      * @param context   the Context.
      * @param newsItems the List containing the NewsItems.
@@ -84,7 +47,8 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
     // Create new views (invoked by the layout manager)
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_news, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                                  .inflate(R.layout.card_news, parent, false);
 
         return new ViewHolder(view);
     }
@@ -93,8 +57,9 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (!(items.get(position) instanceof NewsItem)) {
-            throw new IllegalArgumentException("the List of AbstractMetaItem<?>s provided does not"
-                    + " seem to only contain NewsItems");
+            throw new IllegalArgumentException(
+                    "the List of AbstractMetaItem<?>s provided does not" +
+                    " seem to only contain NewsItems");
         }
         NewsItem newsItem = (NewsItem) items.get(position);
 
@@ -102,7 +67,8 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
         holder.item = newsItem;
 
         /* Date */
-        SimpleDateFormat localFormat = (SimpleDateFormat) android.text.format.DateFormat.getDateFormat(context);
+        SimpleDateFormat localFormat
+                = (SimpleDateFormat) android.text.format.DateFormat.getDateFormat(context);
         holder.vDate.setText(localFormat.format(newsItem.getDate()));
 
         /* Title */
@@ -118,11 +84,12 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
         }
         if (image != null && image.length > 0) { /* finally set the image if one is available */
             Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-            if(imageBitmap == null) {
+            if (imageBitmap == null) {
                 holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
             } else {
                 DisplayMetrics dm = new DisplayMetrics();
-                WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+                WindowManager windowManager = (WindowManager) context.getSystemService(
+                        Context.WINDOW_SERVICE);
                 windowManager.getDefaultDisplay().getMetrics(dm);
                 holder.vImage.setImageBitmap(imageBitmap);
             }
@@ -170,5 +137,42 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
     public void replaceAbstractMetaItems(List<AbstractMetaItem<?>> items) {
         this.items.clear();
         this.items.addAll(items);
+    }
+
+    // Provide a reference to the views for each data item
+    // Complex data items may need more than one view per item, and
+    // you provide access to all the views for a data item in a view holder
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
+        protected NewsItem item;
+
+        protected TextView vDate;
+        protected TextView vTitle;
+        protected TextView vOrganization;
+        protected ImageView vImage;
+
+        public ViewHolder(View view) {
+            super(view);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                /**
+                 * Called when a view has been clicked.
+                 *
+                 * @param v The view that was clicked.
+                 */
+                @Override
+                public void onClick(View v) {
+                    Intent newsViewerIntent = new Intent(context, NewsViewerActivity.class);
+                    newsViewerIntent.setAction(Intent.ACTION_VIEW);
+                    newsViewerIntent.putExtra(NewsViewerFragment.ITEM_KEY, item);
+                    context.startActivity(newsViewerIntent);
+                }
+            });
+
+            vOrganization = (TextView) view.findViewById(R.id.newsCardOrganization);
+            vDate = (TextView) view.findViewById(R.id.newsCardDate);
+            vTitle = (TextView) view.findViewById(R.id.newsCardTitle);
+            vImage = (ImageView) view.findViewById(R.id.newsCardImage);
+        }
     }
 }

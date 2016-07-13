@@ -33,23 +33,6 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
     private MealOfTheDayItem item;
     private Context context;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        protected TextView vHeadline;
-        protected ImageView vImage;
-        protected TextView vName;
-        protected TextView vPrice;
-        protected TextView vCook;
-
-        public ViewHolder(View view) {
-            super(view);
-            vHeadline = (TextView) view.findViewById(R.id.dailyMealHeadline);
-            vImage = (ImageView) view.findViewById(R.id.dailyMealImage);
-            vName = (TextView) view.findViewById(R.id.dailyMealTitle);
-            vPrice = (TextView) view.findViewById(R.id.dailyMealPrice);
-            vCook = (TextView) view.findViewById(R.id.dailyMealCook);
-        }
-    }
-
     /**
      * @param context the Context.
      * @param item    the DailyMealItem.
@@ -62,8 +45,8 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
     // Create new views (invoked by the layout manager)
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_mealoftheday,
-                parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                                  .inflate(R.layout.card_mealoftheday, parent, false);
 
         return new ViewHolder(view);
     }
@@ -78,8 +61,9 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
         /* Headline */
         Calendar cal = new GregorianCalendar();
         cal.setTime(item.getDate());
-        holder.vHeadline.setText("Fraß des Tages (" + cal.get(Calendar.DAY_OF_MONTH) + ". "
-                + cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault()) + ")");
+        holder.vHeadline.setText("Fraß des Tages (" + cal.get(Calendar.DAY_OF_MONTH) + ". " +
+                                 cal.getDisplayName(Calendar.MONTH, Calendar.LONG,
+                                                    Locale.getDefault()) + ")");
 
         /* Name */
         holder.vName.setText(item.getDailyMeal().getName());
@@ -101,11 +85,12 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
         }
         if (image != null && image.length > 0) { /* finally set the image if one is available */
             Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-            if(imageBitmap == null) {
+            if (imageBitmap == null) {
                 holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
             } else {
                 DisplayMetrics dm = new DisplayMetrics();
-                WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+                WindowManager windowManager = (WindowManager) context.getSystemService(
+                        Context.WINDOW_SERVICE);
                 windowManager.getDefaultDisplay().getMetrics(dm);
                 holder.vImage.setImageBitmap(imageBitmap);
             }
@@ -136,5 +121,22 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
      */
     public void setItem(MealOfTheDayItem item) {
         this.item = item;
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        protected TextView vHeadline;
+        protected ImageView vImage;
+        protected TextView vName;
+        protected TextView vPrice;
+        protected TextView vCook;
+
+        public ViewHolder(View view) {
+            super(view);
+            vHeadline = (TextView) view.findViewById(R.id.dailyMealHeadline);
+            vImage = (ImageView) view.findViewById(R.id.dailyMealImage);
+            vName = (TextView) view.findViewById(R.id.dailyMealTitle);
+            vPrice = (TextView) view.findViewById(R.id.dailyMealPrice);
+            vCook = (TextView) view.findViewById(R.id.dailyMealCook);
+        }
     }
 }

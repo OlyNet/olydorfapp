@@ -22,39 +22,32 @@ import java.util.Date;
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
-        getterVisibility = JsonAutoDetect.Visibility.NONE,
-        setterVisibility = JsonAutoDetect.Visibility.NONE)
+                getterVisibility = JsonAutoDetect.Visibility.NONE,
+                setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonIgnoreProperties("mealOfTheDayRatings")
 public class MealOfTheDayItem extends MealOfTheDayMetaItem {
-
-    @JsonProperty("cook")
-    protected String cook;
-
-    @JsonProperty("price")
-    protected float price;
-
-    @JsonProperty("dailyMeal")
-    @JsonSerialize(using = DailyMealSerializer.class)
-    @JsonDeserialize(using = DailyMealDeserializer.class)
-    protected DailyMealItem dailyMeal;
-
-    @JsonProperty("image")
-    protected byte[] image;
 
     /**
      * CREATOR necessary for the Parcelable interface.
      */
-    public static final Parcelable.Creator<MealOfTheDayItem> CREATOR =
-            new Parcelable.Creator<MealOfTheDayItem>() {
+    public static final Parcelable.Creator<MealOfTheDayItem> CREATOR
+            = new Parcelable.Creator<MealOfTheDayItem>() {
 
-                public MealOfTheDayItem createFromParcel(Parcel in) {
-                    return new MealOfTheDayItem(in);
-                }
+        public MealOfTheDayItem createFromParcel(Parcel in) {
+            return new MealOfTheDayItem(in);
+        }
 
-                public MealOfTheDayItem[] newArray(int size) {
-                    return new MealOfTheDayItem[size];
-                }
-            };
+        public MealOfTheDayItem[] newArray(int size) {
+            return new MealOfTheDayItem[size];
+        }
+    };
+    @JsonProperty("cook") protected String cook;
+    @JsonProperty("price") protected float price;
+    @JsonProperty("dailyMeal")
+    @JsonSerialize(using = DailyMealSerializer.class)
+    @JsonDeserialize(using = DailyMealDeserializer.class)
+    protected DailyMealItem dailyMeal;
+    @JsonProperty("image") protected byte[] image;
 
     /**
      * Constructor for creating MealOfTheDayItem from Parcels.
@@ -172,12 +165,11 @@ public class MealOfTheDayItem extends MealOfTheDayMetaItem {
 
     @Override
     public boolean exactlyEquals(AbstractMetaItem<?> another) {
-        return (super.exactlyEquals(another)
-                && this.cook.equals(((MealOfTheDayItem) another).cook)
-                && this.price == ((MealOfTheDayItem) another).price
-                && this.dailyMeal.exactlyEquals(((MealOfTheDayItem) another).dailyMeal)
-                && Arrays.equals(this.image, ((MealOfTheDayItem) another).image)
-        );
+        return (super.exactlyEquals(another) &&
+                this.cook.equals(((MealOfTheDayItem) another).cook) &&
+                this.price == ((MealOfTheDayItem) another).price &&
+                this.dailyMeal.exactlyEquals(((MealOfTheDayItem) another).dailyMeal) &&
+                Arrays.equals(this.image, ((MealOfTheDayItem) another).image));
     }
 
     @Override

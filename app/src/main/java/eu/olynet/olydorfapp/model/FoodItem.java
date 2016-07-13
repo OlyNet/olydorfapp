@@ -20,44 +20,32 @@ import java.util.Date;
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
-        getterVisibility = JsonAutoDetect.Visibility.NONE,
-        setterVisibility = JsonAutoDetect.Visibility.NONE)
+                getterVisibility = JsonAutoDetect.Visibility.NONE,
+                setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class FoodItem extends FoodMetaItem {
-
-    @JsonProperty("organization")
-    @JsonDeserialize(using = OrganizationDeserializer.class)
-    @JsonSerialize(using = OrganizationSerializer.class)
-    protected OrganizationItem organization;
-
-    @JsonProperty("name")
-    protected String name;
-
-    @JsonProperty("englishname")
-    protected String englishname;
-
-    @JsonProperty("vegetarian")
-    protected boolean vegetarian;
-
-    @JsonProperty("price")
-    protected float price;
-
-    @JsonProperty("image")
-    protected byte[] image;
 
     /**
      * CREATOR necessary for the Parcelable interface.
      */
-    public static final Parcelable.Creator<FoodItem> CREATOR =
-            new Parcelable.Creator<FoodItem>() {
+    public static final Parcelable.Creator<FoodItem> CREATOR = new Parcelable.Creator<FoodItem>() {
 
-                public FoodItem createFromParcel(Parcel in) {
-                    return new FoodItem(in);
-                }
+        public FoodItem createFromParcel(Parcel in) {
+            return new FoodItem(in);
+        }
 
-                public FoodItem[] newArray(int size) {
-                    return new FoodItem[size];
-                }
-            };
+        public FoodItem[] newArray(int size) {
+            return new FoodItem[size];
+        }
+    };
+    @JsonProperty("organization")
+    @JsonDeserialize(using = OrganizationDeserializer.class)
+    @JsonSerialize(using = OrganizationSerializer.class)
+    protected OrganizationItem organization;
+    @JsonProperty("name") protected String name;
+    @JsonProperty("englishname") protected String englishname;
+    @JsonProperty("vegetarian") protected boolean vegetarian;
+    @JsonProperty("price") protected float price;
+    @JsonProperty("image") protected byte[] image;
 
     /**
      * Constructor for creating FoodItem from Parcels.
@@ -202,14 +190,13 @@ public class FoodItem extends FoodMetaItem {
 
     @Override
     public boolean exactlyEquals(AbstractMetaItem<?> another) {
-        return (super.exactlyEquals(another)
-                && this.organization.exactlyEquals(((FoodItem) another).organization)
-                && this.name.equals(((FoodItem) another).name)
-                && this.englishname.equals(((FoodItem) another).englishname)
-                && this.vegetarian == ((FoodItem) another).vegetarian
-                && this.price == ((FoodItem) another).price
-                && Arrays.equals(this.image, ((FoodItem) another).image)
-        );
+        return (super.exactlyEquals(another) &&
+                this.organization.exactlyEquals(((FoodItem) another).organization) &&
+                this.name.equals(((FoodItem) another).name) &&
+                this.englishname.equals(((FoodItem) another).englishname) &&
+                this.vegetarian == ((FoodItem) another).vegetarian &&
+                this.price == ((FoodItem) another).price &&
+                Arrays.equals(this.image, ((FoodItem) another).image));
     }
 
     @Override

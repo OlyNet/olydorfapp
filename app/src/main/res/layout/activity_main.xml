@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_activity_DrawerLayout"
     android:layout_width="match_parent"
@@ -12,29 +13,30 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        <android.support.v7.widget.Toolbar
+            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/main_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/OlympiaDarkBlue"
             android:elevation="4dp"
-            android:theme="@style/Base.ThemeOverlay.AppCompat.Dark" />
+            android:theme="@style/Base.ThemeOverlay.AppCompat.Dark"/>
 
         <eu.olynet.olydorfapp.sliding.SlidingTabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:elevation="2dp" />
+            android:elevation="2dp"/>
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
 
     </LinearLayout>
     <!-- The navigation drawer -->
-    <include layout="@layout/navigation_drawer" />
+    <include layout="@layout/navigation_drawer"/>
 
 </android.support.v4.widget.DrawerLayout>

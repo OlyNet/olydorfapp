@@ -45,7 +45,7 @@ public class CustomTrustManager implements X509TrustManager {
     }
 
     private X509TrustManager createTrustManager(KeyStore store) throws NoSuchAlgorithmException,
-            KeyStoreException {
+                                                                       KeyStoreException {
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(
                 TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(store);
@@ -67,8 +67,8 @@ public class CustomTrustManager implements X509TrustManager {
      *                                  an empty string.
      */
     @Override
-    public void checkClientTrusted(X509Certificate[] chain, String authType)
-            throws CertificateException {
+    public void checkClientTrusted(X509Certificate[] chain, String authType) throws
+                                                                             CertificateException {
         try {
             localTrustManager.checkClientTrusted(chain, authType);
         } catch (CertificateException ce) {
@@ -90,8 +90,8 @@ public class CustomTrustManager implements X509TrustManager {
      *                                  an empty string.
      */
     @Override
-    public void checkServerTrusted(X509Certificate[] chain, String authType)
-            throws CertificateException {
+    public void checkServerTrusted(X509Certificate[] chain, String authType) throws
+                                                                             CertificateException {
         try {
             localTrustManager.checkServerTrusted(chain, authType);
         } catch (CertificateException ce) {
@@ -111,7 +111,7 @@ public class CustomTrustManager implements X509TrustManager {
         X509Certificate[] localCerts = localTrustManager.getAcceptedIssuers();
         X509Certificate[] defaultCerts = defaultTrustManager.getAcceptedIssuers();
         X509Certificate[] result = Arrays.copyOf(localCerts,
-                localCerts.length + defaultCerts.length);
+                                                 localCerts.length + defaultCerts.length);
         System.arraycopy(defaultCerts, 0, result, localCerts.length, defaultCerts.length);
         return result;
     }

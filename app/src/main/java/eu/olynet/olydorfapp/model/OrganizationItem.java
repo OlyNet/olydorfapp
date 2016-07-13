@@ -20,40 +20,30 @@ import java.util.Date;
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
-        getterVisibility = JsonAutoDetect.Visibility.NONE,
-        setterVisibility = JsonAutoDetect.Visibility.NONE)
+                getterVisibility = JsonAutoDetect.Visibility.NONE,
+                setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonIgnoreProperties({"food"})
 public class OrganizationItem extends OrganizationMetaItem {
-
-    @JsonProperty("name")
-    protected String name;
-
-    @JsonProperty("shortname")
-    protected String shortname;
-
-    @JsonProperty("website")
-    protected String website;
-
-    @JsonProperty("description")
-    protected String description;
-
-    @JsonProperty("logo")
-    protected byte[] logo;
 
     /**
      * CREATOR necessary for the Parcelable interface.
      */
-    public static final Parcelable.Creator<OrganizationItem> CREATOR =
-            new Parcelable.Creator<OrganizationItem>() {
+    public static final Parcelable.Creator<OrganizationItem> CREATOR
+            = new Parcelable.Creator<OrganizationItem>() {
 
-                public OrganizationItem createFromParcel(Parcel in) {
-                    return new OrganizationItem(in);
-                }
+        public OrganizationItem createFromParcel(Parcel in) {
+            return new OrganizationItem(in);
+        }
 
-                public OrganizationItem[] newArray(int size) {
-                    return new OrganizationItem[size];
-                }
-            };
+        public OrganizationItem[] newArray(int size) {
+            return new OrganizationItem[size];
+        }
+    };
+    @JsonProperty("name") protected String name;
+    @JsonProperty("shortname") protected String shortname;
+    @JsonProperty("website") protected String website;
+    @JsonProperty("description") protected String description;
+    @JsonProperty("logo") protected byte[] logo;
 
     /**
      * Constructor for creating OrganizationItem from Parcels.
@@ -176,13 +166,12 @@ public class OrganizationItem extends OrganizationMetaItem {
 
     @Override
     public boolean exactlyEquals(AbstractMetaItem<?> another) {
-        return (super.exactlyEquals(another)
-                && this.name.equals(((OrganizationItem) another).name)
-                && this.shortname.equals(((OrganizationItem) another).shortname)
-                && this.website.equals(((OrganizationItem) another).website)
-                && this.description.equals(((OrganizationItem) another).description)
-                && Arrays.equals(this.logo, ((OrganizationItem) another).logo)
-        );
+        return (super.exactlyEquals(another) &&
+                this.name.equals(((OrganizationItem) another).name) &&
+                this.shortname.equals(((OrganizationItem) another).shortname) &&
+                this.website.equals(((OrganizationItem) another).website) &&
+                this.description.equals(((OrganizationItem) another).description) &&
+                Arrays.equals(this.logo, ((OrganizationItem) another).logo));
     }
 
     @Override

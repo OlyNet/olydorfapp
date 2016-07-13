@@ -41,6 +41,10 @@ public class HackedURLConnectionEngine extends URLConnectionEngine {
         return con;
     }
 
+    public int getConnectionTimeout() {
+        return this.connectionTimeout;
+    }
+
     /**
      * Sets the maximum time in milliseconds to wait while connecting. Connecting to a server will
      * fail with a SocketTimeoutException if the timeout elapses before a connection is established.
@@ -54,10 +58,6 @@ public class HackedURLConnectionEngine extends URLConnectionEngine {
         if (connectionTimeout >= 0) {
             this.connectionTimeout = connectionTimeout;
         }
-    }
-
-    public int getConnectionTimeout() {
-        return this.connectionTimeout;
     }
 
     public SSLContext getNotFuckedUpSslContext() {

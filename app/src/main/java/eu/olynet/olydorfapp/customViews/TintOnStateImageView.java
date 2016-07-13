@@ -16,23 +16,19 @@ import eu.olynet.olydorfapp.R;
  *
  * @author Sotti https://plus.google.com/+PabloCostaTirado/about
  */
-public class TintOnStateImageView extends ImageView
-{
+public class TintOnStateImageView extends ImageView {
     private ColorStateList mColorStateList;
 
-    public TintOnStateImageView(Context context)
-    {
+    public TintOnStateImageView(Context context) {
         super(context);
     }
 
-    public TintOnStateImageView(Context context, AttributeSet attrs)
-    {
+    public TintOnStateImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initialise(context, attrs, 0);
     }
 
-    public TintOnStateImageView(Context context, AttributeSet attrs, int defStyleAttr)
-    {
+    public TintOnStateImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initialise(context, attrs, defStyleAttr);
     }
@@ -40,24 +36,23 @@ public class TintOnStateImageView extends ImageView
     /**
      * Create, bind and set up the resource
      *
-     * @param context is the context to get the resource from
+     * @param context      is the context to get the resource from
      * @param attributeSet is the attributeSet
-     * @param defStyle is the style
+     * @param defStyle     is the style
      */
-    private void initialise(Context context, AttributeSet attributeSet, int defStyle)
-    {
-        TypedArray a = context.obtainStyledAttributes(attributeSet, R.styleable.TintOnStateImageView, defStyle, 0);
+    private void initialise(Context context, AttributeSet attributeSet, int defStyle) {
+        TypedArray a = context.obtainStyledAttributes(attributeSet,
+                                                      R.styleable.TintOnStateImageView, defStyle,
+                                                      0);
         mColorStateList = a.getColorStateList(R.styleable.TintOnStateImageView_colorStateList);
         a.recycle();
     }
 
     @Override
-    protected void drawableStateChanged()
-    {
+    protected void drawableStateChanged() {
         super.drawableStateChanged();
 
-        if (mColorStateList != null && mColorStateList.isStateful())
-        {
+        if (mColorStateList != null && mColorStateList.isStateful()) {
             updateTintColor();
         }
     }
@@ -65,10 +60,10 @@ public class TintOnStateImageView extends ImageView
     /**
      * Updates the color of the image
      */
-    private void updateTintColor()
-    {
+    private void updateTintColor() {
         int color = mColorStateList.getColorForState(getDrawableState(),
-                ContextCompat.getColor(getContext(), R.color.nav_drawer_item_icon_normal));
+                                                     ContextCompat.getColor(getContext(),
+                                                                            R.color.nav_drawer_item_icon_normal));
 
         super.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }

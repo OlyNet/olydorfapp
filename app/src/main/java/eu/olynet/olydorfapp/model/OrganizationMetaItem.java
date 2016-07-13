@@ -19,24 +19,24 @@ import java.util.Date;
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
-        getterVisibility = JsonAutoDetect.Visibility.NONE,
-        setterVisibility = JsonAutoDetect.Visibility.NONE)
+                getterVisibility = JsonAutoDetect.Visibility.NONE,
+                setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class OrganizationMetaItem extends AbstractMetaItem<OrganizationMetaItem> {
 
     /**
      * CREATOR necessary for the Parcelable interface.
      */
-    public static final Parcelable.Creator<OrganizationMetaItem> CREATOR =
-            new Parcelable.Creator<OrganizationMetaItem>() {
+    public static final Parcelable.Creator<OrganizationMetaItem> CREATOR
+            = new Parcelable.Creator<OrganizationMetaItem>() {
 
-                public OrganizationMetaItem createFromParcel(Parcel in) {
-                    return new OrganizationMetaItem(in);
-                }
+        public OrganizationMetaItem createFromParcel(Parcel in) {
+            return new OrganizationMetaItem(in);
+        }
 
-                public OrganizationMetaItem[] newArray(int size) {
-                    return new OrganizationMetaItem[size];
-                }
-            };
+        public OrganizationMetaItem[] newArray(int size) {
+            return new OrganizationMetaItem[size];
+        }
+    };
 
     /**
      * Constructor for creating OrganizationMetaItem from Parcels.
@@ -75,10 +75,12 @@ public class OrganizationMetaItem extends AbstractMetaItem<OrganizationMetaItem>
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
+        if (obj == null) {
             return false;
-        if (!(obj instanceof OrganizationMetaItem))
+        }
+        if (!(obj instanceof OrganizationMetaItem)) {
             return false;
+        }
         OrganizationMetaItem item = (OrganizationMetaItem) obj;
 
         return this.getId() == item.getId();

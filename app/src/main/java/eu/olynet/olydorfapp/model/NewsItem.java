@@ -20,38 +20,30 @@ import java.util.Date;
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
-        getterVisibility = JsonAutoDetect.Visibility.NONE,
-        setterVisibility = JsonAutoDetect.Visibility.NONE)
+                getterVisibility = JsonAutoDetect.Visibility.NONE,
+                setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class NewsItem extends NewsMetaItem {
-
-    @JsonProperty("organization")
-    @JsonSerialize(using = OrganizationSerializer.class)
-    @JsonDeserialize(using = OrganizationDeserializer.class)
-    protected OrganizationItem organization = null;
-
-    @JsonProperty("title")
-    protected String title;
-
-    @JsonProperty("text")
-    protected String text;
-
-    @JsonProperty("image")
-    protected byte[] image;
 
     /**
      * CREATOR necessary for the Parcelable interface.
      */
-    public static final Parcelable.Creator<NewsItem> CREATOR =
-            new Parcelable.Creator<NewsItem>() {
+    public static final Parcelable.Creator<NewsItem> CREATOR = new Parcelable.Creator<NewsItem>() {
 
-                public NewsItem createFromParcel(Parcel in) {
-                    return new NewsItem(in);
-                }
+        public NewsItem createFromParcel(Parcel in) {
+            return new NewsItem(in);
+        }
 
-                public NewsItem[] newArray(int size) {
-                    return new NewsItem[size];
-                }
-            };
+        public NewsItem[] newArray(int size) {
+            return new NewsItem[size];
+        }
+    };
+    @JsonProperty("organization")
+    @JsonSerialize(using = OrganizationSerializer.class)
+    @JsonDeserialize(using = OrganizationDeserializer.class)
+    protected OrganizationItem organization = null;
+    @JsonProperty("title") protected String title;
+    @JsonProperty("text") protected String text;
+    @JsonProperty("image") protected byte[] image;
 
     /**
      * Constructor for creating NewsItem from Parcels.
@@ -169,12 +161,11 @@ public class NewsItem extends NewsMetaItem {
 
     @Override
     public boolean exactlyEquals(AbstractMetaItem<?> another) {
-        return (super.exactlyEquals(another)
-                && this.organization.exactlyEquals(((NewsItem) another).organization)
-                && this.title.equals(((NewsItem) another).title)
-                && this.text.equals(((NewsItem) another).text)
-                && Arrays.equals(this.image, ((NewsItem) another).image)
-        );
+        return (super.exactlyEquals(another) &&
+                this.organization.exactlyEquals(((NewsItem) another).organization) &&
+                this.title.equals(((NewsItem) another).title) &&
+                this.text.equals(((NewsItem) another).text) &&
+                Arrays.equals(this.image, ((NewsItem) another).image));
     }
 
     @Override

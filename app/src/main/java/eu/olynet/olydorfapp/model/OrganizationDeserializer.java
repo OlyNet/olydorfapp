@@ -16,8 +16,6 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 
 import java.io.IOException;
 
-import eu.olynet.olydorfapp.model.OrganizationItem;
-import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 
 /**
@@ -77,13 +75,14 @@ public class OrganizationDeserializer extends JsonDeserializer<OrganizationItem>
      * @return Deserialized value
      */
     @Override
-    public OrganizationItem deserialize(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException {
+    public OrganizationItem deserialize(JsonParser jp, DeserializationContext ctxt) throws
+                                                                                    IOException,
+                                                                                    JsonProcessingException {
         ProductionResourceManager rm = ProductionResourceManager.getInstance();
 
         JsonNode node = jp.getCodec().readTree(jp);
         int id = (Integer) node.get("eu.olynet.dorfapp.server.data.model.Organization")
-                .numberValue();
+                               .numberValue();
         if (id <= 0) {
             throw new IOException("id=" + id + " does not refer to a valid OrganizationItem");
         }

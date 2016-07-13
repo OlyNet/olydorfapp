@@ -27,10 +27,13 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 /**
  * {@link Activity} for handling QR code captures in the application.
- * <p>For the laundry module of our app, we need the ability to decode QR images into a {@link String}
- * that we can then use to identify a hardware device. To simplify scanning, the <i>barcodescanner</i>
+ * <p>For the laundry module of our app, we need the ability to decode QR images into a
+ * {@link String}
+ * that we can then use to identify a hardware device. To simplify scanning, the
+ * <i>barcodescanner</i>
  * library by dm77 is applied.</p>
- * <p>Only QR codes are recognized and processed. This activity should always be called for a result,
+ * <p>Only QR codes are recognized and processed. This activity should always be called for a
+ * result,
  * i.e. from a {@link android.support.v4.app.Fragment}</p>
  * <code>
  * startActivityForResult(new Intent(getActivity(), LaundryQRScannerActivity.class), x);
@@ -43,11 +46,11 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  * @see <a href="https://github.com/dm77/barcodescanner">https://github.com/dm77/barcodescanner</a>
  */
-public class LaundryQRScannerActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
-
-    private ZXingScannerView mScannerView;
+public class LaundryQRScannerActivity extends AppCompatActivity
+        implements ZXingScannerView.ResultHandler {
 
     private static final int MY_PERMISSIONS_REQUEST_CAMERA = 35681;
+    private ZXingScannerView mScannerView;
 
     @Override
     public void onCreate(Bundle state) {
@@ -64,10 +67,10 @@ public class LaundryQRScannerActivity extends AppCompatActivity implements ZXing
     public void onResume() {
         super.onResume();
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !=
+            PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
-                    MY_PERMISSIONS_REQUEST_CAMERA);
+                                              MY_PERMISSIONS_REQUEST_CAMERA);
         } else {
             startScan();
         }
@@ -78,8 +81,8 @@ public class LaundryQRScannerActivity extends AppCompatActivity implements ZXing
                                            int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_CAMERA:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startScan();
                 } else {
                     NavUtils.navigateUpFromSameTask(this);

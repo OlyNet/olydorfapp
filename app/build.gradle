@@ -65,6 +65,9 @@ android {
             versionNameSuffix "-SNAPSHOT"
         }
     }
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -72,7 +75,7 @@ dependencies {
     // Multidex support library (needed for Android <5.0)
     compile 'com.android.support:multidex:1.0.1'
     // For cloud messaging!
-    compile 'com.google.android.gms:play-services-gcm:9.2.0'
+    compile 'com.google.android.gms:play-services-gcm:9.2.1'
     // For design components (nav drawer, actionbar, cards, ...)
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.android.support:design:24.0.0'

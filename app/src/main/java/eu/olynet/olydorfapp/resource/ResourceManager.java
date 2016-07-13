@@ -82,8 +82,8 @@ public abstract class ResourceManager {
     public static String getResourceString(Class clazz) {
         String type = treeCaches.get(clazz);
         if (type == null || type.equals("")) {
-            throw new IllegalArgumentException("Class '" + clazz
-                    + "' is not a valid request Object");
+            throw new IllegalArgumentException(
+                    "Class '" + clazz + "' is not a valid request Object");
         }
 
         return type;
@@ -171,11 +171,11 @@ public abstract class ResourceManager {
      * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      */
-    public abstract TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz,
-                                                                    int limit,
-                                                                    @Nullable AbstractMetaItem<?> after,
-                                                                    @Nullable Comparator<AbstractMetaItem<?>>
-                                                                            comparator,
+    public abstract TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, int limit,
+                                                                    @Nullable
+                                                                    AbstractMetaItem<?> after,
+                                                                    @Nullable
+                                                                    Comparator<AbstractMetaItem<?>> comparator,
                                                                     boolean forceUpdate);
 
     /**
@@ -193,10 +193,8 @@ public abstract class ResourceManager {
      * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      */
-    public abstract TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz,
-                                                                    @Nullable AbstractMetaItem<?> after,
-                                                                    @Nullable AbstractMetaItem<?> before,
-                                                                    @Nullable Comparator<AbstractMetaItem<?>>
-                                                                            comparator,
+    public abstract TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, @Nullable
+    AbstractMetaItem<?> after, @Nullable AbstractMetaItem<?> before, @Nullable
+                                                                    Comparator<AbstractMetaItem<?>> comparator,
                                                                     boolean forceUpdate);
 }

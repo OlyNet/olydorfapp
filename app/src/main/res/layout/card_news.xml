@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/news_card_view"
     android:layout_width="match_parent"
@@ -16,7 +17,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.makeramen.roundedimageview.RoundedImageView xmlns:rounded_image_view="http://schemas.android.com/apk/res-auto"
+        <com.makeramen.roundedimageview.RoundedImageView
+            xmlns:rounded_image_view="http://schemas.android.com/apk/res-auto"
             android:id="@+id/newsCardImage"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -30,7 +32,7 @@
             rounded_image_view:riv_corner_radius_bottom_left="0dp"
             rounded_image_view:riv_corner_radius_bottom_right="0dp"
             rounded_image_view:riv_corner_radius_top_left="4dp"
-            rounded_image_view:riv_corner_radius_top_right="4dp" />
+            rounded_image_view:riv_corner_radius_top_right="4dp"/>
 
         <TextView
             android:id="@+id/newsCardTitle"
@@ -43,7 +45,7 @@
             android:adjustViewBounds="true"
             android:text="Toller Titel der extrem lang ist und deswegen nicht in eine Zeile passt"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -61,7 +63,7 @@
                 android:layout_weight="0.3"
                 android:gravity="left|bottom"
                 android:text="01.01.1970"
-                android:textSize="16sp" />
+                android:textSize="16sp"/>
 
             <TextView
                 android:id="@+id/newsCardOrganization"
@@ -71,7 +73,7 @@
                 android:layout_weight="0.7"
                 android:gravity="bottom|right"
                 android:text="Studenten im Olympiazentrum e.V. asdfsdf adfgha asdfgasdf gfhjk"
-                android:textSize="16sp" />
+                android:textSize="16sp"/>
 
         </LinearLayout>
 

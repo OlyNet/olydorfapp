@@ -64,14 +64,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/jni" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/aidl" isTestSource="$RELEASE_BUILD$" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="$RELEASE_BUILD$" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="$RELEASE_BUILD$" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="$RELEASE_BUILD$" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="$RELEASE_BUILD$" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/assets" type="java-test-resource" />
@@ -80,12 +72,24 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/jni" isTestSource="$RELEASE_BUILD$" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/rs" isTestSource="$RELEASE_BUILD$" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/shaders" isTestSource="$RELEASE_BUILD$" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/aidl" isTestSource="$RELEASE_BUILD$" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="$RELEASE_BUILD$" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="$RELEASE_BUILD$" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="$RELEASE_BUILD$" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="$RELEASE_BUILD$" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/builds" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/data-binding-info" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/data-binding-layout-out" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.databinding/adapters/1.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.databinding/library/1.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support.test/exposed-instrumentation-api-publish/0.3/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support.test/runner/0.3/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/24.0.0/jars" />
@@ -97,11 +101,11 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/24.0.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-v4/24.0.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/24.0.0/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/9.2.0/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/9.2.0/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-gcm/9.2.0/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-iid/9.2.0/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-tasks/9.2.0/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/9.2.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/9.2.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-gcm/9.2.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-iid/9.2.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.google.android.gms/play-services-tasks/9.2.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.makeramen/roundedimageview/2.2.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/de.hdodenhof/circleimageview/1.2.2/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/me.dm7.barcodescanner/core/1.8.4/jars" />
@@ -126,49 +130,65 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 24 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="jboss-annotations-api_1.2_spec-1.0.0.Final" level="project" />
+    <orderEntry type="library" exported="" name="commons-io-2.4" level="project" />
+    <orderEntry type="library" exported="" name="juniversalchardet-1.0.3" level="project" />
+    <orderEntry type="library" exported="" name="play-services-base-9.2.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="runner-0.3" level="project" />
     <orderEntry type="library" exported="" name="library-1.0.15" level="project" />
-    <orderEntry type="library" exported="" name="commons-io-2.1" level="project" />
-    <orderEntry type="library" exported="" name="play-services-base-9.2.0" level="project" />
+    <orderEntry type="library" exported="" name="compiler-2.1.2" level="project" />
+    <orderEntry type="library" exported="" name="antlr4-4.5" level="project" />
     <orderEntry type="library" exported="" name="jackson-jaxrs-json-provider-2.7.3" level="project" />
     <orderEntry type="library" exported="" name="support-v4-24.0.0" level="project" />
-    <orderEntry type="library" exported="" name="animated-vector-drawable-24.0.0" level="project" />
-    <orderEntry type="library" exported="" name="jackson-annotations-2.7.3" level="project" />
-    <orderEntry type="library" exported="" name="core-3.2.1" level="project" />
-    <orderEntry type="library" exported="" name="disklrucache-2.0.2" level="project" />
+    <orderEntry type="library" exported="" name="baseLibrary-2.1.2" level="project" />
     <orderEntry type="library" exported="" name="design-24.0.0" level="project" />
-    <orderEntry type="library" exported="" name="core-1.8.4" level="project" />
+    <orderEntry type="library" exported="" name="antlr4-runtime-4.5" level="project" />
+    <orderEntry type="library" exported="" name="antlr4-annotations-4.5" level="project" />
+    <orderEntry type="library" exported="" name="org.abego.treelayout.core-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="commons-lang3-3.4" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="mockito-core-1.10.19" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-24.0.0" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="objenesis-2.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="multidex-instrumentation-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-24.0.0" level="project" />
-    <orderEntry type="library" exported="" name="activation-1.1.1" level="project" />
-    <orderEntry type="library" exported="" name="resteasy-jaxrs-3.0.16.Final" level="project" />
-    <orderEntry type="library" exported="" name="play-services-gcm-9.2.0" level="project" />
-    <orderEntry type="library" exported="" name="jcip-annotations-1.0" level="project" />
-    <orderEntry type="library" exported="" name="play-services-basement-9.2.0" level="project" />
+    <orderEntry type="library" exported="" name="play-services-gcm-9.2.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="exposed-instrumentation-api-publish-0.3" level="project" />
     <orderEntry type="library" exported="" name="jboss-logging-3.1.4.GA" level="project" />
-    <orderEntry type="library" exported="" name="dualcache-2.2.2" level="project" />
-    <orderEntry type="library" exported="" name="play-services-iid-9.2.0" level="project" />
     <orderEntry type="library" exported="" name="jackson-core-2.7.3" level="project" />
+    <orderEntry type="library" exported="" name="jackson-databind-2.7.3" level="project" />
+    <orderEntry type="library" exported="" name="play-services-tasks-9.2.1" level="project" />
+    <orderEntry type="library" exported="" name="appcompat-v7-24.0.0" level="project" />
+    <orderEntry type="library" exported="" name="kotlin-stdlib-1.0.0" level="project" />
+    <orderEntry type="library" exported="" name="library-1.1" level="project" />
+    <orderEntry type="library" exported="" name="compilerCommon-2.1.2" level="project" />
+    <orderEntry type="library" exported="" name="resteasy-client-3.0.16.Final" level="project" />
+    <orderEntry type="library" exported="" name="commons-codec-1.10" level="project" />
+    <orderEntry type="library" exported="" name="jackson-module-jaxb-annotations-2.7.3" level="project" />
+    <orderEntry type="library" exported="" name="jboss-annotations-api_1.2_spec-1.0.0.Final" level="project" />
+    <orderEntry type="library" exported="" name="animated-vector-drawable-24.0.0" level="project" />
+    <orderEntry type="library" exported="" name="core-3.2.1" level="project" />
+    <orderEntry type="library" exported="" name="jackson-annotations-2.7.3" level="project" />
+    <orderEntry type="library" exported="" name="disklrucache-2.0.2" level="project" />
+    <orderEntry type="library" exported="" name="adapters-1.1" level="project" />
+    <orderEntry type="library" exported="" name="core-1.8.4" level="project" />
+    <orderEntry type="library" exported="" name="antlr-runtime-3.5.2" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="objenesis-2.1" level="project" />
+    <orderEntry type="library" exported="" name="activation-1.1.1" level="project" />
+    <orderEntry type="library" exported="" name="resteasy-jaxrs-3.0.16.Final" level="project" />
+    <orderEntry type="library" exported="" name="jcip-annotations-1.0" level="project" />
+    <orderEntry type="library" exported="" name="dualcache-2.2.2" level="project" />
+    <orderEntry type="library" exported="" name="play-services-iid-9.2.1" level="project" />
     <orderEntry type="library" exported="" name="roundedimageview-2.2.1" level="project" />
     <orderEntry type="library" exported="" name="zxing-1.8.4" level="project" />
-    <orderEntry type="library" exported="" name="jackson-databind-2.7.3" level="project" />
-    <orderEntry type="library" exported="" name="play-services-tasks-9.2.0" level="project" />
-    <orderEntry type="library" exported="" name="appcompat-v7-24.0.0" level="project" />
+    <orderEntry type="library" exported="" name="play-services-basement-9.2.1" level="project" />
+    <orderEntry type="library" exported="" name="guava-17.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-24.0.0" level="project" />
     <orderEntry type="library" exported="" name="support-vector-drawable-24.0.0" level="project" />
     <orderEntry type="library" exported="" name="jboss-jaxrs-api_2.0_spec-1.0.0.Final" level="project" />
     <orderEntry type="library" exported="" name="multidex-1.0.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-core-1.3" level="project" />
+    <orderEntry type="library" exported="" name="ST4-4.0.8" level="project" />
     <orderEntry type="library" exported="" name="circleimageview-1.2.2" level="project" />
-    <orderEntry type="library" exported="" name="resteasy-client-3.0.16.Final" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit-4.12" level="project" />
-    <orderEntry type="library" exported="" name="jackson-module-jaxb-annotations-2.7.3" level="project" />
+    <orderEntry type="library" exported="" name="kotlin-runtime-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="jackson-jaxrs-base-2.7.3" level="project" />
   </component>
 </module>

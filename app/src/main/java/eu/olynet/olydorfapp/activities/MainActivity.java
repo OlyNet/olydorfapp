@@ -44,10 +44,8 @@ import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
  */
 public class MainActivity extends AppCompatActivity {
 
-    Toolbar toolbar;
-    ViewPager pager;
-    ViewPagerAdapter adapter;
-    SlidingTabLayout tabs;
+    private Toolbar toolbar;
+    private DrawerLayout mDrawerLayout;
     private Menu optionsMenu;
 
     @Override
@@ -59,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
 
+        /* setup Tabs */
         initSlider(ViewPagerAdapter.Category.HOME);
-
         initNavigator();
 
         /* setup ResourceManager */
@@ -72,9 +70,8 @@ public class MainActivity extends AppCompatActivity {
         /* enable BootReceiver */
         ComponentName receiver = new ComponentName(this, BootReceiver.class);
         PackageManager pm = this.getPackageManager();
-        pm.setComponentEnabledSetting(receiver,
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                PackageManager.DONT_KILL_APP);
+        pm.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                                      PackageManager.DONT_KILL_APP);
     }
 
     @Override
@@ -89,8 +86,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_refresh:
-                // Do animation start
-                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                /* start animation */
+                LayoutInflater inflater = (LayoutInflater) getSystemService(
+                        Context.LAYOUT_INFLATER_SERVICE);
                 ImageView iv = (ImageView) inflater.inflate(R.layout.ic_refresh, null);
                 Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate_refresh);
                 rotation.setRepeatCount(Animation.INFINITE);
@@ -103,19 +101,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Initialize the tab slider.
+     *
+     * @param category the Category to be displayed in the tabs.
+     */
     private void initSlider(ViewPagerAdapter.Category category) {
-        // Creating The ViewPagerAdapter and Passing Fragment Manager, Titles fot the Tabs and Number Of Tabs.
-        adapter = new ViewPagerAdapter(getSupportFragmentManager(), category);
+        /* creating The ViewPagerAdapter and passing the FragmentManager and the category */
+        ViewPagerAdapter adapter = new ViewPagerAdapter(this, getSupportFragmentManager(),
+                                                        category);
 
-        // Assigning ViewPager View and setting the adapter
-        pager = (ViewPager) findViewById(R.id.pager);
+        /* assigning ViewPager view and setting the adapter */
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
-        // Assigning the Sliding Tab Layout View
-        tabs = (SlidingTabLayout) findViewById(R.id.tabs);
-        tabs.setDistributeEvenly(true); // To make the Tabs Fixed set this true, This makes the tabs Space Evenly in Available width
+        /* assigning the sliding tab layout view */
+        SlidingTabLayout tabs = (SlidingTabLayout) findViewById(R.id.tabs);
+        tabs.setDistributeEvenly(true); /* fixed tab sizes */
 
-        // Setting Custom Color for the Scroll bar indicator of the Tab View
+        /* setting a custom color for the scroll bar indicator of the tab view */
         tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
             @Override
             public int getIndicatorColor(int position) {
@@ -123,36 +127,39 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Setting the ViewPager For the SlidingTabsLayout
+        /* setting the ViewPager for the SlidingTabsLayout */
         tabs.setViewPager(pager);
 
+        /* configuring the ActionBar */
         ActionBar ab = getSupportActionBar();
-        if(ab != null) {
-            ab.setTitle(category.title);
+        if (ab != null) {
+            ab.setTitle(getResources().getString(category.androidResourceId));
+            ab.setDisplayHomeAsUpEnabled(true);
+            ab.setDisplayShowHomeEnabled(true);
+            ab.setHomeButtonEnabled(true);
         }
-
     }
 
-    private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mActionBarDrawerToggle;
-    private ScrimInsetsFrameLayout mScrimInsetsFrameLayout;
-    private ListView mDrawerList;
-
+    /**
+     * Sets up the NavigationDrawer.
+     */
     private void initNavigator() {
-        // Navigation Drawer
+        /* NavigationDrawer */
         mDrawerLayout = (DrawerLayout) findViewById(R.id.main_activity_DrawerLayout);
-        mDrawerLayout.setStatusBarBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.primaryDark));
-        mScrimInsetsFrameLayout = (ScrimInsetsFrameLayout) findViewById(R.id.main_activity_navigation_drawer_rootLayout);
+        mDrawerLayout.setStatusBarBackgroundColor(
+                ContextCompat.getColor(getApplicationContext(), R.color.primaryDark));
+        ScrimInsetsFrameLayout mScrimInsetsFrameLayout = (ScrimInsetsFrameLayout) findViewById(
+                R.id.main_activity_navigation_drawer_rootLayout);
 
-        // Fill nav bar with items (list is initialized in the adapter, I was lazy
-        mDrawerList = (ListView) findViewById(R.id.navDrawerItemsListView);
+        /* filling the NavBar with items is handled by the Adapter */
+        ListView mDrawerList = (ListView) findViewById(R.id.navDrawerItemsListView);
         mDrawerList.setAdapter(new NavigationDrawerItemsAdapter(this));
 
-        // Add a click listener to the list view
+        /* clickListener setup */
         mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch(position) {
+                switch (position) {
                     case 0:
                         initSlider(ViewPagerAdapter.Category.HOME);
                         break;
@@ -172,42 +179,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
-                R.string.navigation_drawer_opened, R.string.navigation_drawer_closed) {
-
+        /* setup Toggle for the Drawer in the ActionBar */
+        ActionBarDrawerToggle tog = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
+                                                              R.string.navigation_drawer_opened,
+                                                              R.string.navigation_drawer_closed) {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
                 // Disables the burger/arrow animation by default
                 super.onDrawerSlide(drawerView, 0);
             }
-
         };
+        mDrawerLayout.addDrawerListener(tog);
+        tog.syncState();
 
-        mDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
-        }
-
-        mActionBarDrawerToggle.syncState();
-
-        // Navigation Drawer layout width
-        int possibleMinDrawerWidth = UtilsDevice.getScreenWidth(this) -
-                UtilsMiscellaneous.getThemeAttributeDimensionSize(this, android.R.attr.actionBarSize);
-        int maxDrawerWidth = getResources().getDimensionPixelSize(R.dimen.navigation_drawer_max_width);
-
-        mScrimInsetsFrameLayout.getLayoutParams().width = Math.min(possibleMinDrawerWidth, maxDrawerWidth);
-        // Set the first item as selected for the first time
-
+        /* NavigationDrawer layout width */
+        int minWidth = UtilsDevice.getScreenWidth(this) -
+                       UtilsMiscellaneous
+                               .getThemeAttributeDimensionSize(this, android.R.attr.actionBarSize);
+        int maxWidth = getResources().getDimensionPixelSize(R.dimen.navigation_drawer_max_width);
+        mScrimInsetsFrameLayout.getLayoutParams().width = Math.min(minWidth, maxWidth);
     }
 
+    /**
+     * Stops the animation of the refresh button.
+     */
     public void resetUpdating() {
-        // Get our refresh item from the menu
         MenuItem m = optionsMenu.findItem(R.id.action_refresh);
         if (m.getActionView() != null) {
-            // Remove the animation.
+            /* stop animation */
             m.getActionView().clearAnimation();
             m.setActionView(null);
         }

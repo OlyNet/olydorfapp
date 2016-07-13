@@ -5,6 +5,7 @@
  */
 package eu.olynet.olydorfapp.fragments;
 
+import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,6 +24,7 @@ import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.NewsTabAdapter;
+import eu.olynet.olydorfapp.databinding.TabNewsBinding;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
@@ -34,19 +36,18 @@ import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private static final int DEFAULT_COUNT = 10;
-
-    private enum Action {REPLACE, ADD}
-
+    TabNewsBinding binding;
     private SwipeRefreshLayout mRefreshLayout;
     private NewsTabAdapter mAdapter;
-
     private boolean refreshing = false;
     private boolean noFurtherResults = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.tab_news, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.tab_news, container, false);
+        View view = binding.getRoot();
+        binding.setEmpty(false);
 
         /* initiate NewsTabAdapter */
         mAdapter = new NewsTabAdapter(getContext(), new ArrayList<AbstractMetaItem<?>>());
@@ -65,8 +66,8 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 /* check for scroll down, second-to-last item visible and not already refreshing */
                 if (!noFurtherResults && dy > 0 && !mRefreshLayout.isRefreshing() && !refreshing &&
-                        mLayoutManager.findLastCompletelyVisibleItemPosition() ==
-                                mAdapter.getItemCount() - 2) {
+                    mLayoutManager.findLastCompletelyVisibleItemPosition() ==
+                    mAdapter.getItemCount() - 2) {
                     loadData(Action.ADD, DEFAULT_COUNT, false);
                 }
             }
@@ -143,6 +144,9 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
                 mAdapter.notifyDataSetChanged();
         }
 
+        /* display empty message if necessary */
+        binding.setEmpty(mAdapter.getItemCount() == 0);
+
         /* whether further results are expected */
         noFurtherResults = count < DEFAULT_COUNT;
 
@@ -151,6 +155,8 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
         mRefreshLayout.setEnabled(true);
         refreshing = false;
     }
+
+    private enum Action {REPLACE, ADD}
 
     /**
      *
@@ -186,8 +192,11 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
 
             /* querying the ResourceManager for the needed data and order it correctly */
             TreeSet<AbstractMetaItem<?>> resultTree = rm.getTreeOfMetaItems(NewsMetaItem.class,
-                    this.limit, this.lastItem, new AbstractMetaItem.DateDescComparator(),
-                    forceUpdate);
+                                                                            this.limit,
+                                                                            this.lastItem,
+                                                                            new AbstractMetaItem
+                                                                                    .DateDescComparator(),
+                                                                            forceUpdate);
             if (resultTree == null || resultTree.isEmpty()) {
                 return new ArrayList<>();
             }

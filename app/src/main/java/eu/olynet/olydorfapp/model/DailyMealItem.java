@@ -22,45 +22,34 @@ import java.util.Date;
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
-        getterVisibility = JsonAutoDetect.Visibility.NONE,
-        setterVisibility = JsonAutoDetect.Visibility.NONE)
+                getterVisibility = JsonAutoDetect.Visibility.NONE,
+                setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonIgnoreProperties("mealsofthedays")
 public class DailyMealItem extends DailyMealMetaItem {
-
-    @JsonProperty("organization")
-    @JsonSerialize(using = OrganizationSerializer.class)
-    @JsonDeserialize(using = OrganizationDeserializer.class)
-    protected OrganizationItem organization = null;
-
-    @JsonProperty("name")
-    protected String name;
-
-    @JsonProperty("englishName")
-    protected String englishName;
-
-    @JsonProperty("vegetarian")
-    protected boolean vegetarian;
-
-    @JsonProperty("price")
-    protected float price;
-
-    @JsonProperty("image")
-    protected byte[] image;
 
     /**
      * CREATOR necessary for the Parcelable interface.
      */
-    public static final Parcelable.Creator<DailyMealItem> CREATOR =
-            new Parcelable.Creator<DailyMealItem>() {
+    public static final Parcelable.Creator<DailyMealItem> CREATOR
+            = new Parcelable.Creator<DailyMealItem>() {
 
-                public DailyMealItem createFromParcel(Parcel in) {
-                    return new DailyMealItem(in);
-                }
+        public DailyMealItem createFromParcel(Parcel in) {
+            return new DailyMealItem(in);
+        }
 
-                public DailyMealItem[] newArray(int size) {
-                    return new DailyMealItem[size];
-                }
-            };
+        public DailyMealItem[] newArray(int size) {
+            return new DailyMealItem[size];
+        }
+    };
+    @JsonProperty("organization")
+    @JsonSerialize(using = OrganizationSerializer.class)
+    @JsonDeserialize(using = OrganizationDeserializer.class)
+    protected OrganizationItem organization = null;
+    @JsonProperty("name") protected String name;
+    @JsonProperty("englishName") protected String englishName;
+    @JsonProperty("vegetarian") protected boolean vegetarian;
+    @JsonProperty("price") protected float price;
+    @JsonProperty("image") protected byte[] image;
 
     /**
      * Constructor for creating DailyMealItem from Parcels.
@@ -107,10 +96,10 @@ public class DailyMealItem extends DailyMealMetaItem {
         this.image = item.image;
     }
 
-    public DailyMealItem(int id, Date createDate, Date editDate, String createUser,
-                         String editUser, Date date, String link, Date lastUsedDate,
-                         OrganizationItem organization, String name, String englishName,
-                         boolean vegetarian, float price, byte[] image) {
+    public DailyMealItem(int id, Date createDate, Date editDate, String createUser, String editUser,
+                         Date date, String link, Date lastUsedDate, OrganizationItem organization,
+                         String name, String englishName, boolean vegetarian, float price,
+                         byte[] image) {
         super(id, createDate, editDate, createUser, editUser, date, link, lastUsedDate);
         this.organization = organization;
         this.name = name;
@@ -205,14 +194,13 @@ public class DailyMealItem extends DailyMealMetaItem {
 
     @Override
     public boolean exactlyEquals(AbstractMetaItem<?> another) {
-        return (super.exactlyEquals(another)
-                && this.organization.exactlyEquals(((DailyMealItem) another).organization)
-                && this.name.equals(((DailyMealItem) another).name)
-                && this.englishName.equals(((DailyMealItem) another).englishName)
-                && this.vegetarian == ((DailyMealItem) another).vegetarian
-                && this.price == ((DailyMealItem) another).price
-                && Arrays.equals(this.image, ((DailyMealItem) another).image)
-        );
+        return (super.exactlyEquals(another) &&
+                this.organization.exactlyEquals(((DailyMealItem) another).organization) &&
+                this.name.equals(((DailyMealItem) another).name) &&
+                this.englishName.equals(((DailyMealItem) another).englishName) &&
+                this.vegetarian == ((DailyMealItem) another).vegetarian &&
+                this.price == ((DailyMealItem) another).price &&
+                Arrays.equals(this.image, ((DailyMealItem) another).image));
     }
 
     @Override

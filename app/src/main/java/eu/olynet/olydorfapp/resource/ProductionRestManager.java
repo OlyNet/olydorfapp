@@ -71,8 +71,7 @@ public class ProductionRestManager extends RestManager {
             ca.close();
 
             /* create a KeyManagerFactory that contains our client certificate */
-            InputStream clientCert = this.context.getAssets().open(
-                    Configuration.CERTIFICATE_FILE);
+            InputStream clientCert = this.context.getAssets().open(Configuration.CERTIFICATE_FILE);
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
             keyStore.load(clientCert, Configuration.CERTIFICATE_KEY);
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm);
@@ -89,13 +88,12 @@ public class ProductionRestManager extends RestManager {
             engine.setNotFuckedUpSslContext(sslContext);
 
             /* instantiate the ResteasyClient */
-            ResteasyClient client = new ResteasyClientBuilder()
-                    .providerFactory(new ResteasyProviderFactory()
-                            .register(JacksonJsonProvider.class))
-                    .connectionPoolSize(4)
-                    .connectionTTL(5, TimeUnit.MINUTES)
-                    .httpEngine(engine)
-                    .build();
+            ResteasyClient client = new ResteasyClientBuilder().providerFactory(
+                    new ResteasyProviderFactory().register(JacksonJsonProvider.class))
+                                                               .connectionPoolSize(4)
+                                                               .connectionTTL(5, TimeUnit.MINUTES)
+                                                               .httpEngine(engine)
+                                                               .build();
 
             this.onc = client.target(Configuration.SERVER_BASE_URL).proxy(OlyNetClient.class);
 
@@ -112,8 +110,8 @@ public class ProductionRestManager extends RestManager {
      */
     private void verifyConnectivity() throws NoConnectionException {
         try {
-            ConnectivityManager cm = (ConnectivityManager) this.context
-                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            ConnectivityManager cm = (ConnectivityManager) this.context.getSystemService(
+                    Context.CONNECTIVITY_SERVICE);
             if (!cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
                 throw new NoConnectionException("No internet connection detected");
             }
@@ -130,8 +128,8 @@ public class ProductionRestManager extends RestManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount)
-            throws NoConnectionException {
+    public AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount) throws
+                                                                              NoConnectionException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -178,8 +176,8 @@ public class ProductionRestManager extends RestManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<AbstractMetaItem<?>> fetchItems(Class clazz, int retryCount)
-            throws NoConnectionException {
+    public List<AbstractMetaItem<?>> fetchItems(Class clazz, int retryCount) throws
+                                                                             NoConnectionException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -227,8 +225,8 @@ public class ProductionRestManager extends RestManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public AbstractMetaItem<?> fetchMetaItem(Class clazz, int id, int retryCount)
-            throws NoConnectionException {
+    public AbstractMetaItem<?> fetchMetaItem(Class clazz, int id, int retryCount) throws
+                                                                                  NoConnectionException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -255,8 +253,7 @@ public class ProductionRestManager extends RestManager {
 
                 /* HTTP 404 */
                 if (cause != null && cause instanceof NotFoundException) {
-                    Log.e("ResourceManager", "HTTP 404: meta '" + clazz + "' with id " + id,
-                            cause);
+                    Log.e("ResourceManager", "HTTP 404: meta '" + clazz + "' with id " + id, cause);
                     // TODO: implement better logging
                     break;
                 }
@@ -278,8 +275,8 @@ public class ProductionRestManager extends RestManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<AbstractMetaItem<?>> fetchMetaItems(Class clazz, int retryCount)
-            throws NoConnectionException {
+    public List<AbstractMetaItem<?>> fetchMetaItems(Class clazz, int retryCount) throws
+                                                                                 NoConnectionException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 

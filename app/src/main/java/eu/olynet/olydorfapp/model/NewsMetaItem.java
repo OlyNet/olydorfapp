@@ -18,24 +18,24 @@ import java.util.Date;
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
-        getterVisibility = JsonAutoDetect.Visibility.NONE,
-        setterVisibility = JsonAutoDetect.Visibility.NONE)
+                getterVisibility = JsonAutoDetect.Visibility.NONE,
+                setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
 
     /**
      * CREATOR necessary for the Parcelable interface.
      */
-    public static final Parcelable.Creator<NewsMetaItem> CREATOR =
-            new Parcelable.Creator<NewsMetaItem>() {
+    public static final Parcelable.Creator<NewsMetaItem> CREATOR
+            = new Parcelable.Creator<NewsMetaItem>() {
 
-                public NewsMetaItem createFromParcel(Parcel in) {
-                    return new NewsMetaItem(in);
-                }
+        public NewsMetaItem createFromParcel(Parcel in) {
+            return new NewsMetaItem(in);
+        }
 
-                public NewsMetaItem[] newArray(int size) {
-                    return new NewsMetaItem[size];
-                }
-            };
+        public NewsMetaItem[] newArray(int size) {
+            return new NewsMetaItem[size];
+        }
+    };
 
     /**
      * Constructor for creating NewsMetaItems from Parcels.
@@ -74,10 +74,12 @@ public class NewsMetaItem extends AbstractMetaItem<NewsMetaItem> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
+        if (obj == null) {
             return false;
-        if (!(obj instanceof NewsMetaItem))
+        }
+        if (!(obj instanceof NewsMetaItem)) {
             return false;
+        }
         NewsMetaItem item = (NewsMetaItem) obj;
 
         return this.getId() == item.getId();

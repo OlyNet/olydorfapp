@@ -13,17 +13,14 @@ import android.util.DisplayMetrics;
  *
  * @author Sotti https://plus.google.com/+PabloCostaTirado/about
  */
-public class UtilsDevice
-{
+public class UtilsDevice {
     /**
      * Returns the screen width in pixels
      *
      * @param context is the context to get the resource
-     *
      * @return the screen width in pixels
      */
-    public static int getScreenWidth(Context context)
-    {
+    public static int getScreenWidth(Context context) {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 
         return metrics.widthPixels;

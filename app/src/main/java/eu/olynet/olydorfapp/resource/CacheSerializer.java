@@ -22,7 +22,6 @@ import eu.olynet.olydorfapp.model.AbstractMetaItemMixIn;
  */
 public class CacheSerializer<T> implements Serializer<T> {
 
-    private final Class<T> clazz;
     private static final ObjectMapper sMapper;
 
     static {
@@ -33,6 +32,8 @@ public class CacheSerializer<T> implements Serializer<T> {
         sMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
         sMapper.addMixIn(AbstractMetaItem.class, AbstractMetaItemMixIn.class);
     }
+
+    private final Class<T> clazz;
 
     public CacheSerializer(Class<T> clazz) {
         this.clazz = clazz;

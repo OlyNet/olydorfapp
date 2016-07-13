@@ -22,21 +22,22 @@ import eu.olynet.olydorfapp.activities.LaundryQRScannerActivity;
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */
-public class LaundryTab extends Fragment
-{
+public class LaundryTab extends Fragment {
     final private static int QRScannerRequestCode = 1;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-    {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.tab_laundry, container, false);
 
         // Handle click on the floating action button
-        FloatingActionButton cameraButton = (FloatingActionButton) v.findViewById(R.id.laundryCameraActionButton);
-        cameraButton.setOnClickListener(new View.OnClickListener(){
+        FloatingActionButton cameraButton = (FloatingActionButton) v.findViewById(
+                R.id.laundryCameraActionButton);
+        cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivityForResult(new Intent(getActivity(), LaundryQRScannerActivity.class), QRScannerRequestCode);
+                startActivityForResult(new Intent(getActivity(), LaundryQRScannerActivity.class),
+                                       QRScannerRequestCode);
             }
         });
 
@@ -47,9 +48,11 @@ public class LaundryTab extends Fragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         getActivity();
-        if(requestCode == QRScannerRequestCode && resultCode == Activity.RESULT_OK) {
-            // TODO: validate result of scan (is integer, is valid machine number, etc.) and perform registration
-            Toast.makeText(getContext(), "Scan: "+data.getStringExtra(getResources().getString(R.string.QR_scan_return)), Toast.LENGTH_SHORT).show();
+        if (requestCode == QRScannerRequestCode && resultCode == Activity.RESULT_OK) {
+            // TODO: validate result of scan (is integer, is valid machine number, etc.) and
+            // perform registration
+            Toast.makeText(getContext(), "Scan: " + data.getStringExtra(
+                    getResources().getString(R.string.QR_scan_return)), Toast.LENGTH_SHORT).show();
         }
     }
 }

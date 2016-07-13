@@ -16,8 +16,6 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 
 import java.io.IOException;
 
-import eu.olynet.olydorfapp.model.DailyMealItem;
-import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 
 /**
@@ -77,13 +75,12 @@ public class DailyMealDeserializer extends JsonDeserializer<DailyMealItem> {
      * @return Deserialized value
      */
     @Override
-    public DailyMealItem deserialize(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException {
+    public DailyMealItem deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,
+                                                                                        JsonProcessingException {
         ProductionResourceManager rm = ProductionResourceManager.getInstance();
 
         JsonNode node = jp.getCodec().readTree(jp);
-        int id = (Integer) node.get("eu.olynet.dorfapp.server.data.model.DailyMeal")
-                .numberValue();
+        int id = (Integer) node.get("eu.olynet.dorfapp.server.data.model.DailyMeal").numberValue();
         if (id <= 0) {
             throw new IOException("id=" + id + " does not refer to a valid DailyMealItem");
         }

@@ -70,8 +70,8 @@ public class NewsViewerFragment extends Fragment implements SwipeRefreshLayout.O
                     newsImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
                 } else {
                     DisplayMetrics dm = new DisplayMetrics();
-                    WindowManager windowManager = (WindowManager)
-                            getContext().getSystemService(Context.WINDOW_SERVICE);
+                    WindowManager windowManager = (WindowManager) getContext().getSystemService(
+                            Context.WINDOW_SERVICE);
                     windowManager.getDefaultDisplay().getMetrics(dm);
                     newsImage.setImageBitmap(imageBitmap);
                 }
