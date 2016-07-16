@@ -64,8 +64,10 @@ public class OrganizationMetaItem extends AbstractMetaItem<OrganizationMetaItem>
     }
 
     public OrganizationMetaItem(int id, Date createDate, Date editDate, String createUser,
-                                String editUser, Date date, String link, Date lastUsedDate) {
-        super(id, createDate, editDate, createUser, editUser, date, link, lastUsedDate);
+                                String editUser, Date date, String link,
+                                OrganizationItem organization, Date lastUsedDate) {
+        super(id, createDate, editDate, createUser, editUser, date, link, organization,
+              lastUsedDate);
     }
 
     @Override

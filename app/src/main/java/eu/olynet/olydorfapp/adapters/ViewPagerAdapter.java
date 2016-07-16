@@ -6,6 +6,7 @@
 package eu.olynet.olydorfapp.adapters;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -21,6 +22,8 @@ import eu.olynet.olydorfapp.fragments.BierstubeTab;
 import eu.olynet.olydorfapp.fragments.DummyTab;
 import eu.olynet.olydorfapp.fragments.LaundryTab;
 import eu.olynet.olydorfapp.fragments.NewsTab;
+import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
@@ -40,14 +43,23 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         /* category Bierstube */
         List<Tab> bierstubeTabs = new ArrayList<>();
         bierstubeTabs.add(new Tab(R.string.tabTitleGeneral, new DummyTab()));
-        bierstubeTabs.add(new Tab(R.string.tabTitleNews, new NewsTab()));
+        NewsTab bierstubeNewsTab = new NewsTab();
+        bierstubeTabs.add(new Tab(R.string.tabTitleNews, bierstubeNewsTab));
         bierstubeTabs.add(new Tab(R.string.tabTitleMenu, new BierstubeTab()));
         tmpTabNames.put(Category.BIERSTUBE, bierstubeTabs);
 
         /* category OlyNet */
         List<Tab> olynetTabs = new ArrayList<>();
         olynetTabs.add(new Tab(R.string.tabTitleGeneral, new DummyTab()));
-        olynetTabs.add(new Tab(R.string.tabTitleNews, new NewsTab()));
+        OrganizationMetaItem olynetOrganization =
+                new AbstractMetaItem.DummyFactory<OrganizationMetaItem>(OrganizationMetaItem.class)
+                        .setId(1)
+                        .build();
+        NewsTab olynetNewsTab = new NewsTab();
+        Bundle olynetBundle = new Bundle();
+        olynetBundle.putParcelable(NewsTab.ORG_KEY, olynetOrganization);
+        olynetNewsTab.setArguments(olynetBundle);
+        olynetTabs.add(new Tab(R.string.tabTitleNews, olynetNewsTab));
         olynetTabs.add(new Tab(R.string.tabTitleJoinUs, new DummyTab()));
         tmpTabNames.put(Category.OLYNET, olynetTabs);
 

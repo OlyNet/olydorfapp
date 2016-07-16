@@ -10,8 +10,6 @@ import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -22,6 +20,7 @@ import java.util.Date;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
                 getterVisibility = JsonAutoDetect.Visibility.NONE,
                 setterVisibility = JsonAutoDetect.Visibility.NONE)
+@SuppressWarnings("unused")
 public class NewsItem extends NewsMetaItem {
 
     /**
@@ -37,10 +36,6 @@ public class NewsItem extends NewsMetaItem {
             return new NewsItem[size];
         }
     };
-    @JsonProperty("organization")
-    @JsonSerialize(using = OrganizationSerializer.class)
-    @JsonDeserialize(using = OrganizationDeserializer.class)
-    protected OrganizationItem organization = null;
     @JsonProperty("title") protected String title;
     @JsonProperty("text") protected String text;
     @JsonProperty("image") protected byte[] image;
@@ -52,7 +47,6 @@ public class NewsItem extends NewsMetaItem {
      */
     protected NewsItem(Parcel in) {
         super(in);
-        this.organization = in.readParcelable(OrganizationItem.class.getClassLoader());
         this.title = in.readString();
         this.text = in.readString();
 
@@ -80,7 +74,6 @@ public class NewsItem extends NewsMetaItem {
      */
     public NewsItem(NewsItem item) {
         super(item);
-        this.organization = item.organization;
         this.title = item.title;
         this.text = item.text;
         this.image = item.image;
@@ -89,8 +82,8 @@ public class NewsItem extends NewsMetaItem {
     public NewsItem(int id, Date createDate, Date editDate, String createUser, String editUser,
                     Date date, String link, Date lastUsedDate, OrganizationItem organization,
                     String title, String text, byte[] image) {
-        super(id, createDate, editDate, createUser, editUser, date, link, lastUsedDate);
-        this.organization = organization;
+        super(id, createDate, editDate, createUser, editUser, date, link, organization,
+              lastUsedDate);
         this.title = title;
         this.text = text;
         this.image = image;
@@ -106,7 +99,6 @@ public class NewsItem extends NewsMetaItem {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeParcelable(this.organization, flags);
         dest.writeString(title);
         dest.writeString(text);
 
@@ -117,14 +109,6 @@ public class NewsItem extends NewsMetaItem {
         } else {
             dest.writeByteArray(image);
         }
-    }
-
-    public OrganizationItem getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(OrganizationItem organization) {
-        this.organization = organization;
     }
 
     public String getTitle() {
@@ -153,7 +137,6 @@ public class NewsItem extends NewsMetaItem {
 
     public void updateItem(NewsItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
-        this.organization = updatedItem.organization;
         this.title = updatedItem.title;
         this.text = updatedItem.text;
         this.image = updatedItem.image;
@@ -162,7 +145,6 @@ public class NewsItem extends NewsMetaItem {
     @Override
     public boolean exactlyEquals(AbstractMetaItem<?> another) {
         return (super.exactlyEquals(another) &&
-                this.organization.exactlyEquals(((NewsItem) another).organization) &&
                 this.title.equals(((NewsItem) another).title) &&
                 this.text.equals(((NewsItem) another).text) &&
                 Arrays.equals(this.image, ((NewsItem) another).image));
@@ -171,7 +153,6 @@ public class NewsItem extends NewsMetaItem {
     @Override
     public String toString() {
         String result = super.toString() + "\n";
-        result += "organization = [[" + this.organization.toString() + "]]" + "\n";
         result += "title = " + this.title + "\n";
         result += "text = " + this.text + "\n";
         result += "image = " + ((image != null) ? image.length : 0) + " Byte";

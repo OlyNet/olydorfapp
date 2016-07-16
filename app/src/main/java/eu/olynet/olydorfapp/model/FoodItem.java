@@ -10,8 +10,6 @@ import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -22,6 +20,7 @@ import java.util.Date;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
                 getterVisibility = JsonAutoDetect.Visibility.NONE,
                 setterVisibility = JsonAutoDetect.Visibility.NONE)
+@SuppressWarnings("unused")
 public class FoodItem extends FoodMetaItem {
 
     /**
@@ -37,10 +36,6 @@ public class FoodItem extends FoodMetaItem {
             return new FoodItem[size];
         }
     };
-    @JsonProperty("organization")
-    @JsonDeserialize(using = OrganizationDeserializer.class)
-    @JsonSerialize(using = OrganizationSerializer.class)
-    protected OrganizationItem organization;
     @JsonProperty("name") protected String name;
     @JsonProperty("englishname") protected String englishname;
     @JsonProperty("vegetarian") protected boolean vegetarian;
@@ -54,7 +49,6 @@ public class FoodItem extends FoodMetaItem {
      */
     protected FoodItem(Parcel in) {
         super(in);
-        this.organization = in.readParcelable(OrganizationItem.class.getClassLoader());
         this.name = in.readString();
         this.englishname = in.readString();
         this.vegetarian = in.readByte() != 0; /* byte -> boolean */
@@ -84,7 +78,6 @@ public class FoodItem extends FoodMetaItem {
      */
     public FoodItem(FoodItem item) {
         super(item);
-        this.organization = item.organization;
         this.name = item.name;
         this.englishname = item.englishname;
         this.price = item.price;
@@ -93,11 +86,11 @@ public class FoodItem extends FoodMetaItem {
     }
 
     public FoodItem(int id, Date createDate, Date editDate, String createUser, String editUser,
-                    Date date, String link, Date lastUsedDate, OrganizationItem organization,
+                    Date date, String link, OrganizationItem organization, Date lastUsedDate,
                     String name, String englishname, boolean vegetarian, float price,
                     byte[] image) {
-        super(id, createDate, editDate, createUser, editUser, date, link, lastUsedDate);
-        this.organization = organization;
+        super(id, createDate, editDate, createUser, editUser, date, link, organization,
+              lastUsedDate);
         this.name = name;
         this.englishname = englishname;
         this.price = price;
@@ -115,7 +108,6 @@ public class FoodItem extends FoodMetaItem {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeParcelable(this.organization, flags);
         dest.writeString(name);
         dest.writeString(englishname);
         dest.writeByte((byte) (vegetarian ? 1 : 0)); /* boolean -> byte */
@@ -128,14 +120,6 @@ public class FoodItem extends FoodMetaItem {
         } else {
             dest.writeByteArray(image);
         }
-    }
-
-    public OrganizationItem getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(OrganizationItem organization) {
-        this.organization = organization;
     }
 
     public String getName() {
@@ -180,7 +164,6 @@ public class FoodItem extends FoodMetaItem {
 
     public void updateItem(FoodItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
-        this.organization = updatedItem.organization;
         this.name = updatedItem.name;
         this.englishname = updatedItem.englishname;
         this.price = updatedItem.price;
@@ -191,7 +174,6 @@ public class FoodItem extends FoodMetaItem {
     @Override
     public boolean exactlyEquals(AbstractMetaItem<?> another) {
         return (super.exactlyEquals(another) &&
-                this.organization.exactlyEquals(((FoodItem) another).organization) &&
                 this.name.equals(((FoodItem) another).name) &&
                 this.englishname.equals(((FoodItem) another).englishname) &&
                 this.vegetarian == ((FoodItem) another).vegetarian &&
@@ -202,7 +184,6 @@ public class FoodItem extends FoodMetaItem {
     @Override
     public String toString() {
         String result = super.toString() + "\n";
-        result += "organization = [[" + this.organization.toString() + "]]" + "\n";
         result += "name = " + this.name + "\n";
         result += "englishname = " + this.englishname + "\n";
         result += "price = " + this.price + "\n";

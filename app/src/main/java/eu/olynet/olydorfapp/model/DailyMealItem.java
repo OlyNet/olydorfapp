@@ -12,8 +12,6 @@ import android.os.Parcelable;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -25,6 +23,7 @@ import java.util.Date;
                 getterVisibility = JsonAutoDetect.Visibility.NONE,
                 setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonIgnoreProperties("mealsofthedays")
+@SuppressWarnings("unused")
 public class DailyMealItem extends DailyMealMetaItem {
 
     /**
@@ -41,10 +40,6 @@ public class DailyMealItem extends DailyMealMetaItem {
             return new DailyMealItem[size];
         }
     };
-    @JsonProperty("organization")
-    @JsonSerialize(using = OrganizationSerializer.class)
-    @JsonDeserialize(using = OrganizationDeserializer.class)
-    protected OrganizationItem organization = null;
     @JsonProperty("name") protected String name;
     @JsonProperty("englishName") protected String englishName;
     @JsonProperty("vegetarian") protected boolean vegetarian;
@@ -58,7 +53,6 @@ public class DailyMealItem extends DailyMealMetaItem {
      */
     protected DailyMealItem(Parcel in) {
         super(in);
-        this.organization = in.readParcelable(OrganizationItem.class.getClassLoader());
         this.name = in.readString();
         this.englishName = in.readString();
         this.vegetarian = in.readByte() != 0; /* byte -> boolean */
@@ -88,7 +82,6 @@ public class DailyMealItem extends DailyMealMetaItem {
      */
     public DailyMealItem(DailyMealItem item) {
         super(item);
-        this.organization = item.organization;
         this.name = item.name;
         this.englishName = item.englishName;
         this.vegetarian = item.vegetarian;
@@ -97,11 +90,11 @@ public class DailyMealItem extends DailyMealMetaItem {
     }
 
     public DailyMealItem(int id, Date createDate, Date editDate, String createUser, String editUser,
-                         Date date, String link, Date lastUsedDate, OrganizationItem organization,
+                         Date date, String link, OrganizationItem organization, Date lastUsedDate,
                          String name, String englishName, boolean vegetarian, float price,
                          byte[] image) {
-        super(id, createDate, editDate, createUser, editUser, date, link, lastUsedDate);
-        this.organization = organization;
+        super(id, createDate, editDate, createUser, editUser, date, link, organization,
+              lastUsedDate);
         this.name = name;
         this.englishName = englishName;
         this.vegetarian = vegetarian;
@@ -119,7 +112,6 @@ public class DailyMealItem extends DailyMealMetaItem {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeParcelable(this.organization, flags);
         dest.writeString(name);
         dest.writeString(englishName);
         dest.writeByte((byte) (vegetarian ? 1 : 0)); /* boolean -> byte */
@@ -132,14 +124,6 @@ public class DailyMealItem extends DailyMealMetaItem {
         } else {
             dest.writeByteArray(image);
         }
-    }
-
-    public OrganizationItem getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(OrganizationItem organization) {
-        this.organization = organization;
     }
 
     public String getName() {
@@ -184,7 +168,6 @@ public class DailyMealItem extends DailyMealMetaItem {
 
     public void updateItem(DailyMealItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
-        this.organization = updatedItem.organization;
         this.name = updatedItem.name;
         this.englishName = updatedItem.englishName;
         this.vegetarian = updatedItem.vegetarian;
@@ -195,7 +178,6 @@ public class DailyMealItem extends DailyMealMetaItem {
     @Override
     public boolean exactlyEquals(AbstractMetaItem<?> another) {
         return (super.exactlyEquals(another) &&
-                this.organization.exactlyEquals(((DailyMealItem) another).organization) &&
                 this.name.equals(((DailyMealItem) another).name) &&
                 this.englishName.equals(((DailyMealItem) another).englishName) &&
                 this.vegetarian == ((DailyMealItem) another).vegetarian &&
@@ -206,7 +188,6 @@ public class DailyMealItem extends DailyMealMetaItem {
     @Override
     public String toString() {
         String result = super.toString() + "\n";
-        result += "organization = [[" + this.organization.toString() + "]]" + "\n";
         result += "name = " + this.name + "\n";
         result += "englishName = " + this.englishName + "\n";
         result += "vegetarian = " + this.vegetarian + "\n";

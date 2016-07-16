@@ -41,7 +41,6 @@ public class OrganizationItem extends OrganizationMetaItem {
     };
     @JsonProperty("name") protected String name;
     @JsonProperty("shortname") protected String shortname;
-    @JsonProperty("website") protected String website;
     @JsonProperty("description") protected String description;
     @JsonProperty("logo") protected byte[] logo;
 
@@ -54,7 +53,6 @@ public class OrganizationItem extends OrganizationMetaItem {
         super(in);
         this.name = in.readString();
         this.shortname = in.readString();
-        this.website = in.readString();
         this.description = in.readString();
 
         int imageLength = in.readInt();
@@ -83,18 +81,18 @@ public class OrganizationItem extends OrganizationMetaItem {
         super(item);
         this.name = item.name;
         this.shortname = item.shortname;
-        this.website = item.website;
         this.description = item.description;
         this.logo = item.logo;
     }
 
     public OrganizationItem(int id, Date createDate, Date editDate, String createUser,
-                            String editUser, Date date, String link, Date lastUsedDate, String name,
-                            String shortname, String website, String description, byte[] logo) {
-        super(id, createDate, editDate, createUser, editUser, date, link, lastUsedDate);
+                            String editUser, Date date, String link, OrganizationItem organization,
+                            Date lastUsedDate, String name, String shortname, String description,
+                            byte[] logo) {
+        super(id, createDate, editDate, createUser, editUser, date, link, organization,
+              lastUsedDate);
         this.name = name;
         this.shortname = shortname;
-        this.website = website;
         this.description = description;
         this.logo = logo;
     }
@@ -111,7 +109,6 @@ public class OrganizationItem extends OrganizationMetaItem {
         super.writeToParcel(dest, flags);
         dest.writeString(name);
         dest.writeString(shortname);
-        dest.writeString(website);
         dest.writeString(description);
 
         int imageLength = (logo != null ? logo.length : -1);
@@ -139,14 +136,6 @@ public class OrganizationItem extends OrganizationMetaItem {
         this.shortname = shortname;
     }
 
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
-    }
-
     public byte[] getLogo() {
         return logo;
     }
@@ -159,7 +148,6 @@ public class OrganizationItem extends OrganizationMetaItem {
         super.updateItem(updatedItem);
         this.name = updatedItem.name;
         this.shortname = updatedItem.shortname;
-        this.website = updatedItem.website;
         this.description = updatedItem.description;
         this.logo = updatedItem.logo;
     }
@@ -169,7 +157,6 @@ public class OrganizationItem extends OrganizationMetaItem {
         return (super.exactlyEquals(another) &&
                 this.name.equals(((OrganizationItem) another).name) &&
                 this.shortname.equals(((OrganizationItem) another).shortname) &&
-                this.website.equals(((OrganizationItem) another).website) &&
                 this.description.equals(((OrganizationItem) another).description) &&
                 Arrays.equals(this.logo, ((OrganizationItem) another).logo));
     }
@@ -179,7 +166,6 @@ public class OrganizationItem extends OrganizationMetaItem {
         String result = super.toString() + "\n";
         result += "name = " + this.name + "\n";
         result += "shortname = " + this.shortname + "\n";
-        result += "website = " + this.website + "\n";
         result += "description = " + this.description + "\n";
         result += "image = " + ((logo != null) ? logo.length : 0) + " Byte";
 

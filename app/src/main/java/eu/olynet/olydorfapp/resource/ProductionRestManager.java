@@ -158,6 +158,21 @@ public class ProductionRestManager extends RestManager {
                 if (cause != null && cause instanceof NotFoundException) {
                     Log.i("ResourceManager", "HTTP 404: '" + clazz + "' with id " + id, cause);
                     throw new NotFoundException("HTTP 404: '" + clazz + "' with id " + id, cause);
+                } else {
+//                    throw new RuntimeException(e);
+                    e.printStackTrace();
+                    Log.e("EoT", "EoT");
+                    Log.e("EoT", "EoT");
+                    Log.e("EoT", "EoT");
+                    Log.e("EoT", "EoT");
+                    Log.e("EoT", "EoT");
+                    Log.e("EoT", "EoT");
+                    Log.e("EoT", "EoT");
+                    Log.e("EoT", "EoT");
+                    Log.e("EoT", "EoT");
+                    Log.e("EoT", "EoT");
+                    break;
+//                    return null;
                 }
             } catch (Exception e) {
                 Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);

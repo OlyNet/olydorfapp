@@ -258,7 +258,7 @@ public class ProductionResourceManager extends ResourceManager {
                     if (webItem != null) {
                         item = webItem;
                     } else {
-                        Log.w("ResourceManager", "Fetch failed for some reason");
+                        Log.w("ResourceManager", "Fetch failed for some reason (getItem) " + clazz + id);
                     }
                 } else {
                     Log.d("ResourceManager", "Cached item " + id + " of type '" + clazz +
@@ -351,7 +351,7 @@ public class ProductionResourceManager extends ResourceManager {
                         if (webItem != null) {
                             item = webItem;
                         } else {
-                            Log.w("ResourceManager", "Fetch failed for some reason");
+                            Log.w("ResourceManager", "Fetch failed for some reason (getItems)");
                         }
                     } else {
                         Log.d("ResourceManager", "Cached item " + id + " of type '" + clazz +

@@ -7,9 +7,12 @@ package eu.olynet.olydorfapp.utils;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import eu.olynet.olydorfapp.activities.MainActivity;
+import eu.olynet.olydorfapp.model.OrganizationItem;
+import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 
 /**
@@ -28,8 +31,9 @@ public class UpdateTask extends AsyncTask<Void, Void, Void> {
 
         // TODO: implement view refreshing here
 
-        ProductionResourceManager.getInstance().invalidateCache();
-
+//        ProductionResourceManager.getInstance().invalidateCache();
+        OrganizationItem org = (OrganizationItem) ProductionResourceManager.getInstance().getItem(OrganizationMetaItem.class, 4);
+        Log.e("Test", org.toString());
         return null;
 
     }

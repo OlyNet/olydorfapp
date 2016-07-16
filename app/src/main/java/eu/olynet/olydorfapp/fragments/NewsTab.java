@@ -27,6 +27,7 @@ import eu.olynet.olydorfapp.adapters.NewsTabAdapter;
 import eu.olynet.olydorfapp.databinding.TabNewsBinding;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
+import eu.olynet.olydorfapp.model.OrganizationItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 
@@ -35,12 +36,18 @@ import eu.olynet.olydorfapp.resource.ProductionResourceManager;
  */
 public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
+    public static final String ORG_KEY = "organization_item";
+
     private static final int DEFAULT_COUNT = 10;
-    TabNewsBinding binding;
+
+    private TabNewsBinding binding;
     private SwipeRefreshLayout mRefreshLayout;
     private NewsTabAdapter mAdapter;
+
     private boolean refreshing = false;
     private boolean noFurtherResults = false;
+
+    private OrganizationMetaItem filterOrganization = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -48,6 +55,9 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
         binding = DataBindingUtil.inflate(inflater, R.layout.tab_news, container, false);
         View view = binding.getRoot();
         binding.setEmpty(false);
+
+        /* get the filter OrganizationMetaItem */
+        this.filterOrganization = getArguments().getParcelable(ORG_KEY);
 
         /* initiate NewsTabAdapter */
         mAdapter = new NewsTabAdapter(getContext(), new ArrayList<AbstractMetaItem<?>>());

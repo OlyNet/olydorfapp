@@ -6,6 +6,8 @@
 
 package eu.olynet.olydorfapp.model;
 
+import android.util.Log;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -81,6 +83,8 @@ public class OrganizationDeserializer extends JsonDeserializer<OrganizationItem>
         ProductionResourceManager rm = ProductionResourceManager.getInstance();
 
         JsonNode node = jp.getCodec().readTree(jp);
+        Log.e("JsonNode", node.asText());
+
         int id = (Integer) node.get("eu.olynet.dorfapp.server.data.model.Organization")
                                .numberValue();
         if (id <= 0) {
