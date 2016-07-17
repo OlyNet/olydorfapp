@@ -37,7 +37,6 @@ import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     public static final String ORG_KEY = "organization_item";
-
     private static final int DEFAULT_COUNT = 10;
 
     private TabNewsBinding binding;
@@ -138,7 +137,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
         }
 
         /* start the AsyncTask that fetches the data */
-        new NewsUpdateTask(action, limit, forceUpdate).execute();
+        new NewsUpdateTask(action, limit, filterOrganization, forceUpdate).execute();
     }
 
     /**
@@ -181,12 +180,15 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
 
         private final Action action;
         private final AbstractMetaItem<?> lastItem;
+        private final OrganizationMetaItem filterOrganization;
         private final int limit;
         private final boolean forceUpdate;
 
-        public NewsUpdateTask(Action action, int limit, boolean forceUpdate) {
+        public NewsUpdateTask(Action action, int limit, OrganizationMetaItem filterOrganization,
+                              boolean forceUpdate) {
             super();
             this.action = action;
+            this.filterOrganization = filterOrganization;
             this.limit = limit;
             this.forceUpdate = forceUpdate;
 
@@ -212,6 +214,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
                                                                             this.lastItem,
                                                                             new AbstractMetaItem
                                                                                     .DateDescComparator(),
+                                                                            this.filterOrganization,
                                                                             forceUpdate);
             if (resultTree == null || resultTree.isEmpty()) {
                 return new ArrayList<>();

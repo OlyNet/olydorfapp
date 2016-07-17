@@ -26,6 +26,7 @@ import java.util.TreeSet;
 import javax.ws.rs.NotFoundException;
 
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 
 /**
  * The ResourceManager is the Singleton interface for accessing data on the OlyNet servers.
@@ -258,7 +259,8 @@ public class ProductionResourceManager extends ResourceManager {
                     if (webItem != null) {
                         item = webItem;
                     } else {
-                        Log.w("ResourceManager", "Fetch failed for some reason (getItem) " + clazz + id);
+                        Log.w("ResourceManager",
+                              "Fetch failed for some reason (getItem) " + clazz + id);
                     }
                 } else {
                     Log.d("ResourceManager", "Cached item " + id + " of type '" + clazz +
@@ -535,5 +537,74 @@ public class ProductionResourceManager extends ResourceManager {
             throw new UnsupportedOperationException("not implemented yet");
             // TODO: implement meta-data structure management and fetching from server
         }
+    }
+
+    @Override
+    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, int limit,
+                                                           @Nullable AbstractMetaItem<?> after,
+                                                           @Nullable
+                                                           Comparator<AbstractMetaItem<?>>
+                                                                   comparator,
+                                                           @Nullable
+                                                           OrganizationMetaItem filterOrganization,
+                                                           boolean forceUpdate) {
+        abortIfNotInitialized();
+
+        /*
+         * no locking necessary - the actual work is delegated to getTreeOfMetaItems(clazz,
+         * forceUpdate) which takes care of the locking
+         */
+
+        /* get the valid meta-data tree */
+        TreeSet<AbstractMetaItem<?>> tempMetaTree = getTreeOfMetaItems(clazz, forceUpdate);
+        if (tempMetaTree == null) {
+            return null;
+        }
+
+        /* prepare the different TreeSets */
+        TreeSet<AbstractMetaItem<?>> result;
+        TreeSet<AbstractMetaItem<?>> preResult;
+        TreeSet<AbstractMetaItem<?>> sortedMetaTree;
+        if (comparator != null) {
+            result = new TreeSet<>(comparator);
+            preResult = new TreeSet<>(comparator);
+            sortedMetaTree = new TreeSet<>(comparator);
+        } else {
+            result = new TreeSet<>();
+            preResult = new TreeSet<>();
+            sortedMetaTree = new TreeSet<>();
+        }
+        preResult.addAll(tempMetaTree);
+        sortedMetaTree.addAll(tempMetaTree);
+
+        /* remove everything before (and including) the 'after' AbstractMetaItem if it exists */
+        if (after != null) {
+            preResult.removeAll(sortedMetaTree.headSet(sortedMetaTree.floor(after), true));
+        }
+
+        /* only take a specified number of items from the results */
+        if (limit > 0) {
+            int n = 0;
+            for (AbstractMetaItem<?> item : preResult) {
+                if (n++ >= limit) {
+                    break;
+                }
+
+                /* compare organizations */
+                if (item.getOrganization() == null) {
+                    if (filterOrganization == null) {
+                        result.add(item); /* both null */
+                    }
+                } else if (item.getOrganization().equals(filterOrganization)) {
+                    result.add(item); /* equal */
+                } else {
+                    Log.d("ResourceManager", "Dropping due to organization mismatch: " + item);
+                }
+            }
+        } else {
+            result.addAll(preResult);
+        }
+
+        return result;
     }
 }

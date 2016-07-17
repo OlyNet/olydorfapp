@@ -43,7 +43,12 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         /* category Bierstube */
         List<Tab> bierstubeTabs = new ArrayList<>();
         bierstubeTabs.add(new Tab(R.string.tabTitleGeneral, new DummyTab()));
+        OrganizationMetaItem bierstubeOrganization =
+                new AbstractMetaItem.DummyFactory<>(OrganizationMetaItem.class).setId(2).build();
         NewsTab bierstubeNewsTab = new NewsTab();
+        Bundle bierstubeBundle = new Bundle();
+        bierstubeBundle.putParcelable(NewsTab.ORG_KEY, bierstubeOrganization);
+        bierstubeNewsTab.setArguments(bierstubeBundle);
         bierstubeTabs.add(new Tab(R.string.tabTitleNews, bierstubeNewsTab));
         bierstubeTabs.add(new Tab(R.string.tabTitleMenu, new BierstubeTab()));
         tmpTabNames.put(Category.BIERSTUBE, bierstubeTabs);
@@ -52,9 +57,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         List<Tab> olynetTabs = new ArrayList<>();
         olynetTabs.add(new Tab(R.string.tabTitleGeneral, new DummyTab()));
         OrganizationMetaItem olynetOrganization =
-                new AbstractMetaItem.DummyFactory<OrganizationMetaItem>(OrganizationMetaItem.class)
-                        .setId(1)
-                        .build();
+                new AbstractMetaItem.DummyFactory<>(OrganizationMetaItem.class).setId(1).build();
         NewsTab olynetNewsTab = new NewsTab();
         Bundle olynetBundle = new Bundle();
         olynetBundle.putParcelable(NewsTab.ORG_KEY, olynetOrganization);

@@ -179,7 +179,8 @@ public abstract class ResourceManager {
                                                                     boolean forceUpdate);
 
     /**
-     * Not implemented yet.
+     * Not implemented yet. If you believe to have found a use case for this function, please
+     * open a bug report.
      *
      * @param clazz       the Class of the item to be fetched. Must be specified within the
      *                    treeCaches Map.
@@ -194,7 +195,41 @@ public abstract class ResourceManager {
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      */
     public abstract TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, @Nullable
-    AbstractMetaItem<?> after, @Nullable AbstractMetaItem<?> before, @Nullable
+    AbstractMetaItem<?> after,
+                                                                    @Nullable
+                                                                    AbstractMetaItem<?> before,
+                                                                    @Nullable
                                                                     Comparator<AbstractMetaItem<?>> comparator,
+                                                                    boolean forceUpdate);
+
+    /**
+     * Returns a certain number of items of a specific type that are all greater (according to the
+     * ordering) then a specified element. Also filters out anything whose Organization does not
+     * match the provided OrganizationMetaItem.
+     *
+     * @param clazz              the Class of the item to be fetched. Must be specified within the
+     *                           treeCaches Map.
+     * @param after              exclusive lower bound. Can be null or a dummy.
+     * @param limit              Number of elements that are returned. If it is below or equal to
+     *                           zero, no
+     *                           limit is imposed.
+     * @param comparator         the Comparator used for ordering the meta-data tree. Can be null
+     *                           for
+     *                           default ordering.
+     * @param filterOrganization the OrganizationMetaItem the requested MetaItems must match.
+     * @param forceUpdate        whether the meta-data should always fetched from the server.
+     * @return the requested meta-data. This does not necessarily have to be up-to-createDate. If
+     * the server cannot be reached in time, a cached version will be returned instead.
+     * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     */
+    public abstract TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, int limit,
+                                                                    @Nullable
+                                                                    AbstractMetaItem<?> after,
+                                                                    @Nullable
+                                                                    Comparator<AbstractMetaItem<?>> comparator,
+                                                                    @Nullable
+                                                                    OrganizationMetaItem
+                                                                            filterOrganization,
                                                                     boolean forceUpdate);
 }
