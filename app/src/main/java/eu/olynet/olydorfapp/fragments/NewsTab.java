@@ -14,6 +14,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,6 @@ import eu.olynet.olydorfapp.adapters.NewsTabAdapter;
 import eu.olynet.olydorfapp.databinding.TabNewsBinding;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
-import eu.olynet.olydorfapp.model.OrganizationItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 
@@ -57,7 +57,13 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
         binding.setEmpty(false);
 
         /* get the filter OrganizationMetaItem */
-        this.filterOrganization = getArguments().getParcelable(ORG_KEY);
+        /* get the NewsItem */
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            this.filterOrganization = arguments.getParcelable(ORG_KEY);
+        } else {
+            Log.d("NewsTab", "arguments is null");
+        }
 
         /* initiate NewsTabAdapter */
         mAdapter = new NewsTabAdapter(getContext(), new ArrayList<AbstractMetaItem<?>>());
