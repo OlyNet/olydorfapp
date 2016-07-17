@@ -13,6 +13,8 @@ import eu.olynet.olydorfapp.model.AbstractMetaItem;
  */
 public abstract class RestManager {
 
+    public static final int DEFAULT_RETRY_COUNT = 3;
+
     protected final Context context;
 
     /**

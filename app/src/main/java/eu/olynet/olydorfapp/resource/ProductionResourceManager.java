@@ -146,6 +146,7 @@ public class ProductionResourceManager extends ResourceManager {
     /**
      * Invalidates the cache.
      */
+    @SuppressWarnings("unused")
     public void invalidateCache() {
         cache.invalidate();
     }
@@ -520,23 +521,6 @@ public class ProductionResourceManager extends ResourceManager {
         }
 
         return result;
-    }
-
-    @Override
-    public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz,
-                                                           @Nullable AbstractMetaItem<?> after,
-                                                           @Nullable AbstractMetaItem<?> before,
-                                                           @Nullable
-                                                           Comparator<AbstractMetaItem<?>>
-                                                                   comparator,
-                                                           boolean forceUpdate) {
-        abortIfNotInitialized();
-
-        /* lock for thread-safety */
-        synchronized (lockMap.get(clazz)) {
-            throw new UnsupportedOperationException("not implemented yet");
-            // TODO: implement meta-data structure management and fetching from server
-        }
     }
 
     @Override

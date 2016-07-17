@@ -15,6 +15,8 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.model.NewsItem;
 
@@ -54,6 +56,12 @@ public class NewsViewerFragment extends Fragment implements SwipeRefreshLayout.O
 
         /* set the data */
         if (item != null) {
+
+            SimpleDateFormat localFormat
+                    = (SimpleDateFormat) android.text.format.DateFormat.getDateFormat(getContext());
+            TextView newsDate = (TextView) view.findViewById(R.id.newsViewDate);
+            newsDate.setText(localFormat.format(item.getDate()));
+
             /* Title */
             TextView newsTitle = (TextView) view.findViewById(R.id.newsViewTitle);
             newsTitle.setText(item.getTitle());

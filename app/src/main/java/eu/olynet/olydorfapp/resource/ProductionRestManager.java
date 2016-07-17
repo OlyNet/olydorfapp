@@ -33,7 +33,7 @@ import eu.olynet.olydorfapp.model.AbstractMetaItem;
 public class ProductionRestManager extends RestManager {
 
     /**
-     * The instanced ResteasyClient. Do not use directly.
+     * The instanced ResteasyClient.
      */
     private OlyNetClient onc;
 
@@ -123,7 +123,7 @@ public class ProductionRestManager extends RestManager {
 
     @Override
     public AbstractMetaItem<?> fetchItem(Class clazz, int id) throws NoConnectionException {
-        return fetchItem(clazz, id, 3);
+        return fetchItem(clazz, id, RestManager.DEFAULT_RETRY_COUNT);
     }
 
     @Override
@@ -159,20 +159,7 @@ public class ProductionRestManager extends RestManager {
                     Log.i("ResourceManager", "HTTP 404: '" + clazz + "' with id " + id, cause);
                     throw new NotFoundException("HTTP 404: '" + clazz + "' with id " + id, cause);
                 } else {
-//                    throw new RuntimeException(e);
                     e.printStackTrace();
-                    Log.e("EoT", "EoT");
-                    Log.e("EoT", "EoT");
-                    Log.e("EoT", "EoT");
-                    Log.e("EoT", "EoT");
-                    Log.e("EoT", "EoT");
-                    Log.e("EoT", "EoT");
-                    Log.e("EoT", "EoT");
-                    Log.e("EoT", "EoT");
-                    Log.e("EoT", "EoT");
-                    Log.e("EoT", "EoT");
-                    break;
-//                    return null;
                 }
             } catch (Exception e) {
                 Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
@@ -186,7 +173,7 @@ public class ProductionRestManager extends RestManager {
 
     @Override
     public List<AbstractMetaItem<?>> fetchItems(Class clazz) throws NoConnectionException {
-        return fetchItems(clazz, 3);
+        return fetchItems(clazz, RestManager.DEFAULT_RETRY_COUNT);
     }
 
     @Override
@@ -235,7 +222,7 @@ public class ProductionRestManager extends RestManager {
     @Override
     @SuppressWarnings("unchecked")
     public AbstractMetaItem<?> fetchMetaItem(Class clazz, int id) throws NoConnectionException {
-        return fetchMetaItem(clazz, id, 3);
+        return fetchMetaItem(clazz, id, RestManager.DEFAULT_RETRY_COUNT);
     }
 
     @Override
@@ -285,7 +272,7 @@ public class ProductionRestManager extends RestManager {
     @Override
     @SuppressWarnings("unchecked")
     public List<AbstractMetaItem<?>> fetchMetaItems(Class clazz) throws NoConnectionException {
-        return fetchMetaItems(clazz, 3);
+        return fetchMetaItems(clazz, RestManager.DEFAULT_RETRY_COUNT);
     }
 
     @Override
