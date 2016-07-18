@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/NavDrawerRowLayout"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/navigation_drawer_item_height"
+    android:layout_height="wrap_content"
     android:clickable="false"
     android:focusable="false"
     android:focusableInTouchMode="false">
@@ -12,6 +12,7 @@
     <eu.olynet.olydorfapp.customViews.TintOnStateImageView
         android:id="@+id/navDrawerItemIcon"
         style="@style/NavDrawerRowItemIcon"
+        android:layout_height="match_parent"
         android:src="@drawable/ic_home_white_24dp"
         tools:ignore="ContentDescription"
         tools:tint="@color/nav_drawer_item_icon_selected"/>
@@ -19,6 +20,7 @@
     <TextView
         android:id="@+id/navDrawerItemText"
         style="@style/NavDrawerRowItemText"
+        android:layout_height="match_parent"
         tools:fontFamily="sans-serif-medium"
         tools:textColor="@color/nav_drawer_item_text_selected"/>
 
