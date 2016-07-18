@@ -27,8 +27,6 @@ import eu.olynet.olydorfapp.model.AbstractMetaItem;
  */
 public class OlyNetRestManager extends RestManager {
 
-    private static final int DEFAULT_RETRY_COUNT = 3;
-
     private SSLContext sslContext = null;
 
     public OlyNetRestManager(Context context) {
@@ -195,6 +193,41 @@ public class OlyNetRestManager extends RestManager {
     @Override
     public List<AbstractMetaItem<?>> fetchItems(Class clazz, int retryCount) throws
                                                                              NoConnectionException {
+        return null;
+    }
+
+    /**
+     * Tries to fetch all items of a specific type from the server. Defaults to 3 retries.
+     *
+     * @param clazz the Class of the items to be fetched. Must be specified within the treeCaches
+     *              Map.
+     * @param ids   the List containing the ids to fetch from the server. Must not contain any
+     *              <b>null</b> elements.
+     * @return the fetched items or <b>null</b> if this operation was not successful.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
+     */
+    @Override
+    public List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids)
+            throws NoConnectionException {
+        return fetchItems(clazz, ids, DEFAULT_RETRY_COUNT);
+    }
+
+    /**
+     * Tries to fetch all items of a specific type from the server.
+     *
+     * @param clazz      the Class of the items to be fetched. Must be specified within the
+     *                   treeCaches Map.
+     * @param ids        the List containing the ids to fetch from the server. Must not contain any
+     *                   <b>null</b> elements.
+     * @param retryCount how many times a fetch should be retried if it failed.
+     * @return the fetched items or <b>null</b> if this operation was not successful.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
+     */
+    @Override
+    public List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids, int retryCount)
+            throws NoConnectionException {
         return null;
     }
 

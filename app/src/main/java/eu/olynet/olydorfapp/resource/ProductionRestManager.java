@@ -159,7 +159,11 @@ public class ProductionRestManager extends RestManager {
                     Log.i("ResourceManager", "HTTP 404: '" + clazz + "' with id " + id, cause);
                     throw new NotFoundException("HTTP 404: '" + clazz + "' with id " + id, cause);
                 } else {
+                    System.err.println("class=" + clazz + " id=" + id);
                     e.printStackTrace();
+                    // FIXME remove debug (2 lines)
+                    result = null;
+                    break;
                 }
             } catch (Exception e) {
                 Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
@@ -197,6 +201,69 @@ public class ProductionRestManager extends RestManager {
                 Class proxyClass = this.onc.getClass();
                 Method getResource = proxyClass.getMethod(methodName);
                 result = (List<AbstractMetaItem<?>>) getResource.invoke(this.onc);
+                if (result != null) {
+                    break;
+                }
+            } catch (InvocationTargetException e) {
+                result = null;
+                Throwable cause = e.getCause();
+
+                /* HTTP 404 */
+                if (cause != null && cause instanceof NotFoundException) {
+                    Log.e("ResourceManager", "HTTP 404: '" + clazz + "'", cause);
+                    // TODO: implement better logging
+                }
+            } catch (Exception e) {
+                Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
+                result = null;
+            }
+        }
+
+        /* return the result that may still be null */
+        return result;
+    }
+
+    @Override
+    public List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids) throws NoConnectionException {
+        return fetchItems(clazz, ids, RestManager.DEFAULT_RETRY_COUNT);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids, int retryCount) throws
+                                                                             NoConnectionException {
+        /* terminate if we do not have an internet connection */
+        verifyConnectivity();
+
+        /* check if a valid type has been requested */
+        String type = ResourceManager.getResourceString(clazz);
+
+        /* build the query string containing all ids */
+        String query = "";
+        for (Integer id : ids) {
+            if (id == null) {
+                throw new NullPointerException("the List of ids may not contain null elements");
+            }
+
+            /* add escaped semicolon if the query is not empty */
+            if (!query.equals("")) {
+                query += "%3B";
+            }
+
+            query += id;
+        }
+
+        /* generate function name from type String */
+        String methodName = "get" + type.substring(0, 1).toUpperCase() + type.substring(1);
+        Log.d("fetchItem", methodName);
+
+        /* dynamically invoke the correct Method */
+        List<AbstractMetaItem<?>> result = null;
+        for (int i = 1; i <= retryCount; i++) {
+            try {
+                Class proxyClass = this.onc.getClass();
+                Method getResource = proxyClass.getMethod(methodName, String.class);
+                result = (List<AbstractMetaItem<?>>) getResource.invoke(this.onc, query);
                 if (result != null) {
                     break;
                 }

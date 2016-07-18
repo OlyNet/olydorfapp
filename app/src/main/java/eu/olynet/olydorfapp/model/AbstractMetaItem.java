@@ -79,16 +79,29 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
      * @param in the Parcel this AbstractMetaItem is to be created from.
      */
     protected AbstractMetaItem(Parcel in) {
+        long tmpDate;
+
         this.id = in.readInt();
-        this.createDate = new Date(in.readLong()); /* long -> Date */
-        this.editDate = new Date(in.readLong()); /* long -> Date */
+
+        tmpDate = in.readLong();
+        this.createDate = tmpDate == -1 ? null : new Date(tmpDate); /* long -> Date */
+
+        tmpDate = in.readLong();
+        this.editDate = tmpDate == -1 ? null : new Date(tmpDate); /* long -> Date */
+
         this.createUser = in.readString();
+
         this.editUser = in.readString();
-        long tmpDate = in.readLong();
+
+        tmpDate = in.readLong();
         this.date = tmpDate == -1 ? null : new Date(tmpDate); /* long -> Date */
+
         this.link = in.readString();
+
         this.organization = in.readParcelable(OrganizationItem.class.getClassLoader());
-        this.lastUsedDate = new Date(in.readLong()); /* long -> Date */
+
+        tmpDate = in.readLong();
+        this.lastUsedDate = tmpDate == -1 ? null : new Date(tmpDate); /* long -> Date */
     }
 
     /**
@@ -156,14 +169,14 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
-        dest.writeLong(createDate.getTime()); /* Date -> long */
-        dest.writeLong(editDate.getTime()); /* Date -> long */
+        dest.writeLong(createDate == null ? -1 : createDate.getTime()); /* Date -> long */
+        dest.writeLong(editDate == null ? -1 : editDate.getTime()); /* Date -> long */
         dest.writeString(createUser);
         dest.writeString(editUser);
         dest.writeLong(date == null ? -1 : date.getTime()); /* Date -> long */
         dest.writeString(link);
         dest.writeParcelable(this.organization, flags);
-        dest.writeLong(lastUsedDate.getTime()); /* Date -> long */
+        dest.writeLong(lastUsedDate == null ? -1 : lastUsedDate.getTime()); /* Date -> long */
     }
 
     /**
@@ -377,7 +390,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
         result += "editUser = " + this.editUser + "\n";
         result += "date = " + this.date + "\n";
         result += "link = " + this.link + "\n";
-        result += "organization = [[" + this.organization.toString() + "]]";
+        result += "organization = [[" + this.organization + "]]";
 
         return result;
     }

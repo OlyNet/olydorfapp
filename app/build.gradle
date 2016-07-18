@@ -65,9 +65,6 @@ android {
             versionNameSuffix "-SNAPSHOT"
         }
     }
-    dataBinding {
-        enabled = true
-    }
 }
 
 dependencies {

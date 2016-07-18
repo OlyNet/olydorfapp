@@ -93,6 +93,36 @@ public abstract class RestManager {
                                                                                       NoConnectionException;
 
     /**
+     * Tries to fetch all items of a specific type from the server. Defaults to 3 retries.
+     *
+     * @param clazz the Class of the items to be fetched. Must be specified within the treeCaches
+     *              Map.
+     * @param ids   the List containing the ids to fetch from the server. Must not contain any
+     *              <b>null</b> elements.
+     * @return the fetched items or <b>null</b> if this operation was not successful.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
+     */
+    public abstract List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids)
+            throws NoConnectionException;
+
+    /**
+     * Tries to fetch all items of a specific type from the server.
+     *
+     * @param clazz      the Class of the items to be fetched. Must be specified within the
+     *                   treeCaches Map.
+     * @param ids        the List containing the ids to fetch from the server. Must not contain any
+     *                   <b>null</b> elements.
+     * @param retryCount how many times a fetch should be retried if it failed.
+     * @return the fetched items or <b>null</b> if this operation was not successful.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
+     */
+    public abstract List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids,
+                                                         int retryCount) throws
+                                                                         NoConnectionException;
+
+    /**
      * Tries to fetch the up-to-createDate meta-data information for one specific item from the
      * server. Defaults to 3 retries.
      *

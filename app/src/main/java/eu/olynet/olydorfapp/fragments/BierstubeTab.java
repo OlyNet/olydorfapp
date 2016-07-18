@@ -5,7 +5,6 @@
  */
 package eu.olynet.olydorfapp.fragments;
 
-import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,7 +23,6 @@ import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.DailyMealTabAdapter;
-import eu.olynet.olydorfapp.databinding.TabBierstubeBinding;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
@@ -37,16 +35,13 @@ import eu.olynet.olydorfapp.resource.ProductionResourceManager;
  */
 public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    TabBierstubeBinding binding;
     private SwipeRefreshLayout mRefreshLayout;
     private DailyMealTabAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.tab_bierstube, container, false);
-        View view = binding.getRoot();
-        binding.setEmpty(false);
+        View view = inflater.inflate(R.layout.tab_bierstube, container, false);
 
         /* initiate NewsTabAdapter */
         mAdapter = new DailyMealTabAdapter(getContext(), null);
@@ -111,9 +106,6 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
      */
     private void onLoadCompleted() {
         mAdapter.notifyDataSetChanged();
-
-        /* display empty message if necessary */
-        binding.setEmpty(mAdapter.getItemCount() == 0);
 
         /* disable refreshing animation and enable swipe to refresh again */
         mRefreshLayout.setRefreshing(false);

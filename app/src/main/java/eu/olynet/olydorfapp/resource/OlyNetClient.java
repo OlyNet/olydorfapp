@@ -49,6 +49,10 @@ public interface OlyNetClient {
     public NewsItem getNews(@PathParam("id") int id);
 
     @GET
+    @Path("/news/any/{ids}")
+    public List<NewsItem> getNews(@PathParam("ids") String ids);
+
+    @GET
     @Path("/news")
     public List<NewsItem> getNews();
 
@@ -64,6 +68,10 @@ public interface OlyNetClient {
     @GET
     @Path("/mealoftheday/{id}")
     public MealOfTheDayItem getMealoftheday(@PathParam("id") int id);
+
+    @GET
+    @Path("/mealoftheday/any/{ids}")
+    public List<MealOfTheDayItem> getMealoftheday(@PathParam("ids") String ids);
 
     @GET
     @Path("/mealoftheday")
@@ -83,6 +91,10 @@ public interface OlyNetClient {
     public FoodItem getFood(@PathParam("id") int id);
 
     @GET
+    @Path("/food/any/{ids}")
+    public List<FoodItem> getFood(@PathParam("ids") String ids);
+
+    @GET
     @Path("/food")
     public List<FoodItem> getFood();
 
@@ -100,6 +112,10 @@ public interface OlyNetClient {
     public DailyMealItem getDailymeal(@PathParam("id") int id);
 
     @GET
+    @Path("/dailymeal/any/{ids}")
+    public List<DailyMealItem> getDailymeal(@PathParam("ids") String ids);
+
+    @GET
     @Path("/dailymeal")
     public List<DailyMealItem> getDailymeal();
 
@@ -115,6 +131,10 @@ public interface OlyNetClient {
     @GET
     @Path("/organization/{id}")
     public OrganizationItem getOrganization(@PathParam("id") int id);
+
+    @GET
+    @Path("/organization/any/{ids}")
+    public List<OrganizationItem> getOrganization(@PathParam("ids") String ids);
 
     @GET
     @Path("/organization")

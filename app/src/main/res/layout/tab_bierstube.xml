@@ -1,42 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/BierstubeRefreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".activities.MainActivity">
 
-    <data>
-        <import type="android.view.View"/>
-        <variable
-            name="empty"
-            type="java.lang.Boolean"/>
-    </data>
-
-    <android.support.v4.widget.SwipeRefreshLayout
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/BierstubeRefreshLayout"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/BierstubeGridRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        tools:context=".activities.MainActivity">
+        android:scrollbars="vertical"/>
 
-        <TextView
-            android:id="@+id/emptyText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="top|center"
-            android:paddingTop="20dp"
-            android:text="@string/emptyList"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/OlympiaDarkBlue"
-            android:visibility="@{empty ? View.VISIBLE : View.GONE}"/>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/BierstubeGridRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical"/>
-
-
-    </android.support.v4.widget.SwipeRefreshLayout>
-</layout>
+</android.support.v4.widget.SwipeRefreshLayout>

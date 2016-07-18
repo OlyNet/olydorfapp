@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,9 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
     private List<AbstractMetaItem<?>> items;
     private Context context;
 
+    private View mEmptyView = null;
+    private View mRecyclerView = null;
+
     /**
      * @param context   the Context.
      * @param newsItems the List containing the NewsItems.
@@ -49,11 +53,26 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                                   .inflate(R.layout.card_news, parent, false);
+        mEmptyView = view.findViewById(R.id.news_card_list_empty);
+        mRecyclerView = view.findViewById(R.id.news_card_list);
+
+        registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+
+                if (mEmptyView != null && mRecyclerView != null) {
+                    boolean showEmptyView = getItemCount() == 0;
+                    Log.e("updateVisibility", "empty:" + showEmptyView);
+                    mEmptyView.setVisibility(showEmptyView ? View.VISIBLE : View.GONE);
+                    mRecyclerView.setVisibility(showEmptyView ? View.GONE : View.VISIBLE);
+                }
+            }
+        });
 
         return new ViewHolder(view);
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (!(items.get(position) instanceof NewsItem)) {

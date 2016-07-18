@@ -5,7 +5,6 @@
  */
 package eu.olynet.olydorfapp.fragments;
 
-import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,7 +24,6 @@ import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.NewsTabAdapter;
-import eu.olynet.olydorfapp.databinding.TabNewsBinding;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
@@ -39,7 +37,6 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
     public static final String ORG_KEY = "organization_item";
     private static final int DEFAULT_COUNT = 10;
 
-    private TabNewsBinding binding;
     private SwipeRefreshLayout mRefreshLayout;
     private NewsTabAdapter mAdapter;
 
@@ -51,9 +48,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.tab_news, container, false);
-        View view = binding.getRoot();
-        binding.setEmpty(false);
+        View view = inflater.inflate(R.layout.tab_news, container, false);
 
         /* get the filter OrganizationMetaItem */
         /* get the NewsItem */
@@ -158,9 +153,6 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
             default:
                 mAdapter.notifyDataSetChanged();
         }
-
-        /* display empty message if necessary */
-        binding.setEmpty(mAdapter.getItemCount() == 0);
 
         /* whether further results are expected */
         noFurtherResults = count < DEFAULT_COUNT;

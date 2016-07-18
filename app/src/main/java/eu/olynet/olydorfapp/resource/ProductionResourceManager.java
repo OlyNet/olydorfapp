@@ -575,14 +575,12 @@ public class ProductionResourceManager extends ResourceManager {
                 }
 
                 /* compare organizations */
-                if (item.getOrganization() == null) {
-                    if (filterOrganization == null) {
-                        result.add(item); /* both null */
+                if (filterOrganization != null) {
+                    if(filterOrganization.equals(item.getOrganization())) {
+                        result.add(item); /* equal */
                     }
-                } else if (item.getOrganization().equals(filterOrganization)) {
-                    result.add(item); /* equal */
                 } else {
-                    Log.d("ResourceManager", "Dropping due to organization mismatch: " + item);
+                    result.add(item); /* no fiter */
                 }
             }
         } else {

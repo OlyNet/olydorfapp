@@ -31,9 +31,7 @@ public class UpdateTask extends AsyncTask<Void, Void, Void> {
 
         // TODO: implement view refreshing here
 
-//        ProductionResourceManager.getInstance().invalidateCache();
-        OrganizationItem org = (OrganizationItem) ProductionResourceManager.getInstance().getItem(OrganizationMetaItem.class, 4);
-        Log.e("Test", org.toString());
+        ProductionResourceManager.getInstance().invalidateCache();
         return null;
 
     }
