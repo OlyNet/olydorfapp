@@ -5,6 +5,7 @@
  */
 package eu.olynet.olydorfapp.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -36,8 +37,8 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
     private List<AbstractMetaItem<?>> items;
     private Context context;
 
+    private RecyclerView mRecyclerView = null;
     private View mEmptyView = null;
-    private View mRecyclerView = null;
 
     /**
      * @param context   the Context.
@@ -53,24 +54,49 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                                   .inflate(R.layout.card_news, parent, false);
-        mEmptyView = view.findViewById(R.id.news_card_list_empty);
-        mRecyclerView = view.findViewById(R.id.news_card_list);
 
         registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
                 super.onChanged();
-
-                if (mEmptyView != null && mRecyclerView != null) {
-                    boolean showEmptyView = getItemCount() == 0;
-                    Log.e("updateVisibility", "empty:" + showEmptyView);
-                    mEmptyView.setVisibility(showEmptyView ? View.VISIBLE : View.GONE);
-                    mRecyclerView.setVisibility(showEmptyView ? View.GONE : View.VISIBLE);
-                }
+                checkVisibility();
             }
         });
 
         return new ViewHolder(view);
+    }
+
+    /**
+     * Register the two Views so they can be displayed/hidden as needed
+     *
+     * @param mRecyclerView the RecyclerView (will be displayed if this adapter is not empty).
+     * @param mEmptyView    the View to be displayed in case this adapter is empty.
+     */
+    public void registerViews(RecyclerView mRecyclerView, View mEmptyView) {
+        /* check for null */
+        if (mEmptyView == null) {
+            throw new NullPointerException("mEmptyView may not be null");
+        }
+        if (mRecyclerView == null) {
+            throw new NullPointerException("mRecyclerView may not be null");
+        }
+
+        /* set the views */
+        this.mRecyclerView = mRecyclerView;
+        this.mEmptyView = mEmptyView;
+    }
+
+    public void checkVisibility() {
+        if (mEmptyView != null && mRecyclerView != null) {
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    boolean showEmptyView = getItemCount() == 0;
+                    mEmptyView.setVisibility(showEmptyView ? View.VISIBLE : View.GONE);
+                    mRecyclerView.setVisibility(showEmptyView ? View.GONE : View.VISIBLE);
+                }
+            });
+        }
     }
 
     @Override

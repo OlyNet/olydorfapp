@@ -83,6 +83,13 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
             }
         });
 
+        /* get the EmptyView and register it and the RecyclerView on the adapter */
+        View mEmptyView = view.findViewById(R.id.news_card_list_empty);
+        if(mEmptyView == null) {
+            throw new NullPointerException("asdf");
+        }
+        mAdapter.registerViews(mRecyclerView, mEmptyView);
+
         /* initiate SwipeRefreshLayout */
         mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.news_refresh_layout);
         mRefreshLayout.setOnRefreshListener(this);
@@ -153,6 +160,9 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
             default:
                 mAdapter.notifyDataSetChanged();
         }
+
+        /* check the visibility of the adapter */
+        mAdapter.checkVisibility();
 
         /* whether further results are expected */
         noFurtherResults = count < DEFAULT_COUNT;
