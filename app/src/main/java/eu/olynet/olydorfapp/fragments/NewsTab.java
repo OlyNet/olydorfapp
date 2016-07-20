@@ -9,7 +9,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,16 +27,17 @@ import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
+import eu.olynet.olydorfapp.utils.SwipeRefreshLayoutWithEmpty;
 
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */
-public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnRefreshListener {
 
     public static final String ORG_KEY = "organization_item";
     private static final int DEFAULT_COUNT = 10;
 
-    private SwipeRefreshLayout mRefreshLayout;
+    private SwipeRefreshLayoutWithEmpty mRefreshLayout;
     private NewsTabAdapter mAdapter;
 
     private boolean refreshing = false;
@@ -85,13 +85,13 @@ public class NewsTab extends Fragment implements SwipeRefreshLayout.OnRefreshLis
 
         /* get the EmptyView and register it and the RecyclerView on the adapter */
         View mEmptyView = view.findViewById(R.id.news_card_list_empty);
-        if(mEmptyView == null) {
+        if (mEmptyView == null) {
             throw new NullPointerException("asdf");
         }
         mAdapter.registerViews(mRecyclerView, mEmptyView);
 
         /* initiate SwipeRefreshLayout */
-        mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.news_refresh_layout);
+        mRefreshLayout = (SwipeRefreshLayoutWithEmpty) view.findViewById(R.id.news_refresh_layout);
         mRefreshLayout.setOnRefreshListener(this);
 
         return view;

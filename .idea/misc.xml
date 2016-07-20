@@ -37,7 +37,7 @@
     <ConfirmationsSetting value="0" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="$RELEASE_BUILD$" assert-keyword="$RELEASE_BUILD$" jdk-15="$RELEASE_BUILD$" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" default="$RELEASE_BUILD$" assert-keyword="$RELEASE_BUILD$" jdk-15="$RELEASE_BUILD$" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
