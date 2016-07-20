@@ -6,6 +6,7 @@
 package eu.olynet.olydorfapp.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
@@ -23,6 +24,8 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 import eu.olynet.olydorfapp.R;
+import eu.olynet.olydorfapp.activities.MealOfTheDayViewerActivity;
+import eu.olynet.olydorfapp.fragments.MealOfTheDayViewerFragment;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 
 /**
@@ -30,16 +33,16 @@ import eu.olynet.olydorfapp.model.MealOfTheDayItem;
  */
 public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapter.ViewHolder> {
 
-    private MealOfTheDayItem item;
+    private MealOfTheDayItem mealOfTheDayItem;
     private Context context;
 
     /**
      * @param context the Context.
-     * @param item    the DailyMealItem.
+     * @param mealOfTheDayItem    the DailyMealItem.
      */
-    public DailyMealTabAdapter(Context context, MealOfTheDayItem item) {
+    public DailyMealTabAdapter(Context context, MealOfTheDayItem mealOfTheDayItem) {
         this.context = context;
-        this.item = item;
+        this.mealOfTheDayItem = mealOfTheDayItem;
     }
 
     // Create new views (invoked by the layout manager)
@@ -54,34 +57,37 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (position != 0 || item == null) {
+        if (position != 0 || mealOfTheDayItem == null) {
             return;
         }
 
+        /* set the correct mealOfTheDayItem in the ViewHolder for the OnClickListener */
+        holder.item = mealOfTheDayItem;
+
         /* Headline */
         Calendar cal = new GregorianCalendar();
-        cal.setTime(item.getDate());
+        cal.setTime(mealOfTheDayItem.getDate());
         holder.vHeadline.setText("Fraß des Tages (" + cal.get(Calendar.DAY_OF_MONTH) + ". " +
                                  cal.getDisplayName(Calendar.MONTH, Calendar.LONG,
                                                     Locale.getDefault()) + ")");
 
         /* Name */
-        holder.vName.setText(item.getDailyMeal().getName());
+        holder.vName.setText(mealOfTheDayItem.getDailyMeal().getName());
 
         /* Cook */
-        holder.vCook.setText(item.getCook());
+        holder.vCook.setText(mealOfTheDayItem.getCook());
 
         /* Price */
         NumberFormat deDE = NumberFormat.getCurrencyInstance(Locale.GERMANY);
-        holder.vPrice.setText(deDE.format(item.getPrice()));
+        holder.vPrice.setText(deDE.format(mealOfTheDayItem.getPrice()));
 
         /* Image */
-        byte[] image = item.getImage();
+        byte[] image = mealOfTheDayItem.getImage();
         if (image == null || image.length <= 0) { /* fall back to Meal image */
-            image = item.getDailyMeal().getImage();
+            image = mealOfTheDayItem.getDailyMeal().getImage();
         }
         if (image == null || image.length <= 0) { /* fall back to Organization image */
-            image = item.getDailyMeal().getOrganization().getLogo();
+            image = mealOfTheDayItem.getDailyMeal().getOrganization().getLogo();
         }
         if (image != null && image.length > 0) { /* finally set the image if one is available */
             Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
@@ -106,24 +112,27 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
      */
     @Override
     public int getItemCount() {
-        return item == null ? 0 : 1;
+        return mealOfTheDayItem == null ? 0 : 1;
     }
 
     /**
      * @return the MealOfTheDayItem.
      */
     public MealOfTheDayItem getItem() {
-        return item;
+        return mealOfTheDayItem;
     }
 
     /**
      * @param item the new MealOfTheDayItem.
      */
     public void setItem(MealOfTheDayItem item) {
-        this.item = item;
+        this.mealOfTheDayItem = item;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
+        protected MealOfTheDayItem item;
+
         protected TextView vHeadline;
         protected ImageView vImage;
         protected TextView vName;
@@ -132,6 +141,22 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
 
         public ViewHolder(View view) {
             super(view);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                /**
+                 * Called when a view has been clicked.
+                 *
+                 * @param v The view that was clicked.
+                 */
+                @Override
+                public void onClick(View v) {
+                    Intent newsViewerIntent = new Intent(context, MealOfTheDayViewerActivity.class);
+                    newsViewerIntent.setAction(Intent.ACTION_VIEW);
+                    newsViewerIntent.putExtra(MealOfTheDayViewerFragment.ITEM_KEY, item);
+                    context.startActivity(newsViewerIntent);
+                }
+            });
+
             vHeadline = (TextView) view.findViewById(R.id.meal_of_the_day_headline);
             vImage = (ImageView) view.findViewById(R.id.meal_of_the_day_image);
             vName = (TextView) view.findViewById(R.id.meal_of_the_day_title);

@@ -7,6 +7,7 @@ package eu.olynet.olydorfapp.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +25,9 @@ import java.util.List;
 import java.util.Locale;
 
 import eu.olynet.olydorfapp.R;
+import eu.olynet.olydorfapp.activities.MealOfTheDayViewerActivity;
+import eu.olynet.olydorfapp.activities.NewsViewerActivity;
+import eu.olynet.olydorfapp.fragments.MealOfTheDayViewerFragment;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 
@@ -213,11 +217,10 @@ public class MealOfTheDayListAdapter
                  */
                 @Override
                 public void onClick(View v) {
-                    // TODO: fix intent
-//                    Intent newsViewerIntent = new Intent(context, NewsViewerActivity.class);
-//                    newsViewerIntent.setAction(Intent.ACTION_VIEW);
-//                    newsViewerIntent.putExtra(NewsViewerFragment.ITEM_KEY, item);
-//                    context.startActivity(newsViewerIntent);
+                    Intent newsViewerIntent = new Intent(context, MealOfTheDayViewerActivity.class);
+                    newsViewerIntent.setAction(Intent.ACTION_VIEW);
+                    newsViewerIntent.putExtra(MealOfTheDayViewerFragment.ITEM_KEY, item);
+                    context.startActivity(newsViewerIntent);
                 }
             });
 
