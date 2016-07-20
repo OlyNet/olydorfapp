@@ -136,7 +136,8 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
             TreeSet<AbstractMetaItem<?>> metaTree = rm.getTreeOfMetaItems(
                     MealOfTheDayMetaItem.class, 0, null, new AbstractMetaItem.DateAscComparator(),
                     forceUpdate);
-            if (metaTree == null) {
+
+            if (metaTree == null || metaTree.isEmpty()) {
                 return null;
             }
 

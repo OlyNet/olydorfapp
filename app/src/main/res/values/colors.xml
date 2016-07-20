@@ -67,4 +67,7 @@
     <color name="OlympiaDarkGreen">#008f44</color> <!--4FF03D  -->
     <color name="OlympiaDarkBlue">#5979AD</color>
 
+    <!-- Card colors -->
+    <color name="CardRegular">#E0E0E0</color>
+
 </resources>

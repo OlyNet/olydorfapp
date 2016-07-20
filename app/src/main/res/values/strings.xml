@@ -28,6 +28,7 @@
     <string name="tabTitleNews">News</string>
     <string name="tabTitleGeneral">General</string>
     <string name="tabTitleMenu">Menu</string>
+    <string name="tabTitleMealOfTheDay">Specials</string>
     <string name="tabTitleJoinUs">Join us!</string>
     <string name="tabTitleAbout">About</string>
     <string name="tabTitleEvents">Events</string>

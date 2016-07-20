@@ -41,13 +41,20 @@ public class MealOfTheDayItem extends MealOfTheDayMetaItem {
             return new MealOfTheDayItem[size];
         }
     };
-    @JsonProperty("cook") protected String cook;
-    @JsonProperty("price") protected float price;
+
+    @JsonProperty("cook")
+    protected String cook;
+
+    @JsonProperty("price")
+    protected float price;
+
     @JsonProperty("dailyMeal")
     @JsonSerialize(using = DailyMealSerializer.class)
     @JsonDeserialize(using = DailyMealDeserializer.class)
     protected DailyMealItem dailyMeal;
-    @JsonProperty("image") protected byte[] image;
+
+    @JsonProperty("image")
+    protected byte[] image;
 
     /**
      * Constructor for creating MealOfTheDayItem from Parcels.

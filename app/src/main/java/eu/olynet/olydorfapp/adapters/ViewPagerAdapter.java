@@ -21,6 +21,7 @@ import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.fragments.BierstubeTab;
 import eu.olynet.olydorfapp.fragments.DummyTab;
 import eu.olynet.olydorfapp.fragments.LaundryTab;
+import eu.olynet.olydorfapp.fragments.MealOfTheDayListFragment;
 import eu.olynet.olydorfapp.fragments.NewsTab;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
@@ -51,6 +52,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         bierstubeNewsTab.setArguments(bierstubeBundle);
         bierstubeTabs.add(new Tab(R.string.tabTitleNews, bierstubeNewsTab));
         bierstubeTabs.add(new Tab(R.string.tabTitleMenu, new BierstubeTab()));
+        bierstubeTabs.add(new Tab(R.string.tabTitleMealOfTheDay, new MealOfTheDayListFragment()));
         tmpTabNames.put(Category.BIERSTUBE, bierstubeTabs);
 
         /* category OlyNet */

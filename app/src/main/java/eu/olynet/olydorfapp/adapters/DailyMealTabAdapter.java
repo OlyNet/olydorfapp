@@ -46,7 +46,7 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                                  .inflate(R.layout.card_mealoftheday, parent, false);
+                                  .inflate(R.layout.card_meal_of_the_day, parent, false);
 
         return new ViewHolder(view);
     }
@@ -132,11 +132,11 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
 
         public ViewHolder(View view) {
             super(view);
-            vHeadline = (TextView) view.findViewById(R.id.dailyMealHeadline);
-            vImage = (ImageView) view.findViewById(R.id.dailyMealImage);
-            vName = (TextView) view.findViewById(R.id.dailyMealTitle);
-            vPrice = (TextView) view.findViewById(R.id.dailyMealPrice);
-            vCook = (TextView) view.findViewById(R.id.dailyMealCook);
+            vHeadline = (TextView) view.findViewById(R.id.meal_of_the_day_headline);
+            vImage = (ImageView) view.findViewById(R.id.meal_of_the_day_image);
+            vName = (TextView) view.findViewById(R.id.meal_of_the_day_title);
+            vPrice = (TextView) view.findViewById(R.id.meal_of_the_day_price);
+            vCook = (TextView) view.findViewById(R.id.meal_of_the_day_cook);
         }
     }
 }

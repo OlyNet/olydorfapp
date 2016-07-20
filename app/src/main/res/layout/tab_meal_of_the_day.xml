@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<eu.olynet.olydorfapp.utils.SwipeRefreshLayoutWithEmpty
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/meal_of_the_day_refresh_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".activities.MainActivity">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/meal_of_the_day_card_list_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="top|center"
+            android:paddingTop="20dp"
+            android:text="@string/emptyList"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/OlympiaDarkBlue"
+            android:visibility="gone"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/meal_of_the_day_card_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </FrameLayout>
+
+</eu.olynet.olydorfapp.utils.SwipeRefreshLayoutWithEmpty>
