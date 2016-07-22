@@ -372,10 +372,12 @@ public class ProductionRestManager extends RestManager {
 
                 /* HTTP 404 */
                 if (cause != null && cause instanceof NotFoundException) {
-                    Log.i("ResourceManager", "HTTP 404: meta '" + clazz + "'", cause);
+                    Log.e("ResourceManager", "HTTP 404: meta '" + clazz + "'", cause);
                     // TODO: implement better logging
                     break;
                 }
+
+                e.printStackTrace();
             } catch (Exception e) {
                 Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
                 result = null;

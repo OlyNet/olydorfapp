@@ -1,7 +1,9 @@
 package eu.olynet.olydorfapp.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -60,7 +62,20 @@ public class NewsViewerActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                Intent upIntent = NavUtils.getParentActivityIntent(this);
+                if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
+                    // TODO: Add information to the intent to return to the correct Fragment
+                    // This activity is NOT part of this app's task, so create a new task
+                    // when navigating up, with a synthesized back stack.
+                    TaskStackBuilder.create(this)
+                                    // Add all of this activity's parents to the back stack
+                                    .addNextIntentWithParentStack(upIntent)
+                                    // Navigate up to the closest parent
+                                    .startActivities();
+                } else {
+                    upIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    NavUtils.navigateUpTo(this, upIntent);
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

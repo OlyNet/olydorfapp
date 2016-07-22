@@ -8,7 +8,6 @@ package eu.olynet.olydorfapp.model;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -75,12 +74,21 @@ public class DailyMealDeserializer extends JsonDeserializer<DailyMealItem> {
      * @return Deserialized value
      */
     @Override
-    public DailyMealItem deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,
-                                                                                        JsonProcessingException {
+    public DailyMealItem deserialize(JsonParser jp, DeserializationContext ctxt)
+            throws IOException {
         ProductionResourceManager rm = ProductionResourceManager.getInstance();
 
         JsonNode node = jp.getCodec().readTree(jp);
-        int id = (Integer) node.get("eu.olynet.dorfapp.server.data.model.DailyMeal").numberValue();
+        int id;
+
+        /* can be either a number or a number wrapped by the server-side object */
+        if (node.isNumber()) {
+            id = node.asInt();
+        } else {
+            id = node.get("eu.olynet.dorfapp.server.data.model.DailyMeal").asInt();
+        }
+
+        /* check if the id is valid */
         if (id <= 0) {
             throw new IOException("id=" + id + " does not refer to a valid DailyMealItem");
         }
