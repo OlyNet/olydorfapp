@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         /* setup Tabs */
-        initSlider(ViewPagerAdapter.Category.HOME);
+        selectTabGroup(ViewPagerAdapter.DEFAULT_CATEGORY);
         initNavigator();
 
         /* setup ResourceManager */
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param category the Category to be displayed in the tabs.
      */
-    private void initSlider(ViewPagerAdapter.Category category) {
+    private void selectTabGroup(final ViewPagerAdapter.Category category) {
         /* creating The ViewPagerAdapter and passing the FragmentManager and the category */
         ViewPagerAdapter adapter = new ViewPagerAdapter(this, getSupportFragmentManager(),
                                                         category);
@@ -161,20 +162,38 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        initSlider(ViewPagerAdapter.Category.HOME);
+                        selectTabGroup(ViewPagerAdapter.Category.HOME);
                         break;
                     case 1:
-                        initSlider(ViewPagerAdapter.Category.BIERSTUBE);
+                        selectTabGroup(ViewPagerAdapter.Category.BIERSTUBE);
                         break;
                     case 2:
-                        initSlider(ViewPagerAdapter.Category.OLYNET);
+                        selectTabGroup(ViewPagerAdapter.Category.OLYNET);
                         break;
                     case 3:
-                        initSlider(ViewPagerAdapter.Category.LAUNDRY);
+                        selectTabGroup(ViewPagerAdapter.Category.LAUNDRY);
                         break;
                     default:
                         Log.e("onItemClick", "Unknown position " + position);
                 }
+                mDrawerLayout.closeDrawers();
+            }
+        });
+
+        FrameLayout settingsButton = (FrameLayout) findViewById(R.id.navigation_drawer_settings);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectTabGroup(ViewPagerAdapter.Category.SETTINGS);
+                mDrawerLayout.closeDrawers();
+            }
+        });
+
+        FrameLayout aboutButton = (FrameLayout) findViewById(R.id.navigation_drawer_about);
+        aboutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectTabGroup(ViewPagerAdapter.Category.ABOUT);
                 mDrawerLayout.closeDrawers();
             }
         });

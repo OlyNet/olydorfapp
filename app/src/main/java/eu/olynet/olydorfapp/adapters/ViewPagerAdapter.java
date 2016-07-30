@@ -23,6 +23,7 @@ import eu.olynet.olydorfapp.fragments.DummyTab;
 import eu.olynet.olydorfapp.fragments.LaundryTab;
 import eu.olynet.olydorfapp.fragments.MealOfTheDayListFragment;
 import eu.olynet.olydorfapp.fragments.NewsTab;
+import eu.olynet.olydorfapp.fragments.SettingsFragment;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 
@@ -31,7 +32,8 @@ import eu.olynet.olydorfapp.model.OrganizationMetaItem;
  */
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
-    public static final Map<Category, List<Tab>> tabNames;
+    public static final Category DEFAULT_CATEGORY = Category.HOME;
+    public static final Map<Category, List<Tab>> categoryToTabs;
 
     static {
         Map<Category, List<Tab>> tmpTabNames = new LinkedHashMap<>();
@@ -73,7 +75,17 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         laundryTabs.add(new Tab(R.string.tabTitleAbout, new LaundryTab()));
         tmpTabNames.put(Category.LAUNDRY, laundryTabs);
 
-        tabNames = Collections.unmodifiableMap(tmpTabNames);
+        /* category Settings */
+        List<Tab> settingsTabs = new ArrayList<>();
+        settingsTabs.add(new Tab(R.string.tabTitleSettings, new SettingsFragment()));
+        tmpTabNames.put(Category.SETTINGS, settingsTabs);
+
+        /* category Settings */
+        List<Tab> aboutTabs = new ArrayList<>();
+        aboutTabs.add(new Tab(R.string.tabTitleAbout, new DummyTab()));
+        tmpTabNames.put(Category.ABOUT, aboutTabs);
+
+        categoryToTabs = Collections.unmodifiableMap(tmpTabNames);
     }
 
     private final Context context;
@@ -89,7 +101,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     public ViewPagerAdapter(Context context, FragmentManager fm, Category category) {
         super(fm);
         this.context = context;
-        this.tabs = tabNames.get(category);
+        this.tabs = categoryToTabs.get(category);
     }
 
     @Override
@@ -114,7 +126,9 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         HOME(R.string.navDrawerHomeEntry),
         BIERSTUBE(R.string.navDrawerBierstubeEntry),
         OLYNET(R.string.navDrawerOlynetEntry),
-        LAUNDRY(R.string.navDrawerLaundryEntry);
+        LAUNDRY(R.string.navDrawerLaundryEntry),
+        SETTINGS(R.string.navDrawerSettingsEntry),
+        ABOUT(R.string.navDrawerAboutEntry);
 
         public final int androidResourceId;
 

@@ -70,4 +70,8 @@
     <!-- Card colors -->
     <color name="CardRegular">#E0E0E0</color>
 
+    <!-- Settings -->
+    <color name="accent">@color/OlympiaOrange</color>
+    <color name="preference_accent">@color/OlympiaOrange</color>
+
 </resources>

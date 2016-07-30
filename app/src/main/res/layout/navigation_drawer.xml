@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_activity_navigation_drawer_rootLayout"
     style="@style/ScrimInsetsLayout"
+    android:clickable="true"
     tools:context=".activities.MainActivity">
 
     <LinearLayout
@@ -105,37 +106,37 @@
                 <include layout="@layout/navigation_drawer_divider"/>
 
                 <FrameLayout
-                    android:id="@+id/navigation_drawer_items_list_linearLayout_help_and_feedback"
+                    android:id="@+id/navigation_drawer_settings"
                     style="@style/NavDrawerRowLayout.Secondary"
                     android:clickable="false">
 
                     <eu.olynet.olydorfapp.customViews.TintOnStateImageView
-                        android:id="@+id/navigation_drawer_items_list_icon_help_and_feedback"
+                        android:id="@+id/navigation_drawer_settings_icon"
                         style="@style/NavDrawerRowItemIcon"
                         android:src="@drawable/ic_help_white_24dp"
                         tools:ignore="ContentDescription"/>
 
                     <TextView
-                        android:id="@+id/navigation_drawer_items_textView_help_and_feedback"
+                        android:id="@+id/navigation_drawer_settings_text"
                         style="@style/NavDrawerRowItemText"
-                        android:text="@string/navDrawerHelpEntry"
+                        android:text="@string/navDrawerSettingsEntry"
                         tools:fontFamily="sans-serif-medium"/>
 
                 </FrameLayout>
 
                 <FrameLayout
-                    android:id="@+id/navigation_drawer_items_list_linearLayout_about"
+                    android:id="@+id/navigation_drawer_about"
                     style="@style/NavDrawerRowLayout.Secondary"
                     android:clickable="false">
 
                     <eu.olynet.olydorfapp.customViews.TintOnStateImageView
-                        android:id="@+id/navigation_drawer_items_list_icon_about"
+                        android:id="@+id/navigation_drawer_about_icon"
                         style="@style/NavDrawerRowItemIcon"
                         android:src="@drawable/ic_info_white_24dp"
                         tools:ignore="ContentDescription"/>
 
                     <TextView
-                        android:id="@+id/navigation_drawer_items_textView_about"
+                        android:id="@+id/navigation_drawer_about_text"
                         style="@style/NavDrawerRowItemText"
                         android:text="@string/navDrawerAboutEntry"
                         tools:fontFamily="sans-serif-medium"/>

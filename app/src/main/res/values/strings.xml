@@ -21,8 +21,9 @@
     <string name="navDrawerLoungeEntry">The O(n)ly</string>
     <string name="navDrawerOlynetEntry">OlyNet e.V.</string>
     <string name="navDrawerLaundryEntry">Laundry room</string>
-    <string name="navDrawerAboutEntry">About</string>
     <string name="navDrawerHelpEntry">Help</string>
+    <string name="navDrawerSettingsEntry">Settings</string>
+    <string name="navDrawerAboutEntry">About</string>
 
     <!-- Tab titles -->
     <string name="tabTitleNews">News</string>
@@ -30,9 +31,17 @@
     <string name="tabTitleMenu">Menu</string>
     <string name="tabTitleMealOfTheDay">Specials</string>
     <string name="tabTitleJoinUs">Join us!</string>
-    <string name="tabTitleAbout">About</string>
     <string name="tabTitleEvents">Events</string>
+    <string name="tabTitleSettings">Settings</string>
+    <string name="tabTitleAbout">About</string>
 
+    <!-- Preferences -->
+    <string name="pref_category_general">General</string>
+    <string name="pref_rotate">Allow rotation</string>
+    <string name="pref_rotate_summary">Rotate content according to phone positioning</string>
+    <string name="pref_language">Language</string>
+    <string name="pref_select_language">Select the preferred language</string>
+    <string name="pref_select_language_default">default</string>
 
     <string name="emptyList">Nothing yet :(</string>
     <string name="navigation_drawer_opened">The navigation drawer is opened</string>
