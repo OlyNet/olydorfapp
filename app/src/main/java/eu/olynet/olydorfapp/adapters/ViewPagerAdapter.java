@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import eu.olynet.olydorfapp.R;
+import eu.olynet.olydorfapp.fragments.AboutFragment;
 import eu.olynet.olydorfapp.fragments.BierstubeTab;
 import eu.olynet.olydorfapp.fragments.DummyTab;
 import eu.olynet.olydorfapp.fragments.LaundryTab;
@@ -82,7 +83,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         /* category Settings */
         List<Tab> aboutTabs = new ArrayList<>();
-        aboutTabs.add(new Tab(R.string.tabTitleAbout, new DummyTab()));
+        aboutTabs.add(new Tab(R.string.tabTitleAbout, new AboutFragment()));
         tmpTabNames.put(Category.ABOUT, aboutTabs);
 
         categoryToTabs = Collections.unmodifiableMap(tmpTabNames);

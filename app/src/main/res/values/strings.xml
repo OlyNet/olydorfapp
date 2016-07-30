@@ -51,6 +51,11 @@
     <string name="tools_text_account_information_username">Max Mustermann</string>
     <string name="tools_text_account_information_email">max.mustermann@olynet.eu</string>
 
+    <!-- About Fragment -->
+    <string name="about_version_string">Version %1$s</string>
+    <string name="about_help_us">Want to help improve this App? Let us know at %1$s!</string>
+    <string name="about_licenses">Open Source Licenses</string>
+
     <!-- Typeface names -->
     <string name="typeface_roboto_regular">Roboto-Regular</string>
     <string name="typeface_roboto_medium">Roboto-Medium</string>
