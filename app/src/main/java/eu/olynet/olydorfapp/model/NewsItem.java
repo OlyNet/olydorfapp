@@ -9,7 +9,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -20,6 +22,7 @@ import java.util.Date;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
                 getterVisibility = JsonAutoDetect.Visibility.NONE,
                 setterVisibility = JsonAutoDetect.Visibility.NONE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("unused")
 public class NewsItem extends NewsMetaItem {
 
@@ -36,8 +39,12 @@ public class NewsItem extends NewsMetaItem {
             return new NewsItem[size];
         }
     };
+
     @JsonProperty("title") protected String title;
+
     @JsonProperty("text") protected String text;
+
+    @JsonDeserialize(using = ImageDeserializer.class)
     @JsonProperty("image") protected byte[] image;
 
     /**

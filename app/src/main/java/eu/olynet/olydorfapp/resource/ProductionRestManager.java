@@ -8,6 +8,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.plugins.providers.ByteArrayProvider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import java.io.InputStream;
@@ -90,6 +91,7 @@ public class ProductionRestManager extends RestManager {
             /* instantiate the ResteasyClient */
             ResteasyClient client = new ResteasyClientBuilder().providerFactory(
                     new ResteasyProviderFactory().register(JacksonJsonProvider.class))
+                                                               .register(ByteArrayProvider.class)
                                                                .connectionPoolSize(4)
                                                                .connectionTTL(5, TimeUnit.MINUTES)
                                                                .httpEngine(engine)
@@ -119,6 +121,31 @@ public class ProductionRestManager extends RestManager {
             e.printStackTrace();
             throw new NoConnectionException("No internet connection detected", e);
         }
+    }
+
+    @Override
+    public byte[] fetchImage(String type, int id, String field) throws NoConnectionException {
+        return fetchImage(type, id, field, 3);
+    }
+
+    @Override
+    public byte[] fetchImage(String type, int id, String field, int retryCount)
+            throws NoConnectionException {
+        byte[] image = null;
+        for (int i = 1; i <= retryCount; i++) {
+            try {
+                image = this.onc.getImage(type, id, field);
+            } catch (NotFoundException e) {
+                image = null;
+                break;
+            } catch (Exception e) {
+                Log.e("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
+                image = null;
+            }
+        }
+
+        /* return the result that may still be null */
+        return image;
     }
 
     @Override
@@ -161,9 +188,6 @@ public class ProductionRestManager extends RestManager {
                 } else {
                     System.err.println("class=" + clazz + " id=" + id);
                     e.printStackTrace();
-                    // FIXME remove debug (2 lines)
-                    result = null;
-                    break;
                 }
             } catch (Exception e) {
                 Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
@@ -224,14 +248,16 @@ public class ProductionRestManager extends RestManager {
     }
 
     @Override
-    public List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids) throws NoConnectionException {
+    public List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids)
+            throws NoConnectionException {
         return fetchItems(clazz, ids, RestManager.DEFAULT_RETRY_COUNT);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids, int retryCount) throws
-                                                                             NoConnectionException {
+    public List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids, int retryCount)
+            throws
+            NoConnectionException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 

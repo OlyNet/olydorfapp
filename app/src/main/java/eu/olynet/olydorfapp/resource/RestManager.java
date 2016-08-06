@@ -40,6 +40,36 @@ public abstract class RestManager {
      */
     protected abstract void init();
 
+
+    /**
+     * Tries to fetch the image of a specific item from the server. Defaults to 3 retries.
+     *
+     * @param type  the type in String form.
+     * @param id    the id.
+     * @param field the field name.
+     * @return the fetched image or <b>null</b> if this operation was not successful.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
+     * @throws NotFoundException        if a HTTP 404 has been received.
+     */
+    public abstract byte[] fetchImage(String type, int id, String field)
+            throws NoConnectionException;
+
+    /**
+     * Tries to fetch the image of a specific item from the server.
+     *
+     * @param type  the type in String form.
+     * @param id    the id.
+     * @param field the field name.
+     * @param retryCount how many times a fetch should be retried if it failed.
+     * @return the fetched image or <b>null</b> if this operation was not successful.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
+     * @throws NotFoundException        if a HTTP 404 has been received.
+     */
+    public abstract byte[] fetchImage(String type, int id, String field, int retryCount)
+            throws NoConnectionException;
+
     /**
      * Tries to fetch a specific item from the server. Defaults to 3 retries.
      *

@@ -11,7 +11,9 @@ import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -22,6 +24,7 @@ import java.util.Date;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
                 getterVisibility = JsonAutoDetect.Visibility.NONE,
                 setterVisibility = JsonAutoDetect.Visibility.NONE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties({"food"})
 public class OrganizationItem extends OrganizationMetaItem {
 
@@ -39,9 +42,14 @@ public class OrganizationItem extends OrganizationMetaItem {
             return new OrganizationItem[size];
         }
     };
+
     @JsonProperty("name") protected String name;
+
     @JsonProperty("shortname") protected String shortname;
+
     @JsonProperty("description") protected String description;
+
+    @JsonDeserialize(using = ImageDeserializer.class)
     @JsonProperty("logo") protected byte[] logo;
 
     /**

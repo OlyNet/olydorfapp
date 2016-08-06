@@ -35,6 +35,12 @@ import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 @Produces(MediaType.APPLICATION_JSON)
 public interface OlyNetClient {
 
+    @GET
+    @Path("{type}/{id}/{field}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public byte[] getImage(@PathParam("type") String type, @PathParam("id") int id,
+                           @PathParam("field") String field);
+
     /* News API */
     @GET
     @Path("/news/meta/{id}")

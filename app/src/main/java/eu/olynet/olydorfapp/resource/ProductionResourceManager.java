@@ -216,6 +216,11 @@ public class ProductionResourceManager extends ResourceManager {
     }
 
     @Override
+    public byte[] getImage(String type, int id, String field) throws NoConnectionException {
+        return this.rest.fetchImage(type, id, field);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public AbstractMetaItem<?> getItem(Class<?> clazz, int id) {
         abortIfNotInitialized();
@@ -576,7 +581,7 @@ public class ProductionResourceManager extends ResourceManager {
 
                 /* compare organizations */
                 if (filterOrganization != null) {
-                    if(filterOrganization.equals(item.getOrganization())) {
+                    if (filterOrganization.equals(item.getOrganization())) {
                         result.add(item); /* equal */
                     }
                 } else {

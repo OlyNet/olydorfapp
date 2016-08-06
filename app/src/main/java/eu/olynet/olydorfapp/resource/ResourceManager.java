@@ -107,6 +107,20 @@ public abstract class ResourceManager {
     public abstract void cleanup();
 
     /**
+     * Get the image of a specific item from the server.
+     *
+     * @param type  the type in String form.
+     * @param id    the id.
+     * @param field the field name.
+     * @return the image requested or <b>null</b>.
+     * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
+     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
+     * @throws NoConnectionException    if no internet connection is available.
+     * @throws RuntimeException         if some weird Reflection error occurs.
+     */
+    public abstract byte[] getImage(String type, int id, String field) throws NoConnectionException;
+
+    /**
      * Get a specific item from the server (preferably) or the cache.
      *
      * @param clazz the Class of the item to be fetched. Must be specified within the treeCaches

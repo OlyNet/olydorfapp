@@ -11,7 +11,9 @@ import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -22,6 +24,7 @@ import java.util.Date;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
                 getterVisibility = JsonAutoDetect.Visibility.NONE,
                 setterVisibility = JsonAutoDetect.Visibility.NONE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties("mealsofthedays")
 @SuppressWarnings("unused")
 public class DailyMealItem extends DailyMealMetaItem {
@@ -40,10 +43,16 @@ public class DailyMealItem extends DailyMealMetaItem {
             return new DailyMealItem[size];
         }
     };
+
     @JsonProperty("name") protected String name;
+
     @JsonProperty("englishName") protected String englishName;
+
     @JsonProperty("vegetarian") protected boolean vegetarian;
+
     @JsonProperty("price") protected float price;
+
+    @JsonDeserialize(using = ImageDeserializer.class)
     @JsonProperty("image") protected byte[] image;
 
     /**
