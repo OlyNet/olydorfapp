@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
@@ -185,7 +186,7 @@ public abstract class ResourceManager {
      * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      */
-    public abstract TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, int limit,
+    public abstract TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, long limit,
                                                                     @Nullable
                                                                     AbstractMetaItem<?> after,
                                                                     @Nullable
@@ -213,13 +214,11 @@ public abstract class ResourceManager {
      * @throws IllegalStateException    if the ResourceManager has not been initialized correctly.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      */
-    public abstract TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, int limit,
+    public abstract TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, long limit,
                                                                     @Nullable
                                                                     AbstractMetaItem<?> after,
                                                                     @Nullable
                                                                     Comparator<AbstractMetaItem<?>> comparator,
-                                                                    @Nullable
-                                                                    OrganizationMetaItem
-                                                                            filterOrganization,
+                                                                    ItemFilter filter,
                                                                     boolean forceUpdate);
 }

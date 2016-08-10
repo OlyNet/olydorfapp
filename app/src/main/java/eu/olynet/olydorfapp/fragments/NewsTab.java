@@ -26,6 +26,7 @@ import eu.olynet.olydorfapp.adapters.NewsTabAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
+import eu.olynet.olydorfapp.resource.ItemFilter;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 import eu.olynet.olydorfapp.utils.SwipeRefreshLayoutWithEmpty;
 
@@ -75,8 +76,8 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 /* check for scroll down, second-to-last item visible and not already refreshing */
                 if (!noFurtherResults && dy > 0 && !mRefreshLayout.isRefreshing() && !refreshing &&
-                    mLayoutManager.findLastCompletelyVisibleItemPosition() ==
-                    mAdapter.getItemCount() - 2) {
+                        mLayoutManager.findLastCompletelyVisibleItemPosition() ==
+                                mAdapter.getItemCount() - 2) {
                     loadData(Action.ADD, DEFAULT_COUNT, false);
                 }
             }
@@ -206,14 +207,18 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
             /* update OrganizationMetaItem tree */
             rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);
 
+            /* Organization filter */
+            ItemFilter filter = abstractMetaItem -> filterOrganization == null ||
+                    abstractMetaItem.getOrganization().equals(this.filterOrganization);
+
             /* querying the ResourceManager for the needed data and order it correctly */
             TreeSet<AbstractMetaItem<?>> resultTree = rm.getTreeOfMetaItems(NewsMetaItem.class,
-                                                                            this.limit,
-                                                                            this.lastItem,
-                                                                            new AbstractMetaItem
-                                                                                    .DateDescComparator(),
-                                                                            this.filterOrganization,
-                                                                            forceUpdate);
+                    this.limit,
+                    this.lastItem,
+                    new AbstractMetaItem.DateDescComparator(),
+                    filter,
+                    forceUpdate);
+
             if (resultTree == null || resultTree.isEmpty()) {
                 return new ArrayList<>();
             }
