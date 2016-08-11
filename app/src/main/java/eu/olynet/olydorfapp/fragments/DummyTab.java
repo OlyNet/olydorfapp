@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import eu.olynet.olydorfapp.R;
 
 /**
- * Created by Edwin on 15/02/2015.
+ * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 public class DummyTab extends Fragment {
 

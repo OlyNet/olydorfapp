@@ -38,111 +38,111 @@ public interface OlyNetClient {
     @GET
     @Path("{type}/{id}/{field}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public byte[] getImage(@PathParam("type") String type, @PathParam("id") int id,
-                           @PathParam("field") String field);
+    byte[] getImage(@PathParam("type") String type, @PathParam("id") int id,
+                    @PathParam("field") String field);
 
     /* News API */
     @GET
     @Path("/news/meta/{id}")
-    public NewsMetaItem getMetaNews(@PathParam("id") int id);
+    NewsMetaItem getMetaNews(@PathParam("id") int id);
 
     @GET
     @Path("/news/meta")
-    public List<NewsMetaItem> getMetaNews();
+    List<NewsMetaItem> getMetaNews();
 
     @GET
     @Path("/news/{id}")
-    public NewsItem getNews(@PathParam("id") int id);
+    NewsItem getNews(@PathParam("id") int id);
 
     @GET
     @Path("/news/any/{ids}")
-    public List<NewsItem> getNews(@PathParam("ids") String ids);
+    List<NewsItem> getNews(@PathParam("ids") String ids);
 
     @GET
     @Path("/news")
-    public List<NewsItem> getNews();
+    List<NewsItem> getNews();
 
     /* MealOfTheDay API */
     @GET
     @Path("/mealoftheday/meta/{id}")
-    public MealOfTheDayMetaItem getMetaMealoftheday(@PathParam("id") int id);
+    MealOfTheDayMetaItem getMetaMealoftheday(@PathParam("id") int id);
 
     @GET
     @Path("/mealoftheday/meta")
-    public List<MealOfTheDayMetaItem> getMetaMealoftheday();
+    List<MealOfTheDayMetaItem> getMetaMealoftheday();
 
     @GET
     @Path("/mealoftheday/{id}")
-    public MealOfTheDayItem getMealoftheday(@PathParam("id") int id);
+    MealOfTheDayItem getMealoftheday(@PathParam("id") int id);
 
     @GET
     @Path("/mealoftheday/any/{ids}")
-    public List<MealOfTheDayItem> getMealoftheday(@PathParam("ids") String ids);
+    List<MealOfTheDayItem> getMealoftheday(@PathParam("ids") String ids);
 
     @GET
     @Path("/mealoftheday")
-    public List<MealOfTheDayItem> getMealoftheday();
+    List<MealOfTheDayItem> getMealoftheday();
 
     /* Food API */
     @GET
     @Path("/food/meta/{id}")
-    public FoodMetaItem getMetaFood(@PathParam("id") int id);
+    FoodMetaItem getMetaFood(@PathParam("id") int id);
 
     @GET
     @Path("/food/meta")
-    public List<FoodMetaItem> getMetaFood();
+    List<FoodMetaItem> getMetaFood();
 
     @GET
     @Path("/food/{id}")
-    public FoodItem getFood(@PathParam("id") int id);
+    FoodItem getFood(@PathParam("id") int id);
 
     @GET
     @Path("/food/any/{ids}")
-    public List<FoodItem> getFood(@PathParam("ids") String ids);
+    List<FoodItem> getFood(@PathParam("ids") String ids);
 
     @GET
     @Path("/food")
-    public List<FoodItem> getFood();
+    List<FoodItem> getFood();
 
     /* DailyMeal API */
     @GET
     @Path("/dailymeal/meta/{id}")
-    public DailyMealMetaItem getMetaDailymeal(@PathParam("id") int id);
+    DailyMealMetaItem getMetaDailymeal(@PathParam("id") int id);
 
     @GET
     @Path("/dailymeal/meta")
-    public List<DailyMealMetaItem> getMetaDailymeal();
+    List<DailyMealMetaItem> getMetaDailymeal();
 
     @GET
     @Path("/dailymeal/{id}")
-    public DailyMealItem getDailymeal(@PathParam("id") int id);
+    DailyMealItem getDailymeal(@PathParam("id") int id);
 
     @GET
     @Path("/dailymeal/any/{ids}")
-    public List<DailyMealItem> getDailymeal(@PathParam("ids") String ids);
+    List<DailyMealItem> getDailymeal(@PathParam("ids") String ids);
 
     @GET
     @Path("/dailymeal")
-    public List<DailyMealItem> getDailymeal();
+    List<DailyMealItem> getDailymeal();
 
     /* Organization API */
     @GET
     @Path("/organization/meta/{id}")
-    public OrganizationMetaItem getMetaOrganization(@PathParam("id") int id);
+    OrganizationMetaItem getMetaOrganization(@PathParam("id") int id);
 
     @GET
     @Path("/organization/meta")
-    public List<OrganizationMetaItem> getMetaOrganization();
+    List<OrganizationMetaItem> getMetaOrganization();
 
     @GET
     @Path("/organization/{id}")
-    public OrganizationItem getOrganization(@PathParam("id") int id);
+    OrganizationItem getOrganization(@PathParam("id") int id);
 
     @GET
     @Path("/organization/any/{ids}")
-    public List<OrganizationItem> getOrganization(@PathParam("ids") String ids);
+    List<OrganizationItem> getOrganization(@PathParam("ids") String ids);
 
     @GET
     @Path("/organization")
-    public List<OrganizationItem> getOrganization();
+    List<OrganizationItem> getOrganization();
 }

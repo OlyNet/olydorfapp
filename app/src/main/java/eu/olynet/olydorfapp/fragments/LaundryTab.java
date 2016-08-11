@@ -33,13 +33,8 @@ public class LaundryTab extends Fragment {
         // Handle click on the floating action button
         FloatingActionButton cameraButton = (FloatingActionButton) v.findViewById(
                 R.id.laundryCameraActionButton);
-        cameraButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivityForResult(new Intent(getActivity(), LaundryQRScannerActivity.class),
-                                       QRScannerRequestCode);
-            }
-        });
+        cameraButton.setOnClickListener(view -> startActivityForResult(new Intent(getActivity(), LaundryQRScannerActivity.class),
+                               QRScannerRequestCode));
 
         return v;
     }

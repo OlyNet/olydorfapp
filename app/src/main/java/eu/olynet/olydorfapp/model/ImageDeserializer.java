@@ -24,6 +24,7 @@ import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
+@SuppressWarnings("unused")
 public class ImageDeserializer extends JsonDeserializer<byte[]> {
 
     private static final Pattern urlPattern = Pattern.compile("http://.+api/(\\w+)/(\\d+)/(\\w+)$");

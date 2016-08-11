@@ -73,11 +73,6 @@ public class MealOfTheDayMetaItem extends AbstractMetaItem<MealOfTheDayMetaItem>
     }
 
     @Override
-    public String toString() {
-        return super.toString();
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;

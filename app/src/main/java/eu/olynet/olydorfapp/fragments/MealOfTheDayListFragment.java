@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,7 @@ import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
+import eu.olynet.olydorfapp.resource.ResourceManager;
 import eu.olynet.olydorfapp.utils.SwipeRefreshLayoutWithEmpty;
 import eu.olynet.olydorfapp.utils.UpdateAction;
 
@@ -49,7 +49,7 @@ public class MealOfTheDayListFragment extends Fragment
         View view = inflater.inflate(R.layout.tab_meal_of_the_day, container, false);
 
         /* initiate MealOfTheDayListTabAdapter */
-        mAdapter = new MealOfTheDayListAdapter(getContext(), new ArrayList<AbstractMetaItem<?>>());
+        mAdapter = new MealOfTheDayListAdapter(getContext(), new ArrayList<>());
 
         /* setup the LayoutManager */
         final LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
@@ -86,11 +86,6 @@ public class MealOfTheDayListFragment extends Fragment
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -118,12 +113,7 @@ public class MealOfTheDayListFragment extends Fragment
 
         /* enable the refreshing animation if and only if it is not already enabled */
         if (!mRefreshLayout.isRefreshing()) {
-            mRefreshLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    mRefreshLayout.setRefreshing(true);
-                }
-            });
+            mRefreshLayout.post(() ->mRefreshLayout.setRefreshing(true));
         }
 
         /* start the AsyncTask that fetches the data */
@@ -189,7 +179,7 @@ public class MealOfTheDayListFragment extends Fragment
 
         @Override
         protected List<AbstractMetaItem<?>> doInBackground(Void... params) {
-            ProductionResourceManager rm = ProductionResourceManager.getInstance();
+            ResourceManager rm = ProductionResourceManager.getInstance();
 
             /* update OrganizationMetaItem tree */
             rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);

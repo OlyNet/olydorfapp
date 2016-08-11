@@ -26,6 +26,7 @@ import java.util.Date;
                 setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties({"food"})
+@SuppressWarnings("unused")
 public class OrganizationItem extends OrganizationMetaItem {
 
     /**

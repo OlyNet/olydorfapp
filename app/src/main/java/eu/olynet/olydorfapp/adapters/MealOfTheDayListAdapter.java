@@ -26,7 +26,6 @@ import java.util.Locale;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.activities.MealOfTheDayViewerActivity;
-import eu.olynet.olydorfapp.activities.NewsViewerActivity;
 import eu.olynet.olydorfapp.fragments.MealOfTheDayViewerFragment;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
@@ -37,8 +36,8 @@ import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 public class MealOfTheDayListAdapter
         extends RecyclerView.Adapter<MealOfTheDayListAdapter.ViewHolder> {
 
-    private List<AbstractMetaItem<?>> items;
-    private Context context;
+    private final List<AbstractMetaItem<?>> items;
+    private final Context context;
 
     private RecyclerView mRecyclerView = null;
     private View mEmptyView = null;
@@ -91,13 +90,10 @@ public class MealOfTheDayListAdapter
 
     public void checkVisibility() {
         if (mEmptyView != null && mRecyclerView != null) {
-            ((Activity) context).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    boolean showEmptyView = getItemCount() == 0;
-                    mEmptyView.setVisibility(showEmptyView ? View.VISIBLE : View.GONE);
-                    mRecyclerView.setVisibility(showEmptyView ? View.GONE : View.VISIBLE);
-                }
+            ((Activity) context).runOnUiThread(() -> {
+                boolean showEmptyView = getItemCount() == 0;
+                mEmptyView.setVisibility(showEmptyView ? View.VISIBLE : View.GONE);
+                mRecyclerView.setVisibility(showEmptyView ? View.GONE : View.VISIBLE);
             });
         }
     }
@@ -198,30 +194,20 @@ public class MealOfTheDayListAdapter
 
         protected MealOfTheDayItem item;
 
-        protected View view;
-        protected TextView vHeadline;
-        protected ImageView vImage;
-        protected TextView vName;
-        protected TextView vPrice;
-        protected TextView vCook;
+        protected final TextView vHeadline;
+        protected final ImageView vImage;
+        protected final TextView vName;
+        protected final TextView vPrice;
+        protected final TextView vCook;
 
         public ViewHolder(View view) {
             super(view);
-            this.view = view;
 
-            view.setOnClickListener(new View.OnClickListener() {
-                /**
-                 * Called when a view has been clicked.
-                 *
-                 * @param v The view that was clicked.
-                 */
-                @Override
-                public void onClick(View v) {
-                    Intent newsViewerIntent = new Intent(context, MealOfTheDayViewerActivity.class);
-                    newsViewerIntent.setAction(Intent.ACTION_VIEW);
-                    newsViewerIntent.putExtra(MealOfTheDayViewerFragment.ITEM_KEY, item);
-                    context.startActivity(newsViewerIntent);
-                }
+            view.setOnClickListener(v -> {
+                Intent newsViewerIntent = new Intent(context, MealOfTheDayViewerActivity.class);
+                newsViewerIntent.setAction(Intent.ACTION_VIEW);
+                newsViewerIntent.putExtra(MealOfTheDayViewerFragment.ITEM_KEY, item);
+                context.startActivity(newsViewerIntent);
             });
 
             vHeadline = (TextView) view.findViewById(R.id.meal_of_the_day_headline);

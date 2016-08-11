@@ -34,7 +34,7 @@ import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapter.ViewHolder> {
 
     private MealOfTheDayItem mealOfTheDayItem;
-    private Context context;
+    private final Context context;
 
     /**
      * @param context the Context.
@@ -133,28 +133,20 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
 
         protected MealOfTheDayItem item;
 
-        protected TextView vHeadline;
-        protected ImageView vImage;
-        protected TextView vName;
-        protected TextView vPrice;
-        protected TextView vCook;
+        protected final TextView vHeadline;
+        protected final ImageView vImage;
+        protected final TextView vName;
+        protected final TextView vPrice;
+        protected final TextView vCook;
 
         public ViewHolder(View view) {
             super(view);
 
-            view.setOnClickListener(new View.OnClickListener() {
-                /**
-                 * Called when a view has been clicked.
-                 *
-                 * @param v The view that was clicked.
-                 */
-                @Override
-                public void onClick(View v) {
-                    Intent newsViewerIntent = new Intent(context, MealOfTheDayViewerActivity.class);
-                    newsViewerIntent.setAction(Intent.ACTION_VIEW);
-                    newsViewerIntent.putExtra(MealOfTheDayViewerFragment.ITEM_KEY, item);
-                    context.startActivity(newsViewerIntent);
-                }
+            view.setOnClickListener(v -> {
+                Intent newsViewerIntent = new Intent(context, MealOfTheDayViewerActivity.class);
+                newsViewerIntent.setAction(Intent.ACTION_VIEW);
+                newsViewerIntent.putExtra(MealOfTheDayViewerFragment.ITEM_KEY, item);
+                context.startActivity(newsViewerIntent);
             });
 
             vHeadline = (TextView) view.findViewById(R.id.meal_of_the_day_headline);

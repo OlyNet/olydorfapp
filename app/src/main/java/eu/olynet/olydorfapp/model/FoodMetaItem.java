@@ -89,11 +89,6 @@ public class FoodMetaItem extends AbstractMetaItem<FoodMetaItem> {
     }
 
     @Override
-    public String toString() {
-        return super.toString();
-    }
-
-    @Override
     public void updateItem(FoodMetaItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
     }

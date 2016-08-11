@@ -7,12 +7,9 @@ package eu.olynet.olydorfapp.utils;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
 import eu.olynet.olydorfapp.activities.MainActivity;
-import eu.olynet.olydorfapp.model.OrganizationItem;
-import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 
 /**
@@ -20,10 +17,10 @@ import eu.olynet.olydorfapp.resource.ProductionResourceManager;
  */
 public class UpdateTask extends AsyncTask<Void, Void, Void> {
 
-    private Context mCon;
+    private final Context context;
 
     public UpdateTask(Context con) {
-        mCon = con;
+        context = con;
     }
 
     @Override
@@ -39,9 +36,9 @@ public class UpdateTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected void onPostExecute(Void nope) {
         // Give some feedback on the UI.
-        Toast.makeText(mCon, "Invalidated the cache!", Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "Invalidated the cache!", Toast.LENGTH_LONG).show();
 
         // Change the menu back
-        ((MainActivity) mCon).resetUpdating();
+        ((MainActivity) context).resetUpdating();
     }
 }

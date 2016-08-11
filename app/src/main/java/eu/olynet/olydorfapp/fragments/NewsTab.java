@@ -28,6 +28,7 @@ import eu.olynet.olydorfapp.model.NewsMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ItemFilter;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
+import eu.olynet.olydorfapp.resource.ResourceManager;
 import eu.olynet.olydorfapp.utils.SwipeRefreshLayoutWithEmpty;
 
 /**
@@ -60,7 +61,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
         }
 
         /* initiate NewsTabAdapter */
-        mAdapter = new NewsTabAdapter(getContext(), new ArrayList<AbstractMetaItem<?>>());
+        mAdapter = new NewsTabAdapter(getContext(), new ArrayList<>());
 
         /* setup the LayoutManager */
         final LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
@@ -95,11 +96,6 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -127,12 +123,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
 
         /* enable the refreshing animation if and only if it is not already enabled */
         if (!mRefreshLayout.isRefreshing()) {
-            mRefreshLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    mRefreshLayout.setRefreshing(true);
-                }
-            });
+            mRefreshLayout.post(() -> mRefreshLayout.setRefreshing(true));
         }
 
         /* start the AsyncTask that fetches the data */
@@ -202,7 +193,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
 
         @Override
         protected List<AbstractMetaItem<?>> doInBackground(Void... params) {
-            ProductionResourceManager rm = ProductionResourceManager.getInstance();
+            ResourceManager rm = ProductionResourceManager.getInstance();
 
             /* update OrganizationMetaItem tree */
             rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);

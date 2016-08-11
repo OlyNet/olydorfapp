@@ -16,10 +16,12 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import java.io.IOException;
 
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
+import eu.olynet.olydorfapp.resource.ResourceManager;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
+@SuppressWarnings("unused")
 public class DailyMealDeserializer extends JsonDeserializer<DailyMealItem> {
 
     /**
@@ -76,7 +78,7 @@ public class DailyMealDeserializer extends JsonDeserializer<DailyMealItem> {
     @Override
     public DailyMealItem deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException {
-        ProductionResourceManager rm = ProductionResourceManager.getInstance();
+        ResourceManager rm = ProductionResourceManager.getInstance();
 
         JsonNode node = jp.getCodec().readTree(jp);
         int id;
