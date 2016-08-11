@@ -104,7 +104,7 @@ public class MealOfTheDayListFragment extends Fragment
      * @param limit       how many new items to fetch at most.
      * @param forceUpdate whether an update of the cached data should be forced.
      */
-    public void loadData(UpdateAction action, int limit, boolean forceUpdate) {
+    private void loadData(UpdateAction action, int limit, boolean forceUpdate) {
         /* set local refreshing variable */
         refreshing = true;
 
@@ -154,8 +154,7 @@ public class MealOfTheDayListFragment extends Fragment
     /**
      *
      */
-    protected class MealOfTheDayUpdateTask
-            extends AsyncTask<Void, Void, List<AbstractMetaItem<?>>> {
+    class MealOfTheDayUpdateTask extends AsyncTask<Void, Void, List<AbstractMetaItem<?>>> {
 
         private final UpdateAction action;
         private final AbstractMetaItem<?> lastItem;

@@ -185,12 +185,12 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
     // you provide access to all the views for a data item in a view holder
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        protected NewsItem item;
+        NewsItem item;
 
-        protected final TextView vDate;
-        protected final TextView vTitle;
-        protected final TextView vOrganization;
-        protected final ImageView vImage;
+        final TextView vDate;
+        final TextView vTitle;
+        final TextView vOrganization;
+        final ImageView vImage;
 
         public ViewHolder(View view) {
             super(view);

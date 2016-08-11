@@ -114,7 +114,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
      * @param limit       how many new items to fetch at most.
      * @param forceUpdate whether an update of the cached data should be forced.
      */
-    public void loadData(Action action, int limit, boolean forceUpdate) {
+    private void loadData(Action action, int limit, boolean forceUpdate) {
         /* set local refreshing variable */
         refreshing = true;
 
@@ -166,7 +166,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
     /**
      *
      */
-    protected class NewsUpdateTask extends AsyncTask<Void, Void, List<AbstractMetaItem<?>>> {
+    class NewsUpdateTask extends AsyncTask<Void, Void, List<AbstractMetaItem<?>>> {
 
         private final Action action;
         private final AbstractMetaItem<?> lastItem;

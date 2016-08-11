@@ -33,19 +33,19 @@ public abstract class ResourceManager {
      * @see eu.olynet.olydorfapp.resource.OlyNetClient
      * @see eu.olynet.olydorfapp.model.AbstractMetaItemMixIn
      */
-    public static final Map<Class, String> treeCaches;
+    static final Map<Class, String> treeCaches;
 
     /**
      * A static Map mapping the valid Classes to their corresponding locking Objects. Locking on the
      * Classes directly would also be possible, but could lead to problems if they were also used in
      * some other place.
      */
-    public static final Map<Class, Object> lockMap;
+    static final Map<Class, Object> lockMap;
 
     /**
      * All items contained in this Set will be skipped during cleanup operations.
      */
-    public static final Set<Class> skipDuringCleanup;
+    static final Set<Class> skipDuringCleanup;
 
     /* statically fill the Map and the Set */
     static {

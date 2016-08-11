@@ -34,7 +34,7 @@ import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     public static final Category DEFAULT_CATEGORY = Category.HOME;
-    public static final Map<Category, List<Tab>> categoryToTabs;
+    private static final Map<Category, List<Tab>> categoryToTabs;
 
     static {
         Map<Category, List<Tab>> tmpTabNames = new LinkedHashMap<>();

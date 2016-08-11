@@ -192,13 +192,13 @@ public class MealOfTheDayListAdapter
     // you provide access to all the views for a data item in a view holder
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        protected MealOfTheDayItem item;
+        MealOfTheDayItem item;
 
-        protected final TextView vHeadline;
-        protected final ImageView vImage;
-        protected final TextView vName;
-        protected final TextView vPrice;
-        protected final TextView vCook;
+        final TextView vHeadline;
+        final ImageView vImage;
+        final TextView vName;
+        final TextView vPrice;
+        final TextView vCook;
 
         public ViewHolder(View view) {
             super(view);

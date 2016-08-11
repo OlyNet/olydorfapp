@@ -22,7 +22,7 @@ import eu.olynet.olydorfapp.R;
  */
 public class AboutFragment extends Fragment {
 
-    Context context;
+    private Context context;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,8 +45,9 @@ public class AboutFragment extends Fragment {
         aboutAppVersion.setText(res.getString(R.string.about_version_string, version));
 
         TextView aboutHelpUs = (TextView) view.findViewById(R.id.aboutAppHelpUs);
-        aboutHelpUs.setText(Html.fromHtml(res.getString(R.string.about_help_us,
-                                                        "<a href=\"mailto:app@olynet.eu\">app@olynet.eu</a>")));
+        aboutHelpUs.setText(Html.fromHtml(
+                res.getString(R.string.about_help_us,
+                        "<a href=\"mailto:app@olynet.eu\">app@olynet.eu</a>")));
 
         final Button button = (Button) view.findViewById(R.id.aboutLicenseButton);
         button.setOnClickListener(v -> {
