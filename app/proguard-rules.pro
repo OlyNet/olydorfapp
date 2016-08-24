@@ -38,3 +38,6 @@
 -keep public class * extends android.support.v4.view.ActionProvider {
     public <init>(android.content.Context);
 }
+
+# don't complain about missing apis
+-dontwarn java.awt.**,javax.security.**,java.beans.**
