@@ -29,6 +29,7 @@ import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
+import eu.olynet.olydorfapp.resource.ResourceManager;
 
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
@@ -88,12 +89,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
 
         /* enable the refreshing animation if and only if it is not already enabled */
         if (!mRefreshLayout.isRefreshing()) {
-            mRefreshLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    mRefreshLayout.setRefreshing(true);
-                }
-            });
+            mRefreshLayout.post(() -> mRefreshLayout.setRefreshing(true));
         }
 
         /* start the AsyncTask that fetches the data */
@@ -126,7 +122,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
 
         @Override
         protected AbstractMetaItem<?> doInBackground(Void... params) {
-            ProductionResourceManager rm = ProductionResourceManager.getInstance();
+            ResourceManager rm = ProductionResourceManager.getInstance();
 
             /* update OrganizationMetaItem and DailyMealMetaItem trees */
             rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);

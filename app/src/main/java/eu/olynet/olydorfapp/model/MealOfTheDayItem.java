@@ -27,6 +27,7 @@ import java.util.Date;
                 setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties("mealOfTheDayRatings")
+@SuppressWarnings("unused")
 public class MealOfTheDayItem extends MealOfTheDayMetaItem {
 
     /**

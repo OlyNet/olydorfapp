@@ -25,6 +25,7 @@ import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
+import eu.olynet.olydorfapp.resource.ResourceManager;
 import eu.olynet.olydorfapp.utils.SwipeRefreshLayoutWithEmpty;
 import eu.olynet.olydorfapp.utils.UpdateAction;
 
@@ -48,7 +49,7 @@ public class MealOfTheDayListFragment extends Fragment
         View view = inflater.inflate(R.layout.tab_meal_of_the_day, container, false);
 
         /* initiate MealOfTheDayListTabAdapter */
-        mAdapter = new MealOfTheDayListAdapter(getContext(), new ArrayList<AbstractMetaItem<?>>());
+        mAdapter = new MealOfTheDayListAdapter(getContext(), new ArrayList<>());
 
         /* setup the LayoutManager */
         final LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
@@ -85,11 +86,6 @@ public class MealOfTheDayListFragment extends Fragment
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -108,7 +104,7 @@ public class MealOfTheDayListFragment extends Fragment
      * @param limit       how many new items to fetch at most.
      * @param forceUpdate whether an update of the cached data should be forced.
      */
-    public void loadData(UpdateAction action, int limit, boolean forceUpdate) {
+    private void loadData(UpdateAction action, int limit, boolean forceUpdate) {
         /* set local refreshing variable */
         refreshing = true;
 
@@ -117,12 +113,7 @@ public class MealOfTheDayListFragment extends Fragment
 
         /* enable the refreshing animation if and only if it is not already enabled */
         if (!mRefreshLayout.isRefreshing()) {
-            mRefreshLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    mRefreshLayout.setRefreshing(true);
-                }
-            });
+            mRefreshLayout.post(() ->mRefreshLayout.setRefreshing(true));
         }
 
         /* start the AsyncTask that fetches the data */
@@ -163,8 +154,7 @@ public class MealOfTheDayListFragment extends Fragment
     /**
      *
      */
-    protected class MealOfTheDayUpdateTask
-            extends AsyncTask<Void, Void, List<AbstractMetaItem<?>>> {
+    class MealOfTheDayUpdateTask extends AsyncTask<Void, Void, List<AbstractMetaItem<?>>> {
 
         private final UpdateAction action;
         private final AbstractMetaItem<?> lastItem;
@@ -188,7 +178,7 @@ public class MealOfTheDayListFragment extends Fragment
 
         @Override
         protected List<AbstractMetaItem<?>> doInBackground(Void... params) {
-            ProductionResourceManager rm = ProductionResourceManager.getInstance();
+            ResourceManager rm = ProductionResourceManager.getInstance();
 
             /* update OrganizationMetaItem tree */
             rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);

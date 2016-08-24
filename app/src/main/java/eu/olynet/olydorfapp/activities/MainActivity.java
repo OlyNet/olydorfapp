@@ -24,7 +24,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -35,6 +34,7 @@ import eu.olynet.olydorfapp.adapters.ViewPagerAdapter;
 import eu.olynet.olydorfapp.customViews.ScrimInsetsFrameLayout;
 import eu.olynet.olydorfapp.receiver.BootReceiver;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
+import eu.olynet.olydorfapp.resource.ResourceManager;
 import eu.olynet.olydorfapp.sliding.SlidingTabLayout;
 import eu.olynet.olydorfapp.utils.UpdateTask;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         initNavigator();
 
         /* setup ResourceManager */
-        ProductionResourceManager rm = ProductionResourceManager.getInstance();
+        ResourceManager rm = ProductionResourceManager.getInstance();
         if (!rm.isInitialized()) {
             rm.init(getApplicationContext());
         }
@@ -121,12 +121,7 @@ public class MainActivity extends AppCompatActivity {
         tabs.setDistributeEvenly(true); /* fixed tab sizes */
 
         /* setting a custom color for the scroll bar indicator of the tab view */
-        tabs.setCustomTabColorizer(new SlidingTabLayout.TabColorizer() {
-            @Override
-            public int getIndicatorColor(int position) {
-                return ContextCompat.getColor(getApplicationContext(), R.color.OlympiaDarkBlue);
-            }
-        });
+        tabs.setCustomTabColorizer(position -> ContextCompat.getColor(getApplicationContext(), R.color.OlympiaDarkBlue));
 
         /* setting the ViewPager for the SlidingTabsLayout */
         tabs.setViewPager(pager);
@@ -157,45 +152,36 @@ public class MainActivity extends AppCompatActivity {
         mDrawerList.setAdapter(new NavigationDrawerItemsAdapter(this));
 
         /* clickListener setup */
-        mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        selectTabGroup(ViewPagerAdapter.Category.HOME);
-                        break;
-                    case 1:
-                        selectTabGroup(ViewPagerAdapter.Category.BIERSTUBE);
-                        break;
-                    case 2:
-                        selectTabGroup(ViewPagerAdapter.Category.OLYNET);
-                        break;
-                    case 3:
-                        selectTabGroup(ViewPagerAdapter.Category.LAUNDRY);
-                        break;
-                    default:
-                        Log.e("onItemClick", "Unknown position " + position);
-                }
-                mDrawerLayout.closeDrawers();
+        mDrawerList.setOnItemClickListener((parent, view, position, id) -> {
+            switch (position) {
+                case 0:
+                    selectTabGroup(ViewPagerAdapter.Category.HOME);
+                    break;
+                case 1:
+                    selectTabGroup(ViewPagerAdapter.Category.BIERSTUBE);
+                    break;
+                case 2:
+                    selectTabGroup(ViewPagerAdapter.Category.OLYNET);
+                    break;
+                case 3:
+                    selectTabGroup(ViewPagerAdapter.Category.LAUNDRY);
+                    break;
+                default:
+                    Log.e("onItemClick", "Unknown position " + position);
             }
+            mDrawerLayout.closeDrawers();
         });
 
         FrameLayout settingsButton = (FrameLayout) findViewById(R.id.navigation_drawer_settings);
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectTabGroup(ViewPagerAdapter.Category.SETTINGS);
-                mDrawerLayout.closeDrawers();
-            }
+        settingsButton.setOnClickListener(v -> {
+            selectTabGroup(ViewPagerAdapter.Category.SETTINGS);
+            mDrawerLayout.closeDrawers();
         });
 
         FrameLayout aboutButton = (FrameLayout) findViewById(R.id.navigation_drawer_about);
-        aboutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectTabGroup(ViewPagerAdapter.Category.ABOUT);
-                mDrawerLayout.closeDrawers();
-            }
+        aboutButton.setOnClickListener(v -> {
+            selectTabGroup(ViewPagerAdapter.Category.ABOUT);
+            mDrawerLayout.closeDrawers();
         });
 
         /* setup Toggle for the Drawer in the ActionBar */

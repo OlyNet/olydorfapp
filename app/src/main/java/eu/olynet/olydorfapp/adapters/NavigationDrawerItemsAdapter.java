@@ -25,7 +25,7 @@ import eu.olynet.olydorfapp.customViews.TintOnStateImageView;
 public class NavigationDrawerItemsAdapter extends BaseAdapter {
 
     private final LayoutInflater inflater;
-    private List<Pair<Integer, String>> navDrawerItems;
+    private final List<Pair<Integer, String>> navDrawerItems;
 
     public NavigationDrawerItemsAdapter(Context context) {
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

@@ -91,11 +91,11 @@ public class ProductionRestManager extends RestManager {
             /* instantiate the ResteasyClient */
             ResteasyClient client = new ResteasyClientBuilder().providerFactory(
                     new ResteasyProviderFactory().register(JacksonJsonProvider.class))
-                                                               .register(ByteArrayProvider.class)
-                                                               .connectionPoolSize(4)
-                                                               .connectionTTL(5, TimeUnit.MINUTES)
-                                                               .httpEngine(engine)
-                                                               .build();
+                    .register(ByteArrayProvider.class)
+                    .connectionPoolSize(4)
+                    .connectionTTL(5, TimeUnit.MINUTES)
+                    .httpEngine(engine)
+                    .build();
 
             this.onc = client.target(Configuration.SERVER_BASE_URL).proxy(OlyNetClient.class);
 
@@ -129,8 +129,11 @@ public class ProductionRestManager extends RestManager {
     }
 
     @Override
-    public byte[] fetchImage(String type, int id, String field, int retryCount)
-            throws NoConnectionException {
+    public byte[] fetchImage(String type, int id, String field, int retryCount) throws
+            NoConnectionException {
+        /* terminate if we do not have an internet connection */
+        verifyConnectivity();
+
         byte[] image = null;
         for (int i = 1; i <= retryCount; i++) {
             try {
@@ -156,7 +159,7 @@ public class ProductionRestManager extends RestManager {
     @Override
     @SuppressWarnings("unchecked")
     public AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount) throws
-                                                                              NoConnectionException {
+            NoConnectionException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -207,7 +210,7 @@ public class ProductionRestManager extends RestManager {
     @Override
     @SuppressWarnings("unchecked")
     public List<AbstractMetaItem<?>> fetchItems(Class clazz, int retryCount) throws
-                                                                             NoConnectionException {
+            NoConnectionException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -321,7 +324,7 @@ public class ProductionRestManager extends RestManager {
     @Override
     @SuppressWarnings("unchecked")
     public AbstractMetaItem<?> fetchMetaItem(Class clazz, int id, int retryCount) throws
-                                                                                  NoConnectionException {
+            NoConnectionException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -371,7 +374,7 @@ public class ProductionRestManager extends RestManager {
     @Override
     @SuppressWarnings("unchecked")
     public List<AbstractMetaItem<?>> fetchMetaItems(Class clazz, int retryCount) throws
-                                                                                 NoConnectionException {
+            NoConnectionException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 

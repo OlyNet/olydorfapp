@@ -10,6 +10,7 @@ import java.io.IOException;
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
+@SuppressWarnings("unused")
 public class NoConnectionException extends IOException {
 
     public NoConnectionException() {

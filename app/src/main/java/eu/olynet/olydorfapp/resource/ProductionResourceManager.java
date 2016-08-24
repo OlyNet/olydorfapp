@@ -41,10 +41,11 @@ public class ProductionResourceManager extends ResourceManager {
      * The timeout in seconds after each message to the user.
      */
     private static final int TIMEOUT_AFTER_MESSAGE = 15;
+
     /**
      * Singleton instance
      */
-    private static ProductionResourceManager ourInstance = new ProductionResourceManager();
+    private static final ProductionResourceManager ourInstance = new ProductionResourceManager();
     /**
      * The RestManager.
      */
@@ -91,11 +92,7 @@ public class ProductionResourceManager extends ResourceManager {
         }
     }
 
-    /**
-     * Has the ResourceManager been properly initialized?
-     *
-     * @return <b>true</b> if and only if the ResourceManager has been properly initialized.
-     */
+    @Override
     public boolean isInitialized() {
         return this.cache != null && this.rest != null;
     }

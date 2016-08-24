@@ -5,16 +5,16 @@
   -->
 
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-                                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                                    android:id="@+id/mealoftheday_card_view"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_margin="5dp"
-                                    android:clickable="true"
-                                    android:foreground="?android:attr/selectableItemBackground"
-                                    card_view:cardBackgroundColor="@color/CardRegular"
-                                    card_view:cardCornerRadius="4dp"
-                                    card_view:cardElevation="2dp">
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mealoftheday_card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:clickable="true"
+    android:foreground="?android:attr/selectableItemBackground"
+    card_view:cardBackgroundColor="@color/CardRegular"
+    card_view:cardCornerRadius="4dp"
+    card_view:cardElevation="2dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -33,24 +33,24 @@
             android:text="31. Februar 3020"
             android:textColor="#9e9e9e"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <com.makeramen.roundedimageview.RoundedImageView xmlns:rounded_image_view="http://schemas.android.com/apk/res-auto"
-                                                         android:id="@+id/meal_of_the_day_image"
-                                                         android:layout_width="fill_parent"
-                                                         android:layout_height="wrap_content"
-                                                         android:layout_alignParentLeft="true"
-                                                         android:layout_alignParentStart="true"
-                                                         android:layout_below="@+id/meal_of_the_day_headline"
-                                                         android:adjustViewBounds="true"
-                                                         android:contentDescription="Food image"
-                                                         android:maxHeight="150dp"
-                                                         android:scaleType="centerCrop"
-                                                         android:src="@drawable/ic_account_circle_white_64dp"
-                                                         rounded_image_view:riv_corner_radius_bottom_left="0dp"
-                                                         rounded_image_view:riv_corner_radius_bottom_right="0dp"
-                                                         rounded_image_view:riv_corner_radius_top_left="0dp"
-                                                         rounded_image_view:riv_corner_radius_top_right="0dp"/>
+            android:id="@+id/meal_of_the_day_image"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/meal_of_the_day_headline"
+            android:adjustViewBounds="true"
+            android:contentDescription="Food image"
+            android:maxHeight="150dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_account_circle_white_64dp"
+            rounded_image_view:riv_corner_radius_bottom_left="0dp"
+            rounded_image_view:riv_corner_radius_bottom_right="0dp"
+            rounded_image_view:riv_corner_radius_top_left="0dp"
+            rounded_image_view:riv_corner_radius_top_right="0dp" />
 
         <TextView
             android:id="@+id/meal_of_the_day_title"
@@ -63,7 +63,7 @@
             android:adjustViewBounds="true"
             android:text="Gnocci mit Gorgonzolasauce"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -80,7 +80,8 @@
                 android:layout_weight="0.5"
                 android:gravity="left|bottom"
                 android:text="4,40 €"
-                android:textSize="16sp"/>
+                android:textSize="16sp" />
+
             <TextView
                 android:id="@+id/meal_of_the_day_cook"
                 android:layout_width="0dp"
@@ -88,9 +89,10 @@
                 android:layout_gravity="bottom|right"
                 android:layout_weight="0.5"
                 android:gravity="bottom|right"
-                android:text="Wilhelmine"
+                android:paddingLeft="2pt"
                 android:paddingRight="2pt"
-                android:textSize="16sp"/>
+                android:text="Wilhelmine"
+                android:textSize="16sp" />
 
         </LinearLayout>
 

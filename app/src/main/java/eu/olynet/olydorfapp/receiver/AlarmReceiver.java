@@ -16,6 +16,7 @@ import android.util.Log;
 import java.util.Calendar;
 
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
+import eu.olynet.olydorfapp.resource.ResourceManager;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
@@ -45,7 +46,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         wl.acquire();
 
         /* setup ResourceManager */
-        ProductionResourceManager rm = ProductionResourceManager.getInstance();
+        ResourceManager rm = ProductionResourceManager.getInstance();
         if (!rm.isInitialized()) {
             rm.init(context.getApplicationContext());
         }

@@ -33,8 +33,8 @@ import eu.olynet.olydorfapp.model.NewsItem;
  */
 public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHolder> {
 
-    private List<AbstractMetaItem<?>> items;
-    private Context context;
+    private final List<AbstractMetaItem<?>> items;
+    private final Context context;
 
     private RecyclerView mRecyclerView = null;
     private View mEmptyView = null;
@@ -87,13 +87,10 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
 
     public void checkVisibility() {
         if (mEmptyView != null && mRecyclerView != null) {
-            ((Activity) context).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    boolean showEmptyView = getItemCount() == 0;
-                    mEmptyView.setVisibility(showEmptyView ? View.VISIBLE : View.GONE);
-                    mRecyclerView.setVisibility(showEmptyView ? View.GONE : View.VISIBLE);
-                }
+            ((Activity) context).runOnUiThread(() -> {
+                boolean showEmptyView = getItemCount() == 0;
+                mEmptyView.setVisibility(showEmptyView ? View.VISIBLE : View.GONE);
+                mRecyclerView.setVisibility(showEmptyView ? View.GONE : View.VISIBLE);
             });
         }
     }
@@ -188,29 +185,21 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
     // you provide access to all the views for a data item in a view holder
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        protected NewsItem item;
+        NewsItem item;
 
-        protected TextView vDate;
-        protected TextView vTitle;
-        protected TextView vOrganization;
-        protected ImageView vImage;
+        final TextView vDate;
+        final TextView vTitle;
+        final TextView vOrganization;
+        final ImageView vImage;
 
         public ViewHolder(View view) {
             super(view);
 
-            view.setOnClickListener(new View.OnClickListener() {
-                /**
-                 * Called when a view has been clicked.
-                 *
-                 * @param v The view that was clicked.
-                 */
-                @Override
-                public void onClick(View v) {
-                    Intent newsViewerIntent = new Intent(context, NewsViewerActivity.class);
-                    newsViewerIntent.setAction(Intent.ACTION_VIEW);
-                    newsViewerIntent.putExtra(NewsViewerFragment.ITEM_KEY, item);
-                    context.startActivity(newsViewerIntent);
-                }
+            view.setOnClickListener(v -> {
+                Intent newsViewerIntent = new Intent(context, NewsViewerActivity.class);
+                newsViewerIntent.setAction(Intent.ACTION_VIEW);
+                newsViewerIntent.putExtra(NewsViewerFragment.ITEM_KEY, item);
+                context.startActivity(newsViewerIntent);
             });
 
             vOrganization = (TextView) view.findViewById(R.id.newsCardOrganization);

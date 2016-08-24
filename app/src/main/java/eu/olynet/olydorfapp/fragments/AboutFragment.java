@@ -22,7 +22,7 @@ import eu.olynet.olydorfapp.R;
  */
 public class AboutFragment extends Fragment {
 
-    Context context;
+    private Context context;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,21 +45,20 @@ public class AboutFragment extends Fragment {
         aboutAppVersion.setText(res.getString(R.string.about_version_string, version));
 
         TextView aboutHelpUs = (TextView) view.findViewById(R.id.aboutAppHelpUs);
-        aboutHelpUs.setText(Html.fromHtml(res.getString(R.string.about_help_us,
-                                                        "<a href=\"mailto:app@olynet.eu\">app@olynet.eu</a>")));
+        aboutHelpUs.setText(Html.fromHtml(
+                res.getString(R.string.about_help_us,
+                        "<a href=\"mailto:app@olynet.eu\">app@olynet.eu</a>")));
 
         final Button button = (Button) view.findViewById(R.id.aboutLicenseButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                WebView view = (WebView) LayoutInflater.from(context)
-                                                       .inflate(R.layout.dialog_licenses, null);
-                view.loadUrl("file:///android_asset/open_source_licenses.html");
-                new AlertDialog.Builder(context, R.style.PreferenceFixTheme_DayNight_Dialog_Alert)
-                        .setTitle(getString(R.string.about_licenses))
-                        .setView(view)
-                        .setPositiveButton(android.R.string.ok, null)
-                        .show();
-            }
+        button.setOnClickListener(v -> {
+            WebView view1 = (WebView) LayoutInflater.from(context)
+                                                   .inflate(R.layout.dialog_licenses, null);
+            view1.loadUrl("file:///android_asset/open_source_licenses.html");
+            new AlertDialog.Builder(context, R.style.PreferenceFixTheme_DayNight_Dialog_Alert)
+                    .setTitle(getString(R.string.about_licenses))
+                    .setView(view1)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
         });
 
         /* return the View */
