@@ -54,7 +54,7 @@ public class AboutFragment extends Fragment {
             WebView view1 = (WebView) LayoutInflater.from(context)
                                                    .inflate(R.layout.dialog_licenses, null);
             view1.loadUrl("file:///android_asset/open_source_licenses.html");
-            new AlertDialog.Builder(context, R.style.PreferenceFixTheme_DayNight_Dialog_Alert)
+            new AlertDialog.Builder(context, R.style.AlertDialog)
                     .setTitle(getString(R.string.about_licenses))
                     .setView(view1)
                     .setPositiveButton(android.R.string.ok, null)
