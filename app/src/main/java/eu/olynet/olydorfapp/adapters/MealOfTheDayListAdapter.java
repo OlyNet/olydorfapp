@@ -26,7 +26,6 @@ import java.util.Locale;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.activities.MealOfTheDayViewerActivity;
-import eu.olynet.olydorfapp.activities.NewsViewerActivity;
 import eu.olynet.olydorfapp.fragments.MealOfTheDayViewerFragment;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
