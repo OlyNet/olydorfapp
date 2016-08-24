@@ -10,6 +10,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
+    <string name="bullet">&#8226;</string>
+
     <!-- Toolbar titles -->
     <string name="toolbarTitleHome">Home</string>
     <string name="toolbarTitleExplore">Explore</string>
@@ -51,10 +53,47 @@
     <string name="tools_text_account_information_username">Max Mustermann</string>
     <string name="tools_text_account_information_email">max.mustermann@olynet.eu</string>
 
+    <!-- Join Us Fragment -->
+    <string name="join_us_opening">The OlyNet is an association that assists students living in
+        the olympic village when they experience internet or general pc problems. As this can
+        get a bit boring after a while we are always looking for new challenges (have a look at
+        our projects). It is our goal to make life here in the dorms even more enjoyable than it
+        already is. Of course, we all still have to go to university and work and therefor don’t
+        have as much time to work on our ideas as we might like. This is where you come into the
+        picture: do you want to join us? We are always looking for new dedicated members that
+        want to work with us!</string>
+    <string name="join_us_closing">Are you interested? Let us know! Send a mail to
+        joinus@olynet.eu or visit us in one of our consultation hours.</string>
+
+    <string name="join_us_headline_expect">What we expect:</string>
+    <string name="join_us_headline_looking_for">What we are especially looking for:</string>
+    <string name="join_us_headline_offer">What we offer:</string>
+
+    <string name="join_us_expectation1">interest in diverse topics such as technology, management
+        or graphics &amp; design</string>
+    <string name="join_us_expectation2">being able to work independently and in teams</string>
+    <string name="join_us_expectation3">dedication: willingness to invest time and becoming
+        acquainted with completely new topics and concepts</string>
+    <string name="join_us_expectation4">a good portion of humor. ;)</string>
+
+    <string name="join_us_looking_for1">people interested in bookkeeping and/or management</string>
+    <string name="join_us_looking_for2">software developers (iOS, Android, Java, Webdevelopment,
+        Embedded, …) or people who want to collect experience in this field</string>
+    <string name="join_us_looking_for3">anyone else that is interested and motivated.</string>
+
+    <string name="join_us_offer1">gathering experience in an interesting and innovative
+        environment</string>
+    <string name="join_us_offer2">the possibility to be a part of something bigger</string>
+    <string name="join_us_offer3">a team that does things together outside of its work</string>
+    <string name="join_us_offer4">a performance record by us and the IT department of the
+        Studentenwerk Munich</string>
+    <string name="join_us_offer5">extended lease in the dorms of the Studentenwerk.</string>
+
     <!-- About Fragment -->
     <string name="about_version_string">Version %1$s</string>
-    <string name="about_help_us">Want to help improve this App? Let us know at %1$s!</string>
+    <string name="about_help_us">Want to help improve this app? Let us know at %1$s!</string>
     <string name="about_licenses">Open Source Licenses</string>
+
 
     <!-- Typeface names -->
     <string name="typeface_roboto_regular">Roboto-Regular</string>

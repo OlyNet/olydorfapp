@@ -21,6 +21,7 @@ import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.fragments.AboutFragment;
 import eu.olynet.olydorfapp.fragments.BierstubeTab;
 import eu.olynet.olydorfapp.fragments.DummyTab;
+import eu.olynet.olydorfapp.fragments.JoinUsTab;
 import eu.olynet.olydorfapp.fragments.LaundryTab;
 import eu.olynet.olydorfapp.fragments.MealOfTheDayListFragment;
 import eu.olynet.olydorfapp.fragments.NewsTab;
@@ -68,7 +69,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         olynetBundle.putParcelable(NewsTab.ORG_KEY, olynetOrganization);
         olynetNewsTab.setArguments(olynetBundle);
         olynetTabs.add(new Tab(R.string.tabTitleNews, olynetNewsTab));
-        olynetTabs.add(new Tab(R.string.tabTitleJoinUs, new DummyTab()));
+        olynetTabs.add(new Tab(R.string.tabTitleJoinUs, new JoinUsTab()));
         tmpTabNames.put(Category.OLYNET, olynetTabs);
 
         /* category Laundry */
