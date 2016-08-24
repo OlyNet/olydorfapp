@@ -91,7 +91,8 @@
 
     <!-- About Fragment -->
     <string name="about_version_string">Version %1$s</string>
-    <string name="about_help_us">Want to help improve this app? Let us know at %1$s!</string>
+    <string name="about_help_us">Want to help improve this app? Let us know at
+        app@olynet.eu!</string>
     <string name="about_licenses">Open Source Licenses</string>
 
 

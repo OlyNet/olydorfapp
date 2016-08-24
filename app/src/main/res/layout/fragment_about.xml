@@ -55,6 +55,7 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/aboutAppGroup"
         android:layout_marginTop="25dp"
+        android:autoLink="email"
         android:text="@string/about_help_us"
         android:textIsSelectable="false"
         android:textSize="14sp"/>

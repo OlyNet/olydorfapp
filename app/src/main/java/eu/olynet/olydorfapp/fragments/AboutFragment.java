@@ -7,7 +7,6 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,15 +43,10 @@ public class AboutFragment extends Fragment {
         TextView aboutAppVersion = (TextView) view.findViewById(R.id.aboutAppVersion);
         aboutAppVersion.setText(res.getString(R.string.about_version_string, version));
 
-        TextView aboutHelpUs = (TextView) view.findViewById(R.id.aboutAppHelpUs);
-        aboutHelpUs.setText(Html.fromHtml(
-                res.getString(R.string.about_help_us,
-                        "<a href=\"mailto:app@olynet.eu\">app@olynet.eu</a>")));
-
         final Button button = (Button) view.findViewById(R.id.aboutLicenseButton);
         button.setOnClickListener(v -> {
             WebView view1 = (WebView) LayoutInflater.from(context)
-                                                   .inflate(R.layout.dialog_licenses, null);
+                                                    .inflate(R.layout.dialog_licenses, null);
             view1.loadUrl("file:///android_asset/open_source_licenses.html");
             new AlertDialog.Builder(context, R.style.AlertDialog)
                     .setTitle(getString(R.string.about_licenses))
