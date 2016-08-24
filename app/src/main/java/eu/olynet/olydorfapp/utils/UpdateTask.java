@@ -25,12 +25,8 @@ public class UpdateTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... nope) {
-
-        // TODO: implement view refreshing here
-
         ProductionResourceManager.getInstance().invalidateCache();
         return null;
-
     }
 
     @Override
