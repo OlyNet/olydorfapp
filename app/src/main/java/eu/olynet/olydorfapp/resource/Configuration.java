@@ -23,5 +23,5 @@ public final class Configuration {
     /**
      * The base URL of the REST endpoints on the server.
      */
-    protected static final String SERVER_BASE_URL = "https://wstest.olynet.eu/dorfapp-rest/api";
+    protected static final String SERVER_BASE_URL = "https://wstest.olynet.eu/api";
 }
