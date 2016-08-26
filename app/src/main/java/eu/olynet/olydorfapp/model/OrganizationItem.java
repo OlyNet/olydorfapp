@@ -145,6 +145,14 @@ public class OrganizationItem extends OrganizationMetaItem {
         this.shortname = shortname;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public byte[] getLogo() {
         return logo;
     }

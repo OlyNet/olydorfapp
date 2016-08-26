@@ -25,6 +25,7 @@ import eu.olynet.olydorfapp.fragments.JoinUsTab;
 import eu.olynet.olydorfapp.fragments.LaundryTab;
 import eu.olynet.olydorfapp.fragments.MealOfTheDayListFragment;
 import eu.olynet.olydorfapp.fragments.NewsTab;
+import eu.olynet.olydorfapp.fragments.OrganizationTab;
 import eu.olynet.olydorfapp.fragments.SettingsFragment;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
@@ -46,30 +47,47 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         tmpTabNames.put(Category.HOME, homeTabs);
 
         /* category Bierstube */
-        List<Tab> bierstubeTabs = new ArrayList<>();
-        bierstubeTabs.add(new Tab(R.string.tabTitleGeneral, new DummyTab()));
         OrganizationMetaItem bierstubeOrganization =
                 new AbstractMetaItem.DummyFactory<>(OrganizationMetaItem.class).setId(2).build();
+        List<Tab> bierstubeTabs = new ArrayList<>();
+
+        OrganizationTab bierstubeOrgTab = new OrganizationTab();
+        Bundle bierstubeOrgBundle = new Bundle();
+        bierstubeOrgBundle.putParcelable(OrganizationTab.ORG_KEY, bierstubeOrganization);
+        bierstubeOrgTab.setArguments(bierstubeOrgBundle);
+        bierstubeTabs.add(new Tab(R.string.tabTitleGeneral, bierstubeOrgTab));
+
         NewsTab bierstubeNewsTab = new NewsTab();
-        Bundle bierstubeBundle = new Bundle();
-        bierstubeBundle.putParcelable(NewsTab.ORG_KEY, bierstubeOrganization);
-        bierstubeNewsTab.setArguments(bierstubeBundle);
+        Bundle bierstubeNewsBundle = new Bundle();
+        bierstubeNewsBundle.putParcelable(NewsTab.ORG_KEY, bierstubeOrganization);
+        bierstubeNewsTab.setArguments(bierstubeNewsBundle);
         bierstubeTabs.add(new Tab(R.string.tabTitleNews, bierstubeNewsTab));
+
         bierstubeTabs.add(new Tab(R.string.tabTitleMenu, new BierstubeTab()));
+
         bierstubeTabs.add(new Tab(R.string.tabTitleMealOfTheDay, new MealOfTheDayListFragment()));
+
         tmpTabNames.put(Category.BIERSTUBE, bierstubeTabs);
 
         /* category OlyNet */
-        List<Tab> olynetTabs = new ArrayList<>();
-        olynetTabs.add(new Tab(R.string.tabTitleGeneral, new DummyTab()));
         OrganizationMetaItem olynetOrganization =
                 new AbstractMetaItem.DummyFactory<>(OrganizationMetaItem.class).setId(1).build();
+        List<Tab> olynetTabs = new ArrayList<>();
+
+        OrganizationTab olynetOrgTab = new OrganizationTab();
+        Bundle olynetOrgBundle = new Bundle();
+        olynetOrgBundle.putParcelable(OrganizationTab.ORG_KEY, olynetOrganization);
+        olynetOrgTab.setArguments(olynetOrgBundle);
+        olynetTabs.add(new Tab(R.string.tabTitleGeneral, olynetOrgTab));
+
         NewsTab olynetNewsTab = new NewsTab();
-        Bundle olynetBundle = new Bundle();
-        olynetBundle.putParcelable(NewsTab.ORG_KEY, olynetOrganization);
-        olynetNewsTab.setArguments(olynetBundle);
+        Bundle olynetNewsBundle = new Bundle();
+        olynetNewsBundle.putParcelable(NewsTab.ORG_KEY, olynetOrganization);
+        olynetNewsTab.setArguments(olynetNewsBundle);
         olynetTabs.add(new Tab(R.string.tabTitleNews, olynetNewsTab));
+
         olynetTabs.add(new Tab(R.string.tabTitleJoinUs, new JoinUsTab()));
+
         tmpTabNames.put(Category.OLYNET, olynetTabs);
 
         /* category Laundry */

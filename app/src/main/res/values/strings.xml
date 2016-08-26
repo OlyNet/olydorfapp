@@ -53,6 +53,9 @@
     <string name="tools_text_account_information_username">Max Mustermann</string>
     <string name="tools_text_account_information_email">max.mustermann@olynet.eu</string>
 
+    <!--Organization Fragment-->
+    <string name="organization_image">Organization image</string>
+
     <!-- Join Us Fragment -->
     <string name="join_us_opening">The OlyNet is an association that assists students living in
         the olympic village when they experience internet or general pc problems. As this can
