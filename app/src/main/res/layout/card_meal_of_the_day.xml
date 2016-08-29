@@ -23,19 +23,31 @@
 
         <TextView
             android:id="@+id/meal_of_the_day_headline"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center|left"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:adjustViewBounds="true"
-            android:gravity="center"
             android:text="31. Februar 3020"
             android:textColor="#9e9e9e"
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <com.makeramen.roundedimageview.RoundedImageView xmlns:rounded_image_view="http://schemas.android.com/apk/res-auto"
+        <ImageView
+            android:id="@+id/meal_of_the_day_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/meal_of_the_day_headline"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignTop="@+id/meal_of_the_day_headline"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/meat_48dp"/>
+
+        <ImageView
             android:id="@+id/meal_of_the_day_image"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -43,14 +55,9 @@
             android:layout_alignParentStart="true"
             android:layout_below="@+id/meal_of_the_day_headline"
             android:adjustViewBounds="true"
-            android:contentDescription="Food image"
             android:maxHeight="150dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_account_circle_white_64dp"
-            rounded_image_view:riv_corner_radius_bottom_left="0dp"
-            rounded_image_view:riv_corner_radius_bottom_right="0dp"
-            rounded_image_view:riv_corner_radius_top_left="0dp"
-            rounded_image_view:riv_corner_radius_top_right="0dp" />
+            android:src="@drawable/ic_account_circle_white_64dp"/>
 
         <TextView
             android:id="@+id/meal_of_the_day_title"

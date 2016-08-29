@@ -71,6 +71,11 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
                 cal.getDisplayName(Calendar.MONTH, Calendar.LONG,
                         Locale.getDefault()) + ")");
 
+        /* Icon */
+        holder.vIcon.setImageResource(
+                mealOfTheDayItem.getDailyMeal().isVegetarian() ? R.drawable.carrot_48dp
+                                                               : R.drawable.meat_48dp);
+
         /* Name */
         holder.vName.setText(mealOfTheDayItem.getDailyMeal().getName());
 
@@ -125,6 +130,7 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
         MealOfTheDayItem item;
 
         final TextView vHeadline;
+        final ImageView vIcon;
         final ImageView vImage;
         final TextView vName;
         final TextView vPrice;
@@ -141,6 +147,7 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
             });
 
             vHeadline = (TextView) view.findViewById(R.id.meal_of_the_day_headline);
+            vIcon = (ImageView) view.findViewById(R.id.meal_of_the_day_icon);
             vImage = (ImageView) view.findViewById(R.id.meal_of_the_day_image);
             vName = (TextView) view.findViewById(R.id.meal_of_the_day_title);
             vPrice = (TextView) view.findViewById(R.id.meal_of_the_day_price);

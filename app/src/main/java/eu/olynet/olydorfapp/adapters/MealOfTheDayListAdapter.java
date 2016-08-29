@@ -9,14 +9,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -116,6 +112,11 @@ public class MealOfTheDayListAdapter
         DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, Locale.getDefault());
         holder.vHeadline.setText(df.format(mealOfTheDayItem.getDate()));
 
+        /* Icon */
+        holder.vIcon.setImageResource(
+                mealOfTheDayItem.getDailyMeal().isVegetarian() ? R.drawable.carrot_48dp
+                                                               : R.drawable.meat_48dp);
+
         /* Name */
         holder.vName.setText(mealOfTheDayItem.getDailyMeal().getName());
 
@@ -130,11 +131,11 @@ public class MealOfTheDayListAdapter
         byte[] image = mealOfTheDayItem.getImage();
         int screenWidth = UtilsDevice.getScreenWidth(context);
         Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
-        if(bitmap == null) { /* fallback to DailyMeal image  */
+        if (bitmap == null) { /* fallback to DailyMeal image  */
             image = mealOfTheDayItem.getDailyMeal().getImage();
             bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
         }
-        if(bitmap != null) {
+        if (bitmap != null) {
             holder.vImage.setImageBitmap(bitmap);
         } else {
             holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
@@ -183,14 +184,12 @@ public class MealOfTheDayListAdapter
         this.items.addAll(items);
     }
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         MealOfTheDayItem item;
 
         final TextView vHeadline;
+        final ImageView vIcon;
         final ImageView vImage;
         final TextView vName;
         final TextView vPrice;
@@ -207,6 +206,7 @@ public class MealOfTheDayListAdapter
             });
 
             vHeadline = (TextView) view.findViewById(R.id.meal_of_the_day_headline);
+            vIcon = (ImageView) view.findViewById(R.id.meal_of_the_day_icon);
             vImage = (ImageView) view.findViewById(R.id.meal_of_the_day_image);
             vName = (TextView) view.findViewById(R.id.meal_of_the_day_title);
             vPrice = (TextView) view.findViewById(R.id.meal_of_the_day_price);
