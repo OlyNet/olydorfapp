@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
         /* assigning the sliding tab layout view */
         SlidingTabLayout tabs = (SlidingTabLayout) findViewById(R.id.tabs);
-        tabs.setDistributeEvenly(true); /* fixed tab sizes */
+//        tabs.setDistributeEvenly(true); /* fixed tab sizes */
 
         /* setting a custom color for the scroll bar indicator of the tab view */
         tabs.setCustomTabColorizer(position -> ContextCompat.getColor(getApplicationContext(), R.color.OlympiaDarkBlue));
