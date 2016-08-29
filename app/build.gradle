@@ -11,6 +11,11 @@ android {
                 storePassword System.getenv("KEYSTORE_PASSWORD")
                 keyAlias System.getenv("KEY_ALIAS")
                 keyPassword System.getenv("KEY_PASSWORD")
+            } else {
+                storeFile file("/dev/null")
+                storePassword "dummy"
+                keyAlias "dummy"
+                keyPassword "dummy"
             }
         }
     }
@@ -18,13 +23,14 @@ android {
         applicationId "eu.olynet.olydorfapp"
         minSdkVersion 16
         targetSdkVersion 24
+
         /* use either the Jenkins build number as version code or a user specified one */
-        if (System.getenv("BUILD_NUMBER") != null && !System.getenv("BUILD_NUMBER").equals("")) {
+        if (System.getenv("BUILD_NUMBER") != null) {
             versionCode Integer.parseInt(System.getenv("BUILD_NUMBER"))
         } else {
             versionCode 13
         }
-        /* append either the Jenkins build number or 'local' */
+
         versionName "0.9"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -53,15 +59,15 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
-            /* sign only if the correct environment variable is set */
-            if (System.getenv("RELEASE_BUILD").equals("true")) {
-                signingConfig signingConfigs.release
-            }
+            //noinspection GroovyAssignabilityCheck
+            signingConfig signingConfigs.release
 
-            /* append the build number if present */
+            /* append the Jenkins build number if present */
             if (System.getenv("BUILD_NUMBER") != null
                     && !System.getenv("BUILD_NUMBER").equals("")) {
                 versionNameSuffix "." + System.getenv("BUILD_NUMBER")
+            } else {
+                versionNameSuffix "-MANUAL"
             }
         }
         debug {
