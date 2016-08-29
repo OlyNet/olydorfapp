@@ -33,28 +33,28 @@ import eu.olynet.olydorfapp.model.MealOfTheDayItem;
  */
 public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapter.ViewHolder> {
 
+    private static final int DEFAULT_IMAGE = R.drawable.ic_account_circle_white_64dp;
+
     private MealOfTheDayItem mealOfTheDayItem;
     private final Context context;
 
     /**
-     * @param context the Context.
-     * @param mealOfTheDayItem    the DailyMealItem.
+     * @param context          the Context.
+     * @param mealOfTheDayItem the DailyMealItem.
      */
     public DailyMealTabAdapter(Context context, MealOfTheDayItem mealOfTheDayItem) {
         this.context = context;
         this.mealOfTheDayItem = mealOfTheDayItem;
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                                  .inflate(R.layout.card_meal_of_the_day, parent, false);
+                .inflate(R.layout.card_meal_of_the_day, parent, false);
 
         return new ViewHolder(view);
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (position != 0 || mealOfTheDayItem == null) {
@@ -68,8 +68,8 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
         Calendar cal = new GregorianCalendar();
         cal.setTime(mealOfTheDayItem.getDate());
         holder.vHeadline.setText("Fraß des Tages (" + cal.get(Calendar.DAY_OF_MONTH) + ". " +
-                                 cal.getDisplayName(Calendar.MONTH, Calendar.LONG,
-                                                    Locale.getDefault()) + ")");
+                cal.getDisplayName(Calendar.MONTH, Calendar.LONG,
+                        Locale.getDefault()) + ")");
 
         /* Name */
         holder.vName.setText(mealOfTheDayItem.getDailyMeal().getName());
@@ -86,13 +86,10 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
         if (image == null || image.length <= 0) { /* fall back to Meal image */
             image = mealOfTheDayItem.getDailyMeal().getImage();
         }
-        if (image == null || image.length <= 0) { /* fall back to Organization image */
-            image = mealOfTheDayItem.getDailyMeal().getOrganization().getLogo();
-        }
         if (image != null && image.length > 0) { /* finally set the image if one is available */
             Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
             if (imageBitmap == null) {
-                holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+                holder.vImage.setImageResource(DEFAULT_IMAGE);
             } else {
                 DisplayMetrics dm = new DisplayMetrics();
                 WindowManager windowManager = (WindowManager) context.getSystemService(
@@ -101,7 +98,7 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
                 holder.vImage.setImageBitmap(imageBitmap);
             }
         } else {
-            holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            holder.vImage.setImageResource(DEFAULT_IMAGE);
         }
     }
 

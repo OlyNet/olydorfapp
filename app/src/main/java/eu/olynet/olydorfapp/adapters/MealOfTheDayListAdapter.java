@@ -36,6 +36,8 @@ import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 public class MealOfTheDayListAdapter
         extends RecyclerView.Adapter<MealOfTheDayListAdapter.ViewHolder> {
 
+    private static final int DEFAULT_IMAGE = R.drawable.ic_account_circle_white_64dp;
+
     private final List<AbstractMetaItem<?>> items;
     private final Context context;
 
@@ -51,7 +53,6 @@ public class MealOfTheDayListAdapter
         this.items = newsItems;
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -132,7 +133,7 @@ public class MealOfTheDayListAdapter
         if (image != null && image.length > 0) { /* finally set the image if one is available */
             Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
             if (imageBitmap == null) {
-                holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+                holder.vImage.setImageResource(DEFAULT_IMAGE);
             } else {
                 DisplayMetrics dm = new DisplayMetrics();
                 WindowManager windowManager = (WindowManager) context.getSystemService(
@@ -141,7 +142,7 @@ public class MealOfTheDayListAdapter
                 holder.vImage.setImageBitmap(imageBitmap);
             }
         } else {
-            holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            holder.vImage.setImageResource(DEFAULT_IMAGE);
         }
     }
 

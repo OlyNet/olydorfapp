@@ -33,6 +33,8 @@ import eu.olynet.olydorfapp.model.NewsItem;
  */
 public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHolder> {
 
+    private static final int DEFAULT_IMAGE = R.drawable.ic_account_circle_white_64dp;
+
     private final List<AbstractMetaItem<?>> items;
     private final Context context;
 
@@ -48,7 +50,6 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
         this.items = newsItems;
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -120,13 +121,10 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
 
         /* Image */
         byte[] image = newsItem.getImage();
-        if (image == null || image.length <= 0) { /* fall back to Organization image */
-            image = newsItem.getOrganization().getLogo();
-        }
-        if (image != null && image.length > 0) { /* finally set the image if one is available */
+        if (image != null && image.length > 0) { /* set the image if one is available */
             Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
             if (imageBitmap == null) {
-                holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+                holder.vImage.setImageResource(DEFAULT_IMAGE);
             } else {
                 DisplayMetrics dm = new DisplayMetrics();
                 WindowManager windowManager = (WindowManager) context.getSystemService(
@@ -135,7 +133,7 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
                 holder.vImage.setImageBitmap(imageBitmap);
             }
         } else {
-            holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            holder.vImage.setImageResource(DEFAULT_IMAGE);
         }
     }
 
@@ -180,9 +178,6 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
         this.items.addAll(items);
     }
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         NewsItem item;
