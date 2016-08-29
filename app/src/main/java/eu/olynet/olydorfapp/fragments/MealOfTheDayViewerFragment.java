@@ -1,22 +1,20 @@
 package eu.olynet.olydorfapp.fragments;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
+import eu.olynet.olydorfapp.utils.UtilsDevice;
+import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
@@ -75,22 +73,18 @@ public class MealOfTheDayViewerFragment extends Fragment
                                                        : R.drawable.meat_48dp);
 
             /* Image */
-            ImageView mealOfTheDayImage = (ImageView) view.findViewById(
-                    R.id.meal_of_the_day_view_image);
+            ImageView imageView = (ImageView) view.findViewById(R.id.meal_of_the_day_view_image);
             byte[] image = item.getImage();
-            if (image != null && image.length > 0) { /* finally set the image if one is available */
-                Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-                if (imageBitmap == null) {
-                    mealOfTheDayImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
-                } else {
-                    DisplayMetrics dm = new DisplayMetrics();
-                    WindowManager windowManager = (WindowManager) getContext().getSystemService(
-                            Context.WINDOW_SERVICE);
-                    windowManager.getDefaultDisplay().getMetrics(dm);
-                    mealOfTheDayImage.setImageBitmap(imageBitmap);
-                }
+            int screenWidth = UtilsDevice.getScreenWidth(getContext());
+            Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
+            if (bitmap == null) { /* fallback to DailyMeal image */
+                image = item.getDailyMeal().getImage();
+                bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
+            }
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap);
             } else {
-                mealOfTheDayImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+                imageView.setImageResource(R.drawable.ic_account_circle_white_64dp);
             }
         }
 

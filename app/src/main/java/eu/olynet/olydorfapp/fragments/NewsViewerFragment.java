@@ -19,6 +19,8 @@ import java.text.SimpleDateFormat;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.model.NewsItem;
+import eu.olynet.olydorfapp.utils.UtilsDevice;
+import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
@@ -67,24 +69,11 @@ public class NewsViewerFragment extends Fragment implements SwipeRefreshLayout.O
             newsTitle.setText(item.getTitle());
 
             /* Image */
-            ImageView newsImage = (ImageView) view.findViewById(R.id.newsViewImage);
             byte[] image = item.getImage();
-            if (image == null || image.length <= 0) { /* fall back to Organization image */
-                image = item.getOrganization().getLogo();
-            }
-            if (image != null && image.length > 0) { /* finally set the image if one is available */
-                Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-                if (imageBitmap == null) {
-                    newsImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
-                } else {
-                    DisplayMetrics dm = new DisplayMetrics();
-                    WindowManager windowManager = (WindowManager) getContext().getSystemService(
-                            Context.WINDOW_SERVICE);
-                    windowManager.getDefaultDisplay().getMetrics(dm);
-                    newsImage.setImageBitmap(imageBitmap);
-                }
-            } else {
-                newsImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            int screenWidth = UtilsDevice.getScreenWidth(getContext());
+            Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
+            if(bitmap != null) {
+                ((ImageView) view.findViewById(R.id.newsViewImage)).setImageBitmap(bitmap);
             }
 
             /* Content */

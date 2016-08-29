@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
+import eu.olynet.olydorfapp.resource.ItemFilter;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 import eu.olynet.olydorfapp.resource.ResourceManager;
 import eu.olynet.olydorfapp.utils.SwipeRefreshLayoutWithEmpty;
@@ -113,7 +115,7 @@ public class MealOfTheDayListFragment extends Fragment
 
         /* enable the refreshing animation if and only if it is not already enabled */
         if (!mRefreshLayout.isRefreshing()) {
-            mRefreshLayout.post(() ->mRefreshLayout.setRefreshing(true));
+            mRefreshLayout.post(() -> mRefreshLayout.setRefreshing(true));
         }
 
         /* start the AsyncTask that fetches the data */
@@ -146,7 +148,7 @@ public class MealOfTheDayListFragment extends Fragment
         noFurtherResults = count < DEFAULT_COUNT;
 
         /* disable refreshing animation and enable swipe to refresh again */
-        mRefreshLayout.setRefreshing(false);
+        mRefreshLayout.post(() -> mRefreshLayout.setRefreshing(false));
         mRefreshLayout.setEnabled(true);
         refreshing = false;
     }
@@ -187,12 +189,22 @@ public class MealOfTheDayListFragment extends Fragment
             /* the correct Comparator */
             Comparator<AbstractMetaItem<?>> comparator = new AbstractMetaItem.DateAscComparator();
 
-            /* querying the ResourceManager for the needed data and order it correctly */
+            /* filter only relevant items (i.e. today and in the future) */
+            Calendar cal = new GregorianCalendar();
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            ItemFilter filter = abstractMetaItem ->
+                    abstractMetaItem.getDate().compareTo(cal.getTime()) >= 0;
+
+            /* querying the ResourceManager for the needed data */
             TreeSet<AbstractMetaItem<?>> resultTree = rm.getTreeOfMetaItems(
                     MealOfTheDayMetaItem.class,
-                    -1,
+                    this.limit,
                     this.lastItem,
                     comparator,
+                    filter,
                     forceUpdate);
 
             /* null and empty check */
@@ -200,34 +212,10 @@ public class MealOfTheDayListFragment extends Fragment
                 return new ArrayList<>();
             }
 
-            /* filter out the correct meta item (today's or the next available) */
-            Calendar cal = new GregorianCalendar();
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-            MealOfTheDayMetaItem filterItem = new AbstractMetaItem.DummyFactory<>(
-                    MealOfTheDayMetaItem.class).setDate(cal.getTime()).build();
-            MealOfTheDayMetaItem cutoffItem = (MealOfTheDayMetaItem) resultTree.ceiling(filterItem);
-
-            /* null check */
-            if (cutoffItem == null) {
-                return new ArrayList<>();
-            }
-
-            /* get a second tree containing all items equal or greater to the cutoff item */
-            TreeSet<AbstractMetaItem<?>> filteredTree = new TreeSet<>(comparator);
-            filteredTree.addAll(resultTree.tailSet(cutoffItem, true));
-
             /* getting the ids for only the necessary MealOfTheDayItems */
             List<Integer> ids = new ArrayList<>();
-            int n = 1;
-            for (AbstractMetaItem<?> item : filteredTree) {
-                if (n > this.limit) {
-                    break;
-                }
+            for (AbstractMetaItem<?> item : resultTree) {
                 ids.add(item.getId());
-                n++;
             }
 
             /* requesting and returning the result array */

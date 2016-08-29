@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,14 +30,14 @@ import eu.olynet.olydorfapp.activities.MealOfTheDayViewerActivity;
 import eu.olynet.olydorfapp.fragments.MealOfTheDayViewerFragment;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
+import eu.olynet.olydorfapp.utils.UtilsDevice;
+import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */
 public class MealOfTheDayListAdapter
         extends RecyclerView.Adapter<MealOfTheDayListAdapter.ViewHolder> {
-
-    private static final int DEFAULT_IMAGE = R.drawable.ic_account_circle_white_64dp;
 
     private final List<AbstractMetaItem<?>> items;
     private final Context context;
@@ -127,22 +128,16 @@ public class MealOfTheDayListAdapter
 
         /* Image */
         byte[] image = mealOfTheDayItem.getImage();
-        if (image == null || image.length <= 0) { /* fall back to Meal image */
+        int screenWidth = UtilsDevice.getScreenWidth(context);
+        Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
+        if(bitmap == null) { /* fallback to DailyMeal image  */
             image = mealOfTheDayItem.getDailyMeal().getImage();
+            bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
         }
-        if (image != null && image.length > 0) { /* finally set the image if one is available */
-            Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-            if (imageBitmap == null) {
-                holder.vImage.setImageResource(DEFAULT_IMAGE);
-            } else {
-                DisplayMetrics dm = new DisplayMetrics();
-                WindowManager windowManager = (WindowManager) context.getSystemService(
-                        Context.WINDOW_SERVICE);
-                windowManager.getDefaultDisplay().getMetrics(dm);
-                holder.vImage.setImageBitmap(imageBitmap);
-            }
+        if(bitmap != null) {
+            holder.vImage.setImageBitmap(bitmap);
         } else {
-            holder.vImage.setImageResource(DEFAULT_IMAGE);
+            holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
         }
     }
 

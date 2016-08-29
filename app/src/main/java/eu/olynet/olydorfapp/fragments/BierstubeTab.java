@@ -13,12 +13,15 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
@@ -28,6 +31,7 @@ import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
+import eu.olynet.olydorfapp.resource.ItemFilter;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 import eu.olynet.olydorfapp.resource.ResourceManager;
 
@@ -104,7 +108,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
         mAdapter.notifyDataSetChanged();
 
         /* disable refreshing animation and enable swipe to refresh again */
-        mRefreshLayout.setRefreshing(false);
+        mRefreshLayout.post(() -> mRefreshLayout.setRefreshing(false));
         mRefreshLayout.setEnabled(true);
     }
 
@@ -128,12 +132,29 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
             rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);
             rm.getTreeOfMetaItems(DailyMealMetaItem.class, forceUpdate);
 
+            /* the correct Comparator */
+            Comparator<AbstractMetaItem<?>> comparator = new AbstractMetaItem.DateAscComparator();
+
+            /* filter only relevant items (i.e. today and in the future) */
+            Calendar cal = new GregorianCalendar();
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            ItemFilter filter = abstractMetaItem ->
+                    abstractMetaItem.getDate().compareTo(cal.getTime()) >= 0;
+
             /* querying the ResourceManager for the needed data */
             TreeSet<AbstractMetaItem<?>> metaTree = rm.getTreeOfMetaItems(
-                    MealOfTheDayMetaItem.class, 0, null, new AbstractMetaItem.DateAscComparator(),
+                    MealOfTheDayMetaItem.class,
+                    1,
+                    null,
+                    comparator,
+                    filter,
                     forceUpdate);
 
             if (metaTree == null || metaTree.isEmpty()) {
+                Log.w("BierstubeTab", "metaTree is null or empty");
                 return null;
             }
 
@@ -154,7 +175,6 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
                 if (itemDate.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
                     itemDate.get(Calendar.MONTH) == now.get(Calendar.MONTH) &&
                     itemDate.get(Calendar.DAY_OF_MONTH) == now.get(Calendar.DAY_OF_MONTH)) {
-                    // FIXME: probably broken due to timezone offset (UTC and MEZ/MESZ)
                     meal = (MealOfTheDayItem) rm.getItem(MealOfTheDayMetaItem.class,
                                                          metaItem.getId());
                 }

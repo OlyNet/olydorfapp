@@ -74,7 +74,7 @@ public class DualCacheManager extends AbstractCacheManager {
         CacheSerializer<TreeSet> treeSerializer = new CacheSerializer<>(TreeSet.class);
         metaTreeCache = new DualCacheBuilder<>("MetaTrees", pInfo.versionCode,
                                                TreeSet.class).useCustomSerializerInRam(
-                5 * 1024 * 1024, treeSerializer)
+                1024 * 1024, treeSerializer)
                                                              .useCustomSerializerInDisk(
                                                                      10 * 1024 * 1024, true,
                                                                      treeSerializer);
@@ -82,13 +82,13 @@ public class DualCacheManager extends AbstractCacheManager {
                 AbstractMetaItem.class);
         itemCache = new DualCacheBuilder<>("Items", pInfo.versionCode,
                                            AbstractMetaItem.class).useCustomSerializerInRam(
-                5 * 1024 * 1024, itemSerializer)
+                500 * 1024, itemSerializer)
                                                                   .useCustomSerializerInDisk(
                                                                           200 * 1024 * 1024, true,
                                                                           itemSerializer);
         cacheStaleCache = new DualCacheBuilder<>("Stale", pInfo.versionCode,
                                                  Map.class).useDefaultSerializerInRam(
-                5 * 1024 * 1024).useDefaultSerializerInDisk(5 * 1024 * 1024, true);
+                50 * 1024).useDefaultSerializerInDisk(5 * 1024 * 1024, true);
         Log.d("ResourceManager.init", "DualCache setup complete.");
 
         /* get the lastUpdateCache from cache */

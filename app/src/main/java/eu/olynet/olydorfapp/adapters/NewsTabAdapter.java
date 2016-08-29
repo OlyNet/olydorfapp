@@ -27,13 +27,13 @@ import eu.olynet.olydorfapp.activities.NewsViewerActivity;
 import eu.olynet.olydorfapp.fragments.NewsViewerFragment;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsItem;
+import eu.olynet.olydorfapp.utils.UtilsDevice;
+import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */
 public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHolder> {
-
-    private static final int DEFAULT_IMAGE = R.drawable.ic_account_circle_white_64dp;
 
     private final List<AbstractMetaItem<?>> items;
     private final Context context;
@@ -121,19 +121,12 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
 
         /* Image */
         byte[] image = newsItem.getImage();
-        if (image != null && image.length > 0) { /* set the image if one is available */
-            Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-            if (imageBitmap == null) {
-                holder.vImage.setImageResource(DEFAULT_IMAGE);
-            } else {
-                DisplayMetrics dm = new DisplayMetrics();
-                WindowManager windowManager = (WindowManager) context.getSystemService(
-                        Context.WINDOW_SERVICE);
-                windowManager.getDefaultDisplay().getMetrics(dm);
-                holder.vImage.setImageBitmap(imageBitmap);
-            }
+        int screenWidth = UtilsDevice.getScreenWidth(context);
+        Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
+        if(bitmap != null) {
+            holder.vImage.setImageBitmap(bitmap);
         } else {
-            holder.vImage.setImageResource(DEFAULT_IMAGE);
+            holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
         }
     }
 

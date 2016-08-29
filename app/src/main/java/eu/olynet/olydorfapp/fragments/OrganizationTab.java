@@ -25,6 +25,8 @@ import eu.olynet.olydorfapp.model.OrganizationItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 import eu.olynet.olydorfapp.resource.ResourceManager;
+import eu.olynet.olydorfapp.utils.UtilsDevice;
+import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
@@ -101,16 +103,13 @@ public class OrganizationTab extends Fragment implements SwipeRefreshLayout.OnRe
 
             /* set the image if one is available */
             byte[] image = item.getLogo();
-            if (image != null && image.length > 0) {
-                Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-                if (imageBitmap != null) {
-                    DisplayMetrics dm = new DisplayMetrics();
-                    WindowManager windowManager = (WindowManager) getContext().getSystemService(
-                            Context.WINDOW_SERVICE);
-                    windowManager.getDefaultDisplay().getMetrics(dm);
-                    imageView.setImageBitmap(imageBitmap);
-                }
+            int screenWidth = UtilsDevice.getScreenWidth(getContext());
+            Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
+            if(bitmap != null) {
+                imageView.setImageBitmap(bitmap);
             }
+
+            /* link to the organization's website in the ImageView's onClickListener */
             imageView.setOnClickListener((view) -> {
                 if (item.getLink() != null) {
                     Intent intent = new Intent();

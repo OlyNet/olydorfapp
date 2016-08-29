@@ -156,7 +156,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
         noFurtherResults = count < DEFAULT_COUNT;
 
         /* disable refreshing animation and enable swipe to refresh again */
-        mRefreshLayout.setRefreshing(false);
+        mRefreshLayout.post(() -> mRefreshLayout.setRefreshing(false));
         mRefreshLayout.setEnabled(true);
         refreshing = false;
     }

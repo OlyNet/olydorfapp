@@ -27,13 +27,13 @@ import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.activities.MealOfTheDayViewerActivity;
 import eu.olynet.olydorfapp.fragments.MealOfTheDayViewerFragment;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
+import eu.olynet.olydorfapp.utils.UtilsDevice;
+import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */
 public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapter.ViewHolder> {
-
-    private static final int DEFAULT_IMAGE = R.drawable.ic_account_circle_white_64dp;
 
     private MealOfTheDayItem mealOfTheDayItem;
     private final Context context;
@@ -67,7 +67,7 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
         /* Headline */
         Calendar cal = new GregorianCalendar();
         cal.setTime(mealOfTheDayItem.getDate());
-        holder.vHeadline.setText("Fraß des Tages (" + cal.get(Calendar.DAY_OF_MONTH) + ". " +
+        holder.vHeadline.setText("Tagesessen (" + cal.get(Calendar.DAY_OF_MONTH) + ". " +
                 cal.getDisplayName(Calendar.MONTH, Calendar.LONG,
                         Locale.getDefault()) + ")");
 
@@ -83,22 +83,16 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
 
         /* Image */
         byte[] image = mealOfTheDayItem.getImage();
-        if (image == null || image.length <= 0) { /* fall back to Meal image */
+        int screenWidth = UtilsDevice.getScreenWidth(context);
+        Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
+        if(bitmap == null) { /* fallback to DailyMeal image */
             image = mealOfTheDayItem.getDailyMeal().getImage();
+            bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
         }
-        if (image != null && image.length > 0) { /* finally set the image if one is available */
-            Bitmap imageBitmap = BitmapFactory.decodeByteArray(image, 0, image.length);
-            if (imageBitmap == null) {
-                holder.vImage.setImageResource(DEFAULT_IMAGE);
-            } else {
-                DisplayMetrics dm = new DisplayMetrics();
-                WindowManager windowManager = (WindowManager) context.getSystemService(
-                        Context.WINDOW_SERVICE);
-                windowManager.getDefaultDisplay().getMetrics(dm);
-                holder.vImage.setImageBitmap(imageBitmap);
-            }
+        if(bitmap != null) {
+            holder.vImage.setImageBitmap(bitmap);
         } else {
-            holder.vImage.setImageResource(DEFAULT_IMAGE);
+            holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
         }
     }
 

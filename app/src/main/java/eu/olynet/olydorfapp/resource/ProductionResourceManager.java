@@ -568,13 +568,13 @@ public class ProductionResourceManager extends ResourceManager {
             if (limit > 0 && n >= limit) {
                 break;
             }
-            n++;
 
             /* apply filter and add only if it matches */
             if (filter.test(item)) {
                 result.add(item);
+                n++;
             } else {
-                Log.v("ResourceManager", "Dropped due to filter mismatch:" + item);
+                Log.d("ResourceManager", "Dropped due to filter mismatch:" + item);
             }
         }
 
