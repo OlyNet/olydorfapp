@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import eu.olynet.olydorfapp.R;
 
-
+@SuppressWarnings("unused")
 public class SlidingTabLayout extends HorizontalScrollView {
 
     private static final int TITLE_OFFSET_DIPS = 24;
@@ -58,7 +58,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
     /**
      * Set the custom {@link TabColorizer} to be used.
-     * <p/>
+     * <p>
      * If you only require simple custmisation then you can use
      * {@link #setSelectedIndicatorColors(int...)} to achieve
      * similar effects.
@@ -111,7 +111,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
         mViewPager = viewPager;
         if (viewPager != null) {
-            viewPager.setOnPageChangeListener(new InternalViewPagerListener());
+            viewPager.addOnPageChangeListener(new InternalViewPagerListener());
             populateTabStrip();
         }
     }
@@ -126,12 +126,12 @@ public class SlidingTabLayout extends HorizontalScrollView {
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TAB_VIEW_TEXT_SIZE_SP);
         textView.setTypeface(Typeface.DEFAULT_BOLD);
         textView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                                               ViewGroup.LayoutParams
-                                                                       .WRAP_CONTENT));
+                ViewGroup.LayoutParams
+                        .WRAP_CONTENT));
 
         TypedValue outValue = new TypedValue();
         getContext().getTheme()
-                    .resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+                .resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
         textView.setBackgroundResource(outValue.resourceId);
         textView.setAllCaps(true);
 
@@ -152,7 +152,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
             if (mTabViewLayoutId != 0) {
                 // If there is a custom tab view layout id set, try and inflate it
                 tabView = LayoutInflater.from(getContext())
-                                        .inflate(mTabViewLayoutId, mTabStrip, false);
+                        .inflate(mTabViewLayoutId, mTabStrip, false);
                 tabTitleView = (TextView) tabView.findViewById(mTabViewTextViewId);
             }
 
@@ -244,12 +244,12 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
             View selectedTitle = mTabStrip.getChildAt(position);
             int extraOffset = (selectedTitle != null) ? (int) (positionOffset *
-                                                               selectedTitle.getWidth()) : 0;
+                    selectedTitle.getWidth()) : 0;
             scrollToTab(position, extraOffset);
 
             if (mViewPagerPageChangeListener != null) {
                 mViewPagerPageChangeListener.onPageScrolled(position, positionOffset,
-                                                            positionOffsetPixels);
+                        positionOffsetPixels);
             }
         }
 
