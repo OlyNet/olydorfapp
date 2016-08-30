@@ -8,13 +8,10 @@ package eu.olynet.olydorfapp.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,6 +23,7 @@ import java.util.Locale;
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.activities.MealOfTheDayViewerActivity;
 import eu.olynet.olydorfapp.fragments.MealOfTheDayViewerFragment;
+import eu.olynet.olydorfapp.model.DailyMealItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
@@ -36,15 +34,18 @@ import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapter.ViewHolder> {
 
     private MealOfTheDayItem mealOfTheDayItem;
+    private DailyMealItem dailyMealItem;
     private final Context context;
 
     /**
      * @param context          the Context.
      * @param mealOfTheDayItem the DailyMealItem.
      */
-    public DailyMealTabAdapter(Context context, MealOfTheDayItem mealOfTheDayItem) {
+    public DailyMealTabAdapter(Context context, MealOfTheDayItem mealOfTheDayItem,
+                               DailyMealItem dailyMealItem) {
         this.context = context;
         this.mealOfTheDayItem = mealOfTheDayItem;
+        this.dailyMealItem = dailyMealItem;
     }
 
     @Override
@@ -57,12 +58,13 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (position != 0 || mealOfTheDayItem == null) {
+        if (position != 0 || mealOfTheDayItem == null || dailyMealItem == null) {
             return;
         }
 
         /* set the correct mealOfTheDayItem in the ViewHolder for the OnClickListener */
-        holder.item = mealOfTheDayItem;
+        holder.mealOfTheDayItem = mealOfTheDayItem;
+        holder.dailyMealItem = dailyMealItem;
 
         /* Headline */
         Calendar cal = new GregorianCalendar();
@@ -73,11 +75,11 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
 
         /* Icon */
         holder.vIcon.setImageResource(
-                mealOfTheDayItem.getDailyMeal().isVegetarian() ? R.drawable.carrot_48dp
-                                                               : R.drawable.meat_48dp);
+                dailyMealItem.isVegetarian() ? R.drawable.carrot_48dp
+                        : R.drawable.meat_48dp);
 
         /* Name */
-        holder.vName.setText(mealOfTheDayItem.getDailyMeal().getName());
+        holder.vName.setText(dailyMealItem.getName());
 
         /* Cook */
         holder.vCook.setText(mealOfTheDayItem.getCook());
@@ -90,11 +92,11 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
         byte[] image = mealOfTheDayItem.getImage();
         int screenWidth = UtilsDevice.getScreenWidth(context);
         Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
-        if(bitmap == null) { /* fallback to DailyMeal image */
-            image = mealOfTheDayItem.getDailyMeal().getImage();
+        if (bitmap == null) { /* fallback to DailyMeal image */
+            image = dailyMealItem.getImage();
             bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
         }
-        if(bitmap != null) {
+        if (bitmap != null) {
             holder.vImage.setImageBitmap(bitmap);
         } else {
             holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
@@ -119,15 +121,17 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
     }
 
     /**
-     * @param item the new MealOfTheDayItem.
+     * @param mealOfTheDayItem the new MealOfTheDayItem.
      */
-    public void setItem(MealOfTheDayItem item) {
-        this.mealOfTheDayItem = item;
+    public void setItem(MealOfTheDayItem mealOfTheDayItem, DailyMealItem dailyMealItem) {
+        this.mealOfTheDayItem = mealOfTheDayItem;
+        this.dailyMealItem = dailyMealItem;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        MealOfTheDayItem item;
+        MealOfTheDayItem mealOfTheDayItem;
+        DailyMealItem dailyMealItem;
 
         final TextView vHeadline;
         final ImageView vIcon;
@@ -142,7 +146,9 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
             view.setOnClickListener(v -> {
                 Intent newsViewerIntent = new Intent(context, MealOfTheDayViewerActivity.class);
                 newsViewerIntent.setAction(Intent.ACTION_VIEW);
-                newsViewerIntent.putExtra(MealOfTheDayViewerFragment.ITEM_KEY, item);
+                newsViewerIntent.putExtra(MealOfTheDayViewerFragment.MEAL_OF_THE_DAY_ITEM_KEY,
+                        mealOfTheDayItem);
+                newsViewerIntent.putExtra(MealOfTheDayViewerFragment.DAILY_MEAL_KEY, dailyMealItem);
                 context.startActivity(newsViewerIntent);
             });
 

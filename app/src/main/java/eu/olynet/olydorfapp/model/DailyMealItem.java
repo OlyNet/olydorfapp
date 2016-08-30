@@ -99,11 +99,9 @@ public class DailyMealItem extends DailyMealMetaItem {
     }
 
     public DailyMealItem(int id, Date createDate, Date editDate, String createUser, String editUser,
-                         Date date, String link, OrganizationItem organization, Date lastUsedDate,
-                         String name, String englishName, boolean vegetarian, float price,
-                         byte[] image) {
-        super(id, createDate, editDate, createUser, editUser, date, link, organization,
-              lastUsedDate);
+                         Date date, String link, Date lastUsedDate, String name, String englishName,
+                         boolean vegetarian, float price, byte[] image) {
+        super(id, createDate, editDate, createUser, editUser, date, link, -1, lastUsedDate);
         this.name = name;
         this.englishName = englishName;
         this.vegetarian = vegetarian;

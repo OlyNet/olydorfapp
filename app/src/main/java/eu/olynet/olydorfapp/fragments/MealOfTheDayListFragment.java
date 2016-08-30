@@ -16,13 +16,19 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.MealOfTheDayListAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.DailyMealItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
+import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ItemFilter;
@@ -51,7 +57,7 @@ public class MealOfTheDayListFragment extends Fragment
         View view = inflater.inflate(R.layout.tab_meal_of_the_day, container, false);
 
         /* initiate MealOfTheDayListTabAdapter */
-        mAdapter = new MealOfTheDayListAdapter(getContext(), new ArrayList<>());
+        mAdapter = new MealOfTheDayListAdapter(getContext(), new ArrayList<>(), new TreeMap<>());
 
         /* setup the LayoutManager */
         final LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
@@ -68,8 +74,8 @@ public class MealOfTheDayListFragment extends Fragment
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 /* check for scroll down, second-to-last item visible and not already refreshing */
                 if (!noFurtherResults && dy > 0 && !mRefreshLayout.isRefreshing() && !refreshing &&
-                    mLayoutManager.findLastCompletelyVisibleItemPosition() ==
-                    mAdapter.getItemCount() - 2) {
+                        mLayoutManager.findLastCompletelyVisibleItemPosition() ==
+                                mAdapter.getItemCount() - 2) {
                     loadData(UpdateAction.ADD, DEFAULT_COUNT, false);
                 }
             }
@@ -156,7 +162,7 @@ public class MealOfTheDayListFragment extends Fragment
     /**
      *
      */
-    class MealOfTheDayUpdateTask extends AsyncTask<Void, Void, List<AbstractMetaItem<?>>> {
+    class MealOfTheDayUpdateTask extends AsyncTask<Void, Void, ResultStructure> {
 
         private final UpdateAction action;
         private final AbstractMetaItem<?> lastItem;
@@ -179,7 +185,7 @@ public class MealOfTheDayListFragment extends Fragment
         }
 
         @Override
-        protected List<AbstractMetaItem<?>> doInBackground(Void... params) {
+        protected ResultStructure doInBackground(Void... params) {
             ResourceManager rm = ProductionResourceManager.getInstance();
 
             /* update OrganizationMetaItem tree */
@@ -209,7 +215,7 @@ public class MealOfTheDayListFragment extends Fragment
 
             /* null and empty check */
             if (resultTree == null || resultTree.isEmpty()) {
-                return new ArrayList<>();
+                return new ResultStructure();
             }
 
             /* getting the ids for only the necessary MealOfTheDayItems */
@@ -218,12 +224,40 @@ public class MealOfTheDayListFragment extends Fragment
                 ids.add(item.getId());
             }
 
-            /* requesting and returning the result array */
-            return rm.getItems(MealOfTheDayMetaItem.class, ids, comparator);
+            /* requesting the necessary MealOfTheDayItems */
+            List<AbstractMetaItem<?>> mealOfTheDayItems = rm.getItems(MealOfTheDayMetaItem.class,
+                    ids, comparator);
+
+            /* get the necessary DailyMealItems */
+            Set<Integer> dailyMealIds = new HashSet<>();
+            for(AbstractMetaItem<?> item : mealOfTheDayItems) {
+                MealOfTheDayItem mealOfTheDayItem = (MealOfTheDayItem) item;
+                if (mealOfTheDayItem.getDailyMeal() != -1) {
+                    dailyMealIds.add(mealOfTheDayItem.getDailyMeal());
+                }
+            }
+            rm.getTreeOfMetaItems(DailyMealMetaItem.class, forceUpdate);
+            List<AbstractMetaItem<?>> dailyMealItems = rm.getItems(DailyMealMetaItem.class,
+                    dailyMealIds, null);
+
+            /* sanity check */
+            if (dailyMealItems == null || dailyMealItems.isEmpty()) {
+                Log.w("MotDListFrag", "empty or null daily meal list");
+                return new ResultStructure();
+            }
+
+            /* build the mapping */
+            Map<Integer, DailyMealItem> dailyMealMap = new TreeMap<>();
+            for (AbstractMetaItem<?> dailyMealItem : dailyMealItems) {
+                dailyMealMap.put(dailyMealItem.getId(), (DailyMealItem) dailyMealItem);
+            }
+
+            /* return the combined result */
+            return new ResultStructure(mealOfTheDayItems, dailyMealMap);
         }
 
         @Override
-        protected void onPostExecute(List<AbstractMetaItem<?>> result) {
+        protected void onPostExecute(ResultStructure result) {
             super.onPostExecute(result);
 
             /* get the old number of items (which is equivalent to the first new item) */
@@ -231,14 +265,36 @@ public class MealOfTheDayListFragment extends Fragment
 
             switch (this.action) {
                 case ADD:
-                    mAdapter.addAbstractMetaItems(result);
+                    mAdapter.addAbstractMetaItems(result.mealOfTheDayItems, result.dailyMealMap);
                     break;
                 default:
-                    mAdapter.replaceAbstractMetaItems(result);
+                    mAdapter.replaceAbstractMetaItems(result.mealOfTheDayItems,
+                            result.dailyMealMap);
             }
 
             /* perform the post-load actions */
-            onLoadCompleted(this.action, position, result.size());
+            onLoadCompleted(this.action, position, result.mealOfTheDayItems.size());
         }
+    }
+
+    private class ResultStructure {
+
+        private final List<AbstractMetaItem<?>> mealOfTheDayItems;
+        private final Map<Integer, DailyMealItem> dailyMealMap;
+
+        /**
+         * Empty result.
+         */
+        private ResultStructure() {
+            this.mealOfTheDayItems = new ArrayList<>();
+            this.dailyMealMap = new TreeMap<>();
+        }
+
+        private ResultStructure(List<AbstractMetaItem<?>> mealOfTheDayItems,
+                                Map<Integer, DailyMealItem> dailyMealMap) {
+            this.mealOfTheDayItems = mealOfTheDayItems;
+            this.dailyMealMap = dailyMealMap;
+        }
+
     }
 }

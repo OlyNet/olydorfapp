@@ -87,8 +87,8 @@ public class NewsItem extends NewsMetaItem {
     }
 
     public NewsItem(int id, Date createDate, Date editDate, String createUser, String editUser,
-                    Date date, String link, Date lastUsedDate, OrganizationItem organization,
-                    String title, String text, byte[] image) {
+                    Date date, String link, Date lastUsedDate, int organization, String title,
+                    String text, byte[] image) {
         super(id, createDate, editDate, createUser, editUser, date, link, organization,
               lastUsedDate);
         this.title = title;

@@ -51,7 +51,7 @@ public class OrganizationItem extends OrganizationMetaItem {
     @JsonProperty("description") protected String description;
 
     @JsonDeserialize(using = ImageDeserializer.class)
-    @JsonProperty("logo") protected byte[] logo;
+    @JsonProperty("logo") protected byte[] image;
 
     /**
      * Constructor for creating OrganizationItem from Parcels.
@@ -67,10 +67,10 @@ public class OrganizationItem extends OrganizationMetaItem {
         int imageLength = in.readInt();
         if (imageLength < 0) {
             in.readByteArray(new byte[0]);
-            this.logo = null;
+            this.image = null;
         } else {
-            this.logo = new byte[imageLength];
-            in.readByteArray(this.logo);
+            this.image = new byte[imageLength];
+            in.readByteArray(this.image);
         }
     }
 
@@ -91,19 +91,17 @@ public class OrganizationItem extends OrganizationMetaItem {
         this.name = item.name;
         this.shortname = item.shortname;
         this.description = item.description;
-        this.logo = item.logo;
+        this.image = item.image;
     }
 
     public OrganizationItem(int id, Date createDate, Date editDate, String createUser,
-                            String editUser, Date date, String link, OrganizationItem organization,
-                            Date lastUsedDate, String name, String shortname, String description,
-                            byte[] logo) {
-        super(id, createDate, editDate, createUser, editUser, date, link, organization,
-              lastUsedDate);
+                            String editUser, Date date, String link, Date lastUsedDate, String name,
+                            String shortname, String description, byte[] image) {
+        super(id, createDate, editDate, createUser, editUser, date, link, -1, lastUsedDate);
         this.name = name;
         this.shortname = shortname;
         this.description = description;
-        this.logo = logo;
+        this.image = image;
     }
 
     /**
@@ -120,12 +118,12 @@ public class OrganizationItem extends OrganizationMetaItem {
         dest.writeString(shortname);
         dest.writeString(description);
 
-        int imageLength = (logo != null ? logo.length : -1);
+        int imageLength = (image != null ? image.length : -1);
         dest.writeInt(imageLength);
         if (imageLength <= 0) {
             dest.writeByteArray(new byte[0]);
         } else {
-            dest.writeByteArray(logo);
+            dest.writeByteArray(image);
         }
     }
 
@@ -153,12 +151,12 @@ public class OrganizationItem extends OrganizationMetaItem {
         this.description = description;
     }
 
-    public byte[] getLogo() {
-        return logo;
+    public byte[] getImage() {
+        return image;
     }
 
-    public void setLogo(byte[] logo) {
-        this.logo = logo;
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 
     public void updateItem(OrganizationItem updatedItem) throws ItemMismatchException {
@@ -166,7 +164,7 @@ public class OrganizationItem extends OrganizationMetaItem {
         this.name = updatedItem.name;
         this.shortname = updatedItem.shortname;
         this.description = updatedItem.description;
-        this.logo = updatedItem.logo;
+        this.image = updatedItem.image;
     }
 
     @Override
@@ -175,7 +173,7 @@ public class OrganizationItem extends OrganizationMetaItem {
                 this.name.equals(((OrganizationItem) another).name) &&
                 this.shortname.equals(((OrganizationItem) another).shortname) &&
                 this.description.equals(((OrganizationItem) another).description) &&
-                Arrays.equals(this.logo, ((OrganizationItem) another).logo));
+                Arrays.equals(this.image, ((OrganizationItem) another).image));
     }
 
     @Override
@@ -184,7 +182,7 @@ public class OrganizationItem extends OrganizationMetaItem {
         result += "name = " + this.name + "\n";
         result += "shortname = " + this.shortname + "\n";
         result += "description = " + this.description + "\n";
-        result += "image = " + ((logo != null) ? logo.length : 0) + " Byte";
+        result += "image = " + ((image != null) ? image.length : 0) + " Byte";
 
         return result;
     }

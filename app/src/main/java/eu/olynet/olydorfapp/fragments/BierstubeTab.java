@@ -27,10 +27,10 @@ import java.util.TreeSet;
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.DailyMealTabAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.DailyMealItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
-import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ItemFilter;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 import eu.olynet.olydorfapp.resource.ResourceManager;
@@ -49,12 +49,12 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
         View view = inflater.inflate(R.layout.tab_bierstube, container, false);
 
         /* initiate NewsTabAdapter */
-        mAdapter = new DailyMealTabAdapter(getContext(), null);
+        mAdapter = new DailyMealTabAdapter(getContext(), null, null);
 
         /* setup the LayoutManager */
         final GridLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 1,
-                                                                       GridLayoutManager.VERTICAL,
-                                                                       false);
+                GridLayoutManager.VERTICAL,
+                false);
 
         /* initiate RecycleView */
         RecyclerView mRecyclerView = (RecyclerView) view.findViewById(
@@ -115,7 +115,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
     /**
      *
      */
-    protected class BierstubeUpdateTask extends AsyncTask<Void, Void, AbstractMetaItem<?>> {
+    protected class BierstubeUpdateTask extends AsyncTask<Void, Void, ResultStructure> {
 
         private final boolean forceUpdate;
 
@@ -125,12 +125,8 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
         }
 
         @Override
-        protected AbstractMetaItem<?> doInBackground(Void... params) {
+        protected ResultStructure doInBackground(Void... params) {
             ResourceManager rm = ProductionResourceManager.getInstance();
-
-            /* update OrganizationMetaItem and DailyMealMetaItem trees */
-            rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);
-            rm.getTreeOfMetaItems(DailyMealMetaItem.class, forceUpdate);
 
             /* the correct Comparator */
             Comparator<AbstractMetaItem<?>> comparator = new AbstractMetaItem.DateAscComparator();
@@ -153,9 +149,10 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
                     filter,
                     forceUpdate);
 
+            /* sanity check */
             if (metaTree == null || metaTree.isEmpty()) {
                 Log.w("BierstubeTab", "metaTree is null or empty");
-                return null;
+                return new ResultStructure();
             }
 
             /* filter out the correct meta item */
@@ -164,7 +161,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
             MealOfTheDayMetaItem metaItem = (MealOfTheDayMetaItem) metaTree.floor(filterItem);
 
             /* get the correct meal */
-            MealOfTheDayItem meal = null;
+            MealOfTheDayItem mealOfTheDayItem = null;
             if (metaItem != null) {
                 /* verify that this metaItem is indeed for today */
                 Calendar itemDate = Calendar.getInstance();
@@ -173,26 +170,57 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
 
                 /* fetch the full item only if the date matches */
                 if (itemDate.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
-                    itemDate.get(Calendar.MONTH) == now.get(Calendar.MONTH) &&
-                    itemDate.get(Calendar.DAY_OF_MONTH) == now.get(Calendar.DAY_OF_MONTH)) {
-                    meal = (MealOfTheDayItem) rm.getItem(MealOfTheDayMetaItem.class,
-                                                         metaItem.getId());
+                        itemDate.get(Calendar.MONTH) == now.get(Calendar.MONTH) &&
+                        itemDate.get(Calendar.DAY_OF_MONTH) == now.get(Calendar.DAY_OF_MONTH)) {
+                    mealOfTheDayItem = (MealOfTheDayItem) rm.getItem(MealOfTheDayMetaItem.class,
+                            metaItem.getId());
                 }
             }
 
-            /* requesting and returning the result array */
-            return meal;
+            /* sanity check */
+            if (mealOfTheDayItem == null) {
+                return new ResultStructure();
+            }
+
+            /* get the corresponding DailyMealItem */
+            rm.getTreeOfMetaItems(DailyMealMetaItem.class, this.forceUpdate);
+            DailyMealItem dailyMealItem = (DailyMealItem) rm.getItem(DailyMealMetaItem.class,
+                    mealOfTheDayItem.getDailyMeal());
+
+            /* return the combined results */
+            return new ResultStructure(mealOfTheDayItem, dailyMealItem);
         }
 
         @Override
-        protected void onPostExecute(AbstractMetaItem<?> result) {
+        protected void onPostExecute(ResultStructure result) {
             super.onPostExecute(result);
 
             /* update the Adapter */
-            mAdapter.setItem((MealOfTheDayItem) result);
+            mAdapter.setItem(result.mealOfTheDayItem, result.dailyMealItem);
 
             /* perform the post-load actions */
             onLoadCompleted();
         }
+    }
+
+    private class ResultStructure {
+
+        MealOfTheDayItem mealOfTheDayItem;
+        DailyMealItem dailyMealItem;
+
+        /**
+         * Empty result.
+         */
+        private ResultStructure() {
+            this.mealOfTheDayItem = null;
+            this.dailyMealItem = null;
+        }
+
+        private ResultStructure(MealOfTheDayItem mealOfTheDayItem,
+                                DailyMealItem dailyMealItem) {
+            this.mealOfTheDayItem = mealOfTheDayItem;
+            this.dailyMealItem = dailyMealItem;
+        }
+
     }
 }

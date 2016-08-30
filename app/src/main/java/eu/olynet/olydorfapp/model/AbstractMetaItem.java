@@ -12,8 +12,6 @@ import android.support.annotation.NonNull;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.lang.reflect.Constructor;
 import java.util.Comparator;
@@ -25,8 +23,8 @@ import java.util.Date;
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu<a>
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY,
-                getterVisibility = JsonAutoDetect.Visibility.NONE,
-                setterVisibility = JsonAutoDetect.Visibility.NONE)
+        getterVisibility = JsonAutoDetect.Visibility.NONE,
+        setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("unused")
 public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
@@ -54,9 +52,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
     protected String link = null;
 
     @JsonProperty("organization")
-    @JsonSerialize(using = OrganizationSerializer.class)
-    @JsonDeserialize(using = OrganizationDeserializer.class)
-    protected OrganizationItem organization = null;
+    protected int organization = -1;
 
     protected Date lastUsedDate = new Date();
 
@@ -100,7 +96,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
 
         this.link = in.readString();
 
-        this.organization = in.readParcelable(OrganizationItem.class.getClassLoader());
+        this.organization = in.readInt();
 
         tmpDate = in.readLong();
         this.lastUsedDate = tmpDate == -1 ? null : new Date(tmpDate); /* long -> Date */
@@ -136,8 +132,8 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
      * @param lastUsedDate the Date this item was last used on.
      */
     protected AbstractMetaItem(int id, Date createDate, Date editDate, String createUser,
-                               String editUser, Date date, String link,
-                               OrganizationItem organization, Date lastUsedDate) {
+                               String editUser, Date date, String link, int organization,
+                               Date lastUsedDate) {
         this.id = id;
         this.createDate = createDate;
         this.editDate = editDate;
@@ -177,7 +173,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
         dest.writeString(editUser);
         dest.writeLong(date == null ? -1 : date.getTime()); /* Date -> long */
         dest.writeString(link);
-        dest.writeParcelable(this.organization, flags);
+        dest.writeInt(this.organization);
         dest.writeLong(lastUsedDate == null ? -1 : lastUsedDate.getTime()); /* Date -> long */
     }
 
@@ -280,16 +276,16 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
     }
 
     /**
-     * @return the Organization this item belongs to. May be <b>null</b>.
+     * @return the id of the organization this item belongs to. Is -1 if not set.
      */
-    public OrganizationItem getOrganization() {
+    public int getOrganization() {
         return organization;
     }
 
     /**
-     * @param organization the Organization this item belongs to. May be <b>null</b>.
+     * @param organization the id of the organization this item belongs to. Is -1 if not set.
      */
-    public void setOrganization(OrganizationItem organization) {
+    public void setOrganization(int organization) {
         this.organization = organization;
     }
 
@@ -316,7 +312,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
 
     /**
      * Updates this AbstractMetaItem with the contents of another one of the same type and same id.
-     * <p/>
+     * <p>
      * <b>IMPORTANT:</b> Every class that inherits from AbstractMetaItem MUST override this function
      * and call the upper class one!
      *
@@ -354,11 +350,12 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
      */
     public boolean exactlyEquals(AbstractMetaItem<?> another) {
         boolean equal = (this.equals(another) && this.id == another.id &&
-                         this.createDate.equals(another.createDate) &&
-                         this.editDate.equals(another.editDate) &&
-                         this.createUser.equals(another.createUser) &&
-                         this.editUser.equals(another.editUser) &&
-                         this.lastUsedDate.equals(another.lastUsedDate));
+                this.createDate.equals(another.createDate) &&
+                this.editDate.equals(another.editDate) &&
+                this.createUser.equals(another.createUser) &&
+                this.editUser.equals(another.editUser) &&
+                this.lastUsedDate.equals(another.lastUsedDate) &&
+                this.organization == another.organization);
 
         if (this.date == null) {
             equal &= another.date == null;
@@ -370,12 +367,6 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
             equal &= another.link == null;
         } else {
             equal &= this.link.equals(another.link);
-        }
-
-        if (this.organization == null) {
-            equal &= another.organization == null;
-        } else {
-            equal &= this.organization.equals(another.organization);
         }
 
         return equal;
@@ -392,7 +383,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
         result += "editUser = " + this.editUser + "\n";
         result += "date = " + this.date + "\n";
         result += "link = " + this.link + "\n";
-        result += "organization = [[" + this.organization + "]]";
+        result += "organization = " + this.organization;
 
         return result;
     }
@@ -471,7 +462,7 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
         private String editUser = null;
         private Date date = null;
         private String link = null;
-        private OrganizationItem organization = null;
+        private int organization = -1;
         private Date lastUsedDate = null;
 
         /**
@@ -494,12 +485,12 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
         public T build() {
             try {
                 Constructor<?> cons = clazz.getConstructor(int.class, Date.class, Date.class,
-                                                           String.class, String.class, Date.class,
-                                                           String.class, OrganizationItem.class,
-                                                           Date.class);
+                        String.class, String.class, Date.class,
+                        String.class, int.class,
+                        Date.class);
                 return clazz.cast(
                         cons.newInstance(id, createDate, editDate, createUser, editUser, date, link,
-                                         organization, lastUsedDate));
+                                organization, lastUsedDate));
             } catch (Exception e) {
                 throw new RuntimeException("dynamic construction failed - " + this.clazz, e);
             }
@@ -569,10 +560,10 @@ public abstract class AbstractMetaItem<T extends AbstractMetaItem<T>>
         }
 
         /**
-         * @param organization the Organization that the dummy item should have.
+         * @param organization the id of the organization that the dummy item should have.
          * @return this factory.
          */
-        public DummyFactory<T> setOrganization(OrganizationItem organization) {
+        public DummyFactory<T> setOrganization(int organization) {
             this.organization = organization;
             return this;
         }

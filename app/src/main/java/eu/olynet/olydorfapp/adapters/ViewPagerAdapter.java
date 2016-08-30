@@ -20,7 +20,6 @@ import java.util.Map;
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.fragments.AboutFragment;
 import eu.olynet.olydorfapp.fragments.BierstubeTab;
-import eu.olynet.olydorfapp.fragments.DummyTab;
 import eu.olynet.olydorfapp.fragments.JoinUsTab;
 import eu.olynet.olydorfapp.fragments.LaundryTab;
 import eu.olynet.olydorfapp.fragments.MealOfTheDayListFragment;
@@ -59,7 +58,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         NewsTab bierstubeNewsTab = new NewsTab();
         Bundle bierstubeNewsBundle = new Bundle();
-        bierstubeNewsBundle.putParcelable(NewsTab.ORG_KEY, bierstubeOrganization);
+        bierstubeNewsBundle.putParcelable(NewsTab.ORGANIZATION_KEY, bierstubeOrganization);
         bierstubeNewsTab.setArguments(bierstubeNewsBundle);
         bierstubeTabs.add(new Tab(R.string.tabTitleNews, bierstubeNewsTab));
 
@@ -82,7 +81,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
         NewsTab olynetNewsTab = new NewsTab();
         Bundle olynetNewsBundle = new Bundle();
-        olynetNewsBundle.putParcelable(NewsTab.ORG_KEY, olynetOrganization);
+        olynetNewsBundle.putParcelable(NewsTab.ORGANIZATION_KEY, olynetOrganization);
         olynetNewsTab.setArguments(olynetNewsBundle);
         olynetTabs.add(new Tab(R.string.tabTitleNews, olynetNewsTab));
 

@@ -102,7 +102,7 @@ public class OrganizationTab extends Fragment implements SwipeRefreshLayout.OnRe
             contentView.setText(Html.fromHtml(description != null ? description : ""));
 
             /* set the image if one is available */
-            byte[] image = item.getLogo();
+            byte[] image = item.getImage();
             int screenWidth = UtilsDevice.getScreenWidth(getContext());
             Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
             if(bitmap != null) {

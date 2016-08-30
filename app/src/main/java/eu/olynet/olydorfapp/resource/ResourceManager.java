@@ -3,6 +3,7 @@ package eu.olynet.olydorfapp.resource;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -158,7 +159,7 @@ public abstract class ResourceManager {
      *                                  tree or the whole tree itself is missing.
      * @throws RuntimeException         if some weird Reflection error occurs.
      */
-    public abstract List<AbstractMetaItem<?>> getItems(Class<?> clazz, List<Integer> ids,
+    public abstract List<AbstractMetaItem<?>> getItems(Class<?> clazz, Collection<Integer> ids,
                                                        Comparator<AbstractMetaItem<?>> comparator);
 
     /**

@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import eu.olynet.olydorfapp.R;
+import eu.olynet.olydorfapp.model.DailyMealItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
@@ -22,10 +23,13 @@ import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 public class MealOfTheDayViewerFragment extends Fragment
         implements SwipeRefreshLayout.OnRefreshListener {
 
-    public static final String ITEM_KEY = "meal_of_the_day_item";
+    public static final String MEAL_OF_THE_DAY_ITEM_KEY = "meal_of_the_day_item";
+    public static final String DAILY_MEAL_KEY = "daily_meal_item";
 
     private SwipeRefreshLayout mRefreshLayout;
-    private MealOfTheDayItem item = null;
+
+    private MealOfTheDayItem mealOfTheDayItem = null;
+    private DailyMealItem dailyMealItem = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,9 +38,10 @@ public class MealOfTheDayViewerFragment extends Fragment
         /* get the MealOfTheDayItem */
         Bundle arguments = getArguments();
         if (arguments != null) {
-            this.item = arguments.getParcelable(ITEM_KEY);
+            this.mealOfTheDayItem = arguments.getParcelable(MEAL_OF_THE_DAY_ITEM_KEY);
+            this.dailyMealItem = arguments.getParcelable(DAILY_MEAL_KEY);
         } else {
-            Log.e("MealOTDFrag", "arguments is null");
+            Log.e("MealOTDFrag", "arguments bundle is null");
         }
     }
 
@@ -53,32 +58,31 @@ public class MealOfTheDayViewerFragment extends Fragment
         mRefreshLayout.setEnabled(false); /* disable for now */
 
         /* set the data */
-        if (item != null) {
+        if (mealOfTheDayItem != null) {
 
             /* Name */
             TextView mealOfTheDayName = (TextView) view.findViewById(
                     R.id.meal_of_the_day_view_name);
-            mealOfTheDayName.setText(item.getDailyMeal().getName());
+            mealOfTheDayName.setText(dailyMealItem.getName());
 
             /* Cook */
             TextView mealOfTheDayCook = (TextView) view.findViewById(
                     R.id.meal_of_the_day_view_cook);
-            mealOfTheDayCook.setText(item.getCook());
+            mealOfTheDayCook.setText(mealOfTheDayItem.getCook());
 
             /* Icon */
             ImageView mealOfTheDayIcon = (ImageView) view.findViewById(
                     R.id.meal_of_the_day_view_icon);
-            mealOfTheDayIcon.setImageResource(
-                    item.getDailyMeal().isVegetarian() ? R.drawable.carrot_48dp
-                                                       : R.drawable.meat_48dp);
+            mealOfTheDayIcon.setImageResource(dailyMealItem.isVegetarian() ? R.drawable.carrot_48dp
+                    : R.drawable.meat_48dp);
 
             /* Image */
             ImageView imageView = (ImageView) view.findViewById(R.id.meal_of_the_day_view_image);
-            byte[] image = item.getImage();
+            byte[] image = mealOfTheDayItem.getImage();
             int screenWidth = UtilsDevice.getScreenWidth(getContext());
             Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
             if (bitmap == null) { /* fallback to DailyMeal image */
-                image = item.getDailyMeal().getImage();
+                image = dailyMealItem.getImage();
                 bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
             }
             if (bitmap != null) {

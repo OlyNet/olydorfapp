@@ -95,7 +95,7 @@ public class FoodItem extends FoodMetaItem {
     }
 
     public FoodItem(int id, Date createDate, Date editDate, String createUser, String editUser,
-                    Date date, String link, OrganizationItem organization, Date lastUsedDate,
+                    Date date, String link, int organization, Date lastUsedDate,
                     String name, String englishname, boolean vegetarian, float price,
                     byte[] image) {
         super(id, createDate, editDate, createUser, editUser, date, link, organization,

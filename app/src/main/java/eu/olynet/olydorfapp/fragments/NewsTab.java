@@ -18,13 +18,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.NewsTabAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
+import eu.olynet.olydorfapp.model.OrganizationItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ItemFilter;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
@@ -36,7 +41,7 @@ import eu.olynet.olydorfapp.utils.SwipeRefreshLayoutWithEmpty;
  */
 public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnRefreshListener {
 
-    public static final String ORG_KEY = "organization_item";
+    public static final String ORGANIZATION_KEY = "organization_item";
     private static final int DEFAULT_COUNT = 10;
 
     private SwipeRefreshLayoutWithEmpty mRefreshLayout;
@@ -55,13 +60,13 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
         /* get the filter OrganizationMetaItem */
         Bundle arguments = getArguments();
         if (arguments != null) {
-            this.filterOrganization = arguments.getParcelable(ORG_KEY);
+            this.filterOrganization = arguments.getParcelable(ORGANIZATION_KEY);
         } else {
-            Log.d("NewsTab", "arguments is null");
+            Log.d("NewsTab", "arguments bundle is null");
         }
 
         /* initiate NewsTabAdapter */
-        mAdapter = new NewsTabAdapter(getContext(), new ArrayList<>());
+        mAdapter = new NewsTabAdapter(getContext(), new ArrayList<>(), new TreeMap<>());
 
         /* setup the LayoutManager */
         final LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
@@ -166,7 +171,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
     /**
      *
      */
-    class NewsUpdateTask extends AsyncTask<Void, Void, List<AbstractMetaItem<?>>> {
+    class NewsUpdateTask extends AsyncTask<Void, Void, ResultStructure> {
 
         private final Action action;
         private final AbstractMetaItem<?> lastItem;
@@ -192,15 +197,12 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
         }
 
         @Override
-        protected List<AbstractMetaItem<?>> doInBackground(Void... params) {
+        protected ResultStructure doInBackground(Void... params) {
             ResourceManager rm = ProductionResourceManager.getInstance();
-
-            /* update OrganizationMetaItem tree */
-            rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);
 
             /* Organization filter */
             ItemFilter filter = abstractMetaItem -> filterOrganization == null ||
-                    abstractMetaItem.getOrganization().equals(this.filterOrganization);
+                    abstractMetaItem.getOrganization() == this.filterOrganization.getId();
 
             /* querying the ResourceManager for the needed data and order it correctly */
             TreeSet<AbstractMetaItem<?>> resultTree = rm.getTreeOfMetaItems(NewsMetaItem.class,
@@ -210,22 +212,48 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
                     filter,
                     forceUpdate);
 
+            /* sanity check */
             if (resultTree == null || resultTree.isEmpty()) {
-                return new ArrayList<>();
+                return new ResultStructure();
             }
 
             /* getting the ids for only the necessary NewsItems */
             List<Integer> ids = new ArrayList<>();
+            Set<Integer> orgIds = new HashSet<>();
             for (AbstractMetaItem<?> item : resultTree) {
                 ids.add(item.getId());
+                if (item.getOrganization() != -1) {
+                    orgIds.add(item.getOrganization());
+                }
             }
 
-            /* requesting and returning the result array */
-            return rm.getItems(NewsMetaItem.class, ids, new AbstractMetaItem.DateDescComparator());
+            /* requesting the NewsItems */
+            List<AbstractMetaItem<?>> newsItems =  rm.getItems(NewsMetaItem.class, ids,
+                    new AbstractMetaItem.DateDescComparator());
+
+            /* get the necessary OrganizationItems */
+            rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);
+            List<AbstractMetaItem<?>> organizationItems = rm.getItems(OrganizationMetaItem.class,
+                    orgIds, null);
+
+            /* sanity check */
+            if (organizationItems == null || organizationItems.isEmpty()) {
+                Log.w("NewsTab", "empty or null organization list");
+                return new ResultStructure();
+            }
+
+            /* build the mapping */
+            Map<Integer, OrganizationItem> organizationMap = new TreeMap<>();
+            for(AbstractMetaItem<?> organizationItem : organizationItems) {
+                organizationMap.put(organizationItem.getId(), (OrganizationItem) organizationItem);
+            }
+
+            /* return the combined result */
+            return new ResultStructure(newsItems, organizationMap);
         }
 
         @Override
-        protected void onPostExecute(List<AbstractMetaItem<?>> result) {
+        protected void onPostExecute(ResultStructure result) {
             super.onPostExecute(result);
 
             /* get the old number of items (which is equivalent to the first new item) */
@@ -233,14 +261,35 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
 
             switch (this.action) {
                 case ADD:
-                    mAdapter.addAbstractMetaItems(result);
+                    mAdapter.addAbstractMetaItems(result.newsItems, result.organizationMap);
                     break;
                 default:
-                    mAdapter.replaceAbstractMetaItems(result);
+                    mAdapter.replaceAbstractMetaItems(result.newsItems, result.organizationMap);
             }
 
             /* perform the post-load actions */
-            onLoadCompleted(this.action, position, result.size());
+            onLoadCompleted(this.action, position, result.newsItems.size());
         }
+    }
+
+    private class ResultStructure {
+
+        private final List<AbstractMetaItem<?>> newsItems;
+        private final Map<Integer, OrganizationItem> organizationMap;
+
+        /**
+         * Empty result.
+         */
+        private ResultStructure() {
+            this.newsItems = new ArrayList<>();
+            this.organizationMap = new TreeMap<>();
+        }
+
+        private ResultStructure(List<AbstractMetaItem<?>> newsItems,
+                                Map<Integer, OrganizationItem> organizationMap) {
+            this.newsItems = newsItems;
+            this.organizationMap = organizationMap;
+        }
+
     }
 }

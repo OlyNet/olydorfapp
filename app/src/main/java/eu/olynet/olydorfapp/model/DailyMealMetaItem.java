@@ -66,7 +66,7 @@ public class DailyMealMetaItem extends AbstractMetaItem<DailyMealMetaItem> {
     }
 
     public DailyMealMetaItem(int id, Date createDate, Date editDate, String createUser,
-                             String editUser, Date date, String link, OrganizationItem organization,
+                             String editUser, Date date, String link, int organization,
                              Date lastUsedDate) {
         super(id, createDate, editDate, createUser, editUser, date, link, organization,
               lastUsedDate);

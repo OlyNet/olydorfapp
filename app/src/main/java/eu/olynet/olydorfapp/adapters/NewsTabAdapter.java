@@ -9,24 +9,23 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.activities.NewsViewerActivity;
 import eu.olynet.olydorfapp.fragments.NewsViewerFragment;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.NewsItem;
+import eu.olynet.olydorfapp.model.OrganizationItem;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
@@ -36,24 +35,29 @@ import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHolder> {
 
     private final List<AbstractMetaItem<?>> items;
+    private final Map<Integer, OrganizationItem> organizationMap;
     private final Context context;
 
     private RecyclerView mRecyclerView = null;
     private View mEmptyView = null;
 
     /**
-     * @param context   the Context.
-     * @param newsItems the List containing the NewsItems.
+     * @param context         the Context.
+     * @param newsItems       the List containing the NewsItems.
+     * @param organizationMap the data structure that maps integers to their corresponding
+     *                        OrganizationItems.
      */
-    public NewsTabAdapter(Context context, List<AbstractMetaItem<?>> newsItems) {
+    public NewsTabAdapter(Context context, List<AbstractMetaItem<?>> newsItems,
+                          Map<Integer, OrganizationItem> organizationMap) {
         this.context = context;
         this.items = newsItems;
+        this.organizationMap = organizationMap;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                                  .inflate(R.layout.card_news, parent, false);
+                .inflate(R.layout.card_news, parent, false);
 
         registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -101,12 +105,18 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
         if (!(items.get(position) instanceof NewsItem)) {
             throw new IllegalArgumentException(
                     "the List of AbstractMetaItem<?>s provided does not" +
-                    " seem to only contain NewsItems");
+                            " seem to only contain NewsItems");
         }
         NewsItem newsItem = (NewsItem) items.get(position);
+        OrganizationItem organizationItem = organizationMap.get(newsItem.getOrganization());
+        if (organizationItem == null) {
+            throw new IllegalArgumentException("OrganizationItem missing for id "
+                    + newsItem.getId());
+        }
 
         /* set the correct item in the ViewHolder for the OnClickListener */
-        holder.item = newsItem;
+        holder.newsItem = newsItem;
+        holder.organizationItem = organizationItem;
 
         /* Date */
         SimpleDateFormat localFormat
@@ -117,13 +127,13 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
         holder.vTitle.setText(newsItem.getTitle());
 
         /* Organization */
-        holder.vOrganization.setText(newsItem.getOrganization().getName());
+        holder.vOrganization.setText(organizationItem.getName());
 
         /* Image */
         byte[] image = newsItem.getImage();
         int screenWidth = UtilsDevice.getScreenWidth(context);
         Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
-        if(bitmap != null) {
+        if (bitmap != null) {
             holder.vImage.setImageBitmap(bitmap);
         } else {
             holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
@@ -154,26 +164,34 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
     /**
      * Adds a List of AbstractMetaItems that <b>must</b> be NewsItems to this Adapter
      *
-     * @param items the List of AbstractMetaItems to add.
+     * @param items           the List of AbstractMetaItems to add.
+     * @param organizationMap the Map containing the new OrganizationItems.
      */
-    public void addAbstractMetaItems(List<AbstractMetaItem<?>> items) {
+    public void addAbstractMetaItems(List<AbstractMetaItem<?>> items,
+                                     Map<Integer, OrganizationItem> organizationMap) {
         this.items.addAll(items);
+        this.organizationMap.putAll(organizationMap);
     }
 
     /**
      * Replaces the internal List of AbstractMetaItems with a new one that <b>must</b> contain only
      * NewsItems.
      *
-     * @param items the new List of AbstractMetaItems to use.
+     * @param items           the new List of AbstractMetaItems to use.
+     * @param organizationMap the Map containing the new OrganizationItems.
      */
-    public void replaceAbstractMetaItems(List<AbstractMetaItem<?>> items) {
+    public void replaceAbstractMetaItems(List<AbstractMetaItem<?>> items,
+                                         Map<Integer, OrganizationItem> organizationMap) {
         this.items.clear();
         this.items.addAll(items);
+        this.organizationMap.clear();
+        this.organizationMap.putAll(organizationMap);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        NewsItem item;
+        NewsItem newsItem;
+        OrganizationItem organizationItem;
 
         final TextView vDate;
         final TextView vTitle;
@@ -186,7 +204,8 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
             view.setOnClickListener(v -> {
                 Intent newsViewerIntent = new Intent(context, NewsViewerActivity.class);
                 newsViewerIntent.setAction(Intent.ACTION_VIEW);
-                newsViewerIntent.putExtra(NewsViewerFragment.ITEM_KEY, item);
+                newsViewerIntent.putExtra(NewsViewerFragment.NEWS_KEY, newsItem);
+                newsViewerIntent.putExtra(NewsViewerFragment.ORGANIZATION_KEY, organizationItem);
                 context.startActivity(newsViewerIntent);
             });
 

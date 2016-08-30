@@ -52,9 +52,7 @@ public class MealOfTheDayItem extends MealOfTheDayMetaItem {
     protected float price;
 
     @JsonProperty("dailyMeal")
-    @JsonSerialize(using = DailyMealSerializer.class)
-    @JsonDeserialize(using = DailyMealDeserializer.class)
-    protected DailyMealItem dailyMeal;
+    protected int dailyMeal;
 
     @JsonDeserialize(using = ImageDeserializer.class)
     @JsonProperty("image")
@@ -69,7 +67,7 @@ public class MealOfTheDayItem extends MealOfTheDayMetaItem {
         super(in);
         this.cook = in.readString();
         this.price = in.readFloat();
-        this.dailyMeal = in.readParcelable(DailyMealItem.class.getClassLoader());
+        this.dailyMeal = in.readInt();
 
         int imageLength = in.readInt();
         if (imageLength < 0) {
@@ -103,8 +101,8 @@ public class MealOfTheDayItem extends MealOfTheDayMetaItem {
 
     public MealOfTheDayItem(int id, Date createDate, Date editDate, String createUser,
                             String editUser, Date date, String link, Date lastUsedDate, String cook,
-                            float price, DailyMealItem dailyMeal, byte[] image) {
-        super(id, createDate, editDate, createUser, editUser, date, link, null, lastUsedDate);
+                            float price, int dailyMeal, byte[] image) {
+        super(id, createDate, editDate, createUser, editUser, date, link, -1, lastUsedDate);
         this.cook = cook;
         this.price = price;
         this.dailyMeal = dailyMeal;
@@ -121,16 +119,16 @@ public class MealOfTheDayItem extends MealOfTheDayMetaItem {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(cook);
-        dest.writeFloat(price);
-        dest.writeParcelable(this.dailyMeal, flags);
+        dest.writeString(this.cook);
+        dest.writeFloat(this.price);
+        dest.writeInt(this.dailyMeal);
 
-        int imageLength = (image != null ? image.length : -1);
+        int imageLength = (this.image != null ? this.image.length : -1);
         dest.writeInt(imageLength);
         if (imageLength <= 0) {
             dest.writeByteArray(new byte[0]);
         } else {
-            dest.writeByteArray(image);
+            dest.writeByteArray(this.image);
         }
     }
 
@@ -150,11 +148,11 @@ public class MealOfTheDayItem extends MealOfTheDayMetaItem {
         this.price = price;
     }
 
-    public DailyMealItem getDailyMeal() {
+    public int getDailyMeal() {
         return dailyMeal;
     }
 
-    public void setDailyMeal(DailyMealItem dailyMeal) {
+    public void setDailyMeal(int dailyMeal) {
         this.dailyMeal = dailyMeal;
     }
 
@@ -179,7 +177,7 @@ public class MealOfTheDayItem extends MealOfTheDayMetaItem {
         return (super.exactlyEquals(another) &&
                 this.cook.equals(((MealOfTheDayItem) another).cook) &&
                 this.price == ((MealOfTheDayItem) another).price &&
-                this.dailyMeal.exactlyEquals(((MealOfTheDayItem) another).dailyMeal) &&
+                this.dailyMeal == ((MealOfTheDayItem) another).dailyMeal &&
                 Arrays.equals(this.image, ((MealOfTheDayItem) another).image));
     }
 
@@ -188,7 +186,7 @@ public class MealOfTheDayItem extends MealOfTheDayMetaItem {
         String result = super.toString() + "\n";
         result += "cook = " + this.cook + "\n";
         result += "price = " + this.price + "\n";
-        result += "dailyMeal = [[" + this.dailyMeal.toString() + "]]" + "\n";
+        result += "dailyMeal = " + this.dailyMeal + "\n";
         result += "image = " + ((image != null) ? image.length : 0) + " Byte";
 
         return result;

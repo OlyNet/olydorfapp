@@ -20,11 +20,13 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.activities.MealOfTheDayViewerActivity;
 import eu.olynet.olydorfapp.fragments.MealOfTheDayViewerFragment;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.DailyMealItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
@@ -35,25 +37,31 @@ import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 public class MealOfTheDayListAdapter
         extends RecyclerView.Adapter<MealOfTheDayListAdapter.ViewHolder> {
 
-    private final List<AbstractMetaItem<?>> items;
     private final Context context;
 
     private RecyclerView mRecyclerView = null;
     private View mEmptyView = null;
 
+    private final List<AbstractMetaItem<?>> items;
+    private final Map<Integer, DailyMealItem> dailyMealMap;
+
     /**
-     * @param context   the Context.
-     * @param newsItems the List containing the NewsItems.
+     * @param context      the Context.
+     * @param newsItems    the List containing the NewsItems.
+     * @param dailyMealMap the data structure that maps integers to their corresponding
+     *                     DailyMealItems.
      */
-    public MealOfTheDayListAdapter(Context context, List<AbstractMetaItem<?>> newsItems) {
+    public MealOfTheDayListAdapter(Context context, List<AbstractMetaItem<?>> newsItems,
+                                   Map<Integer, DailyMealItem> dailyMealMap) {
         this.context = context;
         this.items = newsItems;
+        this.dailyMealMap = dailyMealMap;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                                  .inflate(R.layout.card_meal_of_the_day, parent, false);
+                .inflate(R.layout.card_meal_of_the_day, parent, false);
 
         registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -101,24 +109,29 @@ public class MealOfTheDayListAdapter
         if (!(items.get(position) instanceof MealOfTheDayItem)) {
             throw new IllegalArgumentException(
                     "the List of AbstractMetaItem<?>s provided does not" +
-                    " seem to only contain MealOfTheDayItems");
+                            " seem to only contain MealOfTheDayItems");
         }
         MealOfTheDayItem mealOfTheDayItem = (MealOfTheDayItem) items.get(position);
+        DailyMealItem dailyMealItem = dailyMealMap.get(mealOfTheDayItem.getDailyMeal());
+        if (dailyMealItem == null) {
+            throw new IllegalArgumentException("DailyMealItem missing for id "
+                    + mealOfTheDayItem.getId());
+        }
 
         /* set the correct item in the ViewHolder for the OnClickListener */
-        holder.item = mealOfTheDayItem;
+        holder.mealOfTheDayItem = mealOfTheDayItem;
+        holder.dailyMealItem = dailyMealItem;
 
         /* Headline */
         DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, Locale.getDefault());
         holder.vHeadline.setText(df.format(mealOfTheDayItem.getDate()));
 
         /* Icon */
-        holder.vIcon.setImageResource(
-                mealOfTheDayItem.getDailyMeal().isVegetarian() ? R.drawable.carrot_48dp
-                                                               : R.drawable.meat_48dp);
+        holder.vIcon.setImageResource(dailyMealItem.isVegetarian() ? R.drawable.carrot_48dp
+                : R.drawable.meat_48dp);
 
         /* Name */
-        holder.vName.setText(mealOfTheDayItem.getDailyMeal().getName());
+        holder.vName.setText(dailyMealItem.getName());
 
         /* Cook */
         holder.vCook.setText(mealOfTheDayItem.getCook());
@@ -132,7 +145,7 @@ public class MealOfTheDayListAdapter
         int screenWidth = UtilsDevice.getScreenWidth(context);
         Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
         if (bitmap == null) { /* fallback to DailyMeal image  */
-            image = mealOfTheDayItem.getDailyMeal().getImage();
+            image = dailyMealItem.getImage();
             bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
         }
         if (bitmap != null) {
@@ -167,26 +180,34 @@ public class MealOfTheDayListAdapter
     /**
      * Adds a List of AbstractMetaItems that <b>must</b> be MealOfTheDayItems to this Adapter
      *
-     * @param items the List of AbstractMetaItems to add.
+     * @param items        the List of AbstractMetaItems to add.
+     * @param dailyMealMap the Map containing the new DailyMealItems.
      */
-    public void addAbstractMetaItems(List<AbstractMetaItem<?>> items) {
+    public void addAbstractMetaItems(List<AbstractMetaItem<?>> items,
+                                     Map<Integer, DailyMealItem> dailyMealMap) {
         this.items.addAll(items);
+        this.dailyMealMap.putAll(dailyMealMap);
     }
 
     /**
      * Replaces the internal List of AbstractMetaItems with a new one that <b>must</b> contain only
      * MealOfTheDayItems.
      *
-     * @param items the new List of AbstractMetaItems to use.
+     * @param items        the new List of AbstractMetaItems to use.
+     * @param dailyMealMap the Map containing the new DailyMealItems.
      */
-    public void replaceAbstractMetaItems(List<AbstractMetaItem<?>> items) {
+    public void replaceAbstractMetaItems(List<AbstractMetaItem<?>> items,
+                                         Map<Integer, DailyMealItem> dailyMealMap) {
         this.items.clear();
         this.items.addAll(items);
+        this.dailyMealMap.clear();
+        this.dailyMealMap.putAll(dailyMealMap);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        MealOfTheDayItem item;
+        MealOfTheDayItem mealOfTheDayItem;
+        DailyMealItem dailyMealItem;
 
         final TextView vHeadline;
         final ImageView vIcon;
@@ -201,7 +222,9 @@ public class MealOfTheDayListAdapter
             view.setOnClickListener(v -> {
                 Intent newsViewerIntent = new Intent(context, MealOfTheDayViewerActivity.class);
                 newsViewerIntent.setAction(Intent.ACTION_VIEW);
-                newsViewerIntent.putExtra(MealOfTheDayViewerFragment.ITEM_KEY, item);
+                newsViewerIntent.putExtra(MealOfTheDayViewerFragment.MEAL_OF_THE_DAY_ITEM_KEY,
+                        mealOfTheDayItem);
+                newsViewerIntent.putExtra(MealOfTheDayViewerFragment.DAILY_MEAL_KEY, dailyMealItem);
                 context.startActivity(newsViewerIntent);
             });
 

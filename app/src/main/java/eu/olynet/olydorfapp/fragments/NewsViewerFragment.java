@@ -1,17 +1,13 @@
 package eu.olynet.olydorfapp.fragments;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +15,7 @@ import java.text.SimpleDateFormat;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.model.NewsItem;
+import eu.olynet.olydorfapp.model.OrganizationItem;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
@@ -27,10 +24,13 @@ import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
  */
 public class NewsViewerFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    public static final String ITEM_KEY = "news_item";
+    public static final String NEWS_KEY = "news_item";
+    public static final String ORGANIZATION_KEY = "organization_item";
 
     private SwipeRefreshLayout mRefreshLayout;
-    private NewsItem item = null;
+
+    private NewsItem newsItem = null;
+    private OrganizationItem organizationItem = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +39,8 @@ public class NewsViewerFragment extends Fragment implements SwipeRefreshLayout.O
         /* get the NewsItem */
         Bundle arguments = getArguments();
         if (arguments != null) {
-            this.item = arguments.getParcelable(ITEM_KEY);
+            this.newsItem = arguments.getParcelable(NEWS_KEY);
+            this.organizationItem = arguments.getParcelable(ORGANIZATION_KEY);
         } else {
             Log.e("NewsViewerFrag", "arguments is null");
         }
@@ -57,19 +58,18 @@ public class NewsViewerFragment extends Fragment implements SwipeRefreshLayout.O
         mRefreshLayout.setEnabled(false); /* disable for now */
 
         /* set the data */
-        if (item != null) {
-
+        if (newsItem != null) {
             SimpleDateFormat localFormat
                     = (SimpleDateFormat) android.text.format.DateFormat.getDateFormat(getContext());
             TextView newsDate = (TextView) view.findViewById(R.id.newsViewDate);
-            newsDate.setText(localFormat.format(item.getDate()));
+            newsDate.setText(localFormat.format(newsItem.getDate()));
 
             /* Title */
             TextView newsTitle = (TextView) view.findViewById(R.id.newsViewTitle);
-            newsTitle.setText(item.getTitle());
+            newsTitle.setText(newsItem.getTitle());
 
             /* Image */
-            byte[] image = item.getImage();
+            byte[] image = newsItem.getImage();
             int screenWidth = UtilsDevice.getScreenWidth(getContext());
             Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
             if(bitmap != null) {
@@ -78,7 +78,7 @@ public class NewsViewerFragment extends Fragment implements SwipeRefreshLayout.O
 
             /* Content */
             TextView newsContent = (TextView) view.findViewById(R.id.newsViewContent);
-            newsContent.setText(item.getText());
+            newsContent.setText(newsItem.getText());
         }
 
         /* return the View */

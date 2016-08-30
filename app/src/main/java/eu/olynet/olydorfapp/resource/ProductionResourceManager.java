@@ -15,6 +15,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -295,7 +296,7 @@ public class ProductionResourceManager extends ResourceManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<AbstractMetaItem<?>> getItems(Class<?> clazz, List<Integer> ids,
+    public List<AbstractMetaItem<?>> getItems(Class<?> clazz, Collection<Integer> ids,
                                               Comparator<AbstractMetaItem<?>> comparator) {
         abortIfNotInitialized();
 

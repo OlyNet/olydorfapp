@@ -67,7 +67,7 @@ public class MealOfTheDayMetaItem extends AbstractMetaItem<MealOfTheDayMetaItem>
 
     public MealOfTheDayMetaItem(int id, Date createDate, Date editDate, String createUser,
                                 String editUser, Date date, String link,
-                                OrganizationItem organization, Date lastUsedDate) {
+                                int organization, Date lastUsedDate) {
         super(id, createDate, editDate, createUser, editUser, date, link, organization,
               lastUsedDate);
     }
