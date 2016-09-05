@@ -6,14 +6,19 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import de.psdev.licensesdialog.LicensesDialog;
+import de.psdev.licensesdialog.licenses.ApacheSoftwareLicense20;
+import de.psdev.licensesdialog.licenses.BSD3ClauseLicense;
+import de.psdev.licensesdialog.licenses.License;
+import de.psdev.licensesdialog.licenses.MITLicense;
+import de.psdev.licensesdialog.model.Notice;
+import de.psdev.licensesdialog.model.Notices;
 import eu.olynet.olydorfapp.R;
 
 /**
@@ -43,19 +48,96 @@ public class AboutFragment extends Fragment {
         TextView aboutAppVersion = (TextView) view.findViewById(R.id.aboutAppVersion);
         aboutAppVersion.setText(res.getString(R.string.about_version_string, version));
 
-        final Button button = (Button) view.findViewById(R.id.aboutLicenseButton);
-        button.setOnClickListener(v -> {
-            WebView view1 = (WebView) LayoutInflater.from(context)
-                                                    .inflate(R.layout.dialog_licenses, null);
-            view1.loadUrl("file:///android_asset/open_source_licenses.html");
-            new AlertDialog.Builder(context, R.style.AlertDialog)
-                    .setTitle(getString(R.string.about_licenses))
-                    .setView(view1)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show();
-        });
+        /* setup the license dialog */
+        setupLicenseDialog((Button) view.findViewById(R.id.aboutLicenseButton));
 
         /* return the View */
         return view;
+    }
+
+    public void setupLicenseDialog(final Button button) {
+        button.setOnClickListener(v -> {
+            final Notices notices = new Notices();
+            final License apacheLicense = new ApacheSoftwareLicense20();
+            final License bsdLicense = new BSD3ClauseLicense();
+            final License mitLicense = new MITLicense();
+
+            notices.addNotice(new Notice("AnimatedVectorDrawable",
+                                         "https://github.com/chiuki/animated-vector-drawable",
+                                         "Copyright 2014 Chiu-Ki Chan",
+                                         apacheLicense));
+            notices.addNotice(new Notice("Android Volley",
+                                         "https://github.com/mcxiaoke/android-volley",
+                                         "Copyright 2014 - 2016 Xiaoke Zhang\n" +
+                                         "Copyright 2011 The Android Open Source Project",
+                                         apacheLicense));
+            notices.addNotice(new Notice("Apache Commons IO",
+                                         "https://commons.apache.org/",
+                                         "Copyright 2002-2011 The Apache Software Foundation",
+                                         apacheLicense));
+            notices.addNotice(new Notice("Apache Commons Lang",
+                                         "https://commons.apache.org/",
+                                         "Copyright 2001-2015 The Apache Software Foundation",
+                                         apacheLicense));
+            notices.addNotice(new Notice("CircleImageView",
+                                         "https://github.com/hdodenhof/CircleImageView",
+                                         "Copyright 2014 - 2016 Henning Dodenhof",
+                                         apacheLicense));
+            notices.addNotice(new Notice("barcodescanner",
+                                         "https://github.com/dm77/barcodescanner",
+                                         "Copyright (c) 2014 Dushyanth Maguluru",
+                                         apacheLicense));
+            notices.addNotice(new Notice("zxing",
+                                         "https://github.com/zxing/zxing",
+                                         "Copyright (c) 2005 Sun Microsystems, Inc.\n" +
+                                         "Copyright (c) 2010-2014 University of Manchester\n" +
+                                         "Copyright (c) 2010-2015 Stian Soiland-Reyes\n" +
+                                         "Copyright (c) 2015 Peter Hull",
+                                         apacheLicense));
+            notices.addNotice(new Notice("Disk LRU Cache",
+                                         "https://github.com/JakeWharton/DiskLruCache",
+                                         "Copyright 2012 Jake Wharton\n" +
+                                         "Copyright 2011 The Android Open Source Project",
+                                         apacheLicense));
+            notices.addNotice(new Notice("dualcache",
+                                         "https://github.com/vincentbrison/dualcache",
+                                         "Copyright 2016 Vincent Brison.",
+                                         apacheLicense));
+            notices.addNotice(new Notice("Hamcrest",
+                                         "Copyright (c) 2000-2006, www.hamcrest.org",
+                                         "http://hamcrest.org/",
+                                         bsdLicense));
+            notices.addNotice(new Notice("Jackson",
+                                         "https://github.com/FasterXML",
+                                         "Copyright 2016 FasterXML, LLC",
+                                         apacheLicense));
+            notices.addNotice(new Notice("LicensesDialog",
+                                         "http://psdev.de",
+                                         "Copyright 2013 Philip Schiffer <admin@psdev.de>",
+                                         apacheLicense));
+            notices.addNotice(new Notice("Mockito",
+                                         "http://mockito.org/",
+                                         "Copyright (c) 2007 Mockito contributors",
+                                         mitLicense));
+            notices.addNotice(new Notice("Objenesis",
+                                         "http://objenesis.org/",
+                                         "Copyright 2006-2013 Joe Walnes, Henri Tremblay, " +
+                                         "Leonardo Mesquita",
+                                         apacheLicense));
+            notices.addNotice(new Notice("Resteasy",
+                                         "https://github.com/resteasy/Resteasy",
+                                         "Copyright (c) 2016 Red Hat, Inc.",
+                                         apacheLicense));
+            notices.addNotice(new Notice("RoundedImageView",
+                                         "https://github.com/vinc3m1/RoundedImageView",
+                                         "Copyright 2015 Vincent Mi",
+                                         apacheLicense));
+
+            /* finally build and open the dialog */
+            new LicensesDialog.Builder(this.context)
+                    .setNotices(notices)
+                    .build()
+                    .show();
+        });
     }
 }

@@ -98,6 +98,8 @@ dependencies {
     // Came with sample :-P
     compile 'de.hdodenhof:circleimageview:1.2.2'
     compile 'com.mcxiaoke.volley:library:1.0.15'
+    // License Dialog
+    compile('de.psdev.licensesdialog:licensesdialog:1.8.1')
     // Apache Commons
     compile 'org.apache.commons:commons-lang3:3.4'
     // RESTEasy support
