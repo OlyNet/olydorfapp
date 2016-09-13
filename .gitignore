@@ -36,3 +36,9 @@ build/
 obj/
 
 radle-version
+
+# do not include key files
+*.pfx
+*.p12
+*.pem
+*.key
