@@ -62,7 +62,7 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.card_meal_of_the_day, parent, false);
+                                  .inflate(R.layout.card_meal_of_the_day, parent, false);
 
         return new ViewHolder(view);
     }
@@ -81,13 +81,13 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
         Calendar cal = new GregorianCalendar();
         cal.setTime(mealOfTheDayItem.getDate());
         holder.vHeadline.setText("Tagesessen (" + cal.get(Calendar.DAY_OF_MONTH) + ". " +
-                cal.getDisplayName(Calendar.MONTH, Calendar.LONG,
-                        Locale.getDefault()) + ")");
+                                 cal.getDisplayName(Calendar.MONTH, Calendar.LONG,
+                                                    Locale.getDefault()) + ")");
 
         /* Icon */
         holder.vIcon.setImageResource(
                 dailyMealItem.isVegetarian() ? R.drawable.carrot_48dp
-                        : R.drawable.meat_48dp);
+                                             : R.drawable.meat_48dp);
 
         /* Name */
         holder.vName.setText(dailyMealItem.getName());
@@ -158,7 +158,7 @@ public class DailyMealTabAdapter extends RecyclerView.Adapter<DailyMealTabAdapte
                 Intent newsViewerIntent = new Intent(context, MealOfTheDayViewerActivity.class);
                 newsViewerIntent.setAction(Intent.ACTION_VIEW);
                 newsViewerIntent.putExtra(MealOfTheDayViewerFragment.MEAL_OF_THE_DAY_ITEM_KEY,
-                        mealOfTheDayItem);
+                                          mealOfTheDayItem);
                 newsViewerIntent.putExtra(MealOfTheDayViewerFragment.DAILY_MEAL_KEY, dailyMealItem);
                 context.startActivity(newsViewerIntent);
             });
