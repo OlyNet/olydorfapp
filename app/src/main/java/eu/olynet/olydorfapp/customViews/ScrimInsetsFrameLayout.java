@@ -1,5 +1,3 @@
-package eu.olynet.olydorfapp.customViews;
-
 /*
  * Copyright 2014 Google Inc.
  *
@@ -15,6 +13,7 @@ package eu.olynet.olydorfapp.customViews;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package eu.olynet.olydorfapp.customViews;
 
 import android.content.Context;
 import android.content.res.TypedArray;

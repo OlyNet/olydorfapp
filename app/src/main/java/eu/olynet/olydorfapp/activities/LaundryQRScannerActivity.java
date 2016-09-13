@@ -1,7 +1,18 @@
-/**
- * Copyright (C) OlyNet e.V. 2015 - All Rights Reserved
- * Unauthorized copying of this file, via any medium is strictly prohibited.
- * Proprietary and confidential
+/*
+ * This file is part of OlydorfApp.
+ *
+ * OlydorfApp is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OlydorfApp is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OlydorfApp.  If not, see <http://www.gnu.org/licenses/>.
  */
 package eu.olynet.olydorfapp.activities;
 
@@ -68,9 +79,9 @@ public class LaundryQRScannerActivity extends AppCompatActivity
         super.onResume();
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !=
-            PackageManager.PERMISSION_GRANTED) {
+                PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
-                                              MY_PERMISSIONS_REQUEST_CAMERA);
+                    MY_PERMISSIONS_REQUEST_CAMERA);
         } else {
             startScan();
         }
@@ -82,7 +93,7 @@ public class LaundryQRScannerActivity extends AppCompatActivity
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_CAMERA:
                 if (grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startScan();
                 } else {
                     NavUtils.navigateUpFromSameTask(this);

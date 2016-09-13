@@ -1,3 +1,19 @@
+/*
+ * This file is part of OlydorfApp.
+ *
+ * OlydorfApp is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OlydorfApp is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OlydorfApp.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package eu.olynet.olydorfapp.customViews;
 
 import android.content.Context;
@@ -9,7 +25,6 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 import eu.olynet.olydorfapp.R;
-
 
 /**
  * ImageView that changes it's image color depending on the state (pressed, selected...)
@@ -42,8 +57,8 @@ public class TintOnStateImageView extends ImageView {
      */
     private void initialise(Context context, AttributeSet attributeSet, int defStyle) {
         TypedArray a = context.obtainStyledAttributes(attributeSet,
-                                                      R.styleable.TintOnStateImageView, defStyle,
-                                                      0);
+                R.styleable.TintOnStateImageView, defStyle,
+                0);
         mColorStateList = a.getColorStateList(R.styleable.TintOnStateImageView_colorStateList);
         a.recycle();
     }
@@ -62,8 +77,8 @@ public class TintOnStateImageView extends ImageView {
      */
     private void updateTintColor() {
         int color = mColorStateList.getColorForState(getDrawableState(),
-                                                     ContextCompat.getColor(getContext(),
-                                                                            R.color.nav_drawer_item_icon_normal));
+                ContextCompat.getColor(getContext(),
+                        R.color.nav_drawer_item_icon_normal));
 
         super.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
