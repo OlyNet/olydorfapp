@@ -17,6 +17,8 @@
 package eu.olynet.olydorfapp.resource;
 
 /**
+ * The resteasy client configuration file.
+ *
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 public final class Configuration {
