@@ -19,6 +19,7 @@ package eu.olynet.olydorfapp.activities;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.multidex.MultiDex;
 import android.support.v4.content.ContextCompat;
@@ -38,6 +39,14 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.adapters.NavigationDrawerItemsAdapter;
@@ -56,9 +65,16 @@ import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
  */
 public class MainActivity extends AppCompatActivity {
 
+    private static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 2354;
+
     private Toolbar toolbar;
     private DrawerLayout mDrawerLayout;
     private Menu optionsMenu;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,12 +100,22 @@ public class MainActivity extends AppCompatActivity {
         PackageManager pm = this.getPackageManager();
         pm.setComponentEnabledSetting(receiver, PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                                       PackageManager.DONT_KILL_APP);
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkGooglePlayServices();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.optionsMenu = menu;
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -113,6 +139,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public boolean checkGooglePlayServices() {
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int status = googleApiAvailability.isGooglePlayServicesAvailable(this);
+        if (status != ConnectionResult.SUCCESS) {
+            if (googleApiAvailability.isUserResolvableError(status)) {
+                googleApiAvailability.getErrorDialog(this, status,
+                                                     REQUEST_CODE_RECOVER_PLAY_SERVICES,
+                                                     dialogInterface -> finish())
+                                     .show();
+            } else {
+                Toast.makeText(this, "This device is not supported.", Toast.LENGTH_LONG).show();
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Initialize the tab slider.
      *
@@ -132,7 +176,8 @@ public class MainActivity extends AppCompatActivity {
 //        tabs.setDistributeEvenly(true); /* fixed tab sizes */
 
         /* setting a custom color for the scroll bar indicator of the tab view */
-        tabs.setCustomTabColorizer(position -> ContextCompat.getColor(getApplicationContext(), R.color.OlympiaDarkBlue));
+        tabs.setCustomTabColorizer(position -> ContextCompat.getColor(getApplicationContext(),
+                                                                      R.color.OlympiaDarkBlue));
 
         /* setting the ViewPager for the SlidingTabsLayout */
         tabs.setViewPager(pager);
@@ -237,10 +282,38 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.start(client, getIndexApiAction());
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.disconnect();
+    }
+
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    public Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName("Main Page") // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
     }
 }
