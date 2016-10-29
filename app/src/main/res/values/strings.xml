@@ -6,6 +6,8 @@
     <string name="menu_action_refresh">Refresh</string>
 
     <string name="news_viewer">OlydorfApp News Viewer</string>
+    <string name="daily_meal_viewer">OlydorfApp Daily Meal Viewer</string>
+    <string name="food_viewer">OlydorfApp Food Viewer</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -52,6 +54,11 @@
     <string name="tag_nav_drawer_special_entry">nav_drawer_special_entry</string>
     <string name="tools_text_account_information_username">Max Mustermann</string>
     <string name="tools_text_account_information_email">max.mustermann@olynet.eu</string>
+
+    <!--Bierstube Fragment-->
+    <string name="bierstube_headline_daily">Today\'s Specials</string>
+    <string name="bierstube_headline_foods">Foods</string>
+    <string name="bierstube_headline_drinks">Drinks</string>
 
     <!--Organization Fragment-->
     <string name="organization_image">Organization image</string>

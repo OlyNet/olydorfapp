@@ -27,20 +27,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import eu.olynet.olydorfapp.R;
-import eu.olynet.olydorfapp.fragments.MealOfTheDayViewerFragment;
+import eu.olynet.olydorfapp.fragments.FoodViewerFragment;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
-public class MealOfTheDayViewerActivity extends AppCompatActivity {
+public class FoodViewerActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_meal_of_the_day_viewer);
+        setContentView(R.layout.activity_food_viewer);
 
         /* setup the ActionBar */
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.meal_of_the_day_viewer_toolbar);
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.food_viewer_toolbar);
         setSupportActionBar(myToolbar);
 
         ActionBar ab = getSupportActionBar();
@@ -50,27 +50,27 @@ public class MealOfTheDayViewerActivity extends AppCompatActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setDisplayShowHomeEnabled(true);
         ab.setHomeButtonEnabled(true);
-        ab.setTitle("Daily Meal");
+        ab.setTitle("Food");
 
         /* setup the Fragment */
-        if (findViewById(R.id.meal_of_the_day_viewer_activity_fragment) != null) {
+        if (findViewById(R.id.food_viewer_activity_fragment) != null) {
             if (savedInstanceState != null) {
                 return;
             }
 
-            MealOfTheDayViewerFragment mealOfTheDayViewerFragment = new MealOfTheDayViewerFragment();
-            mealOfTheDayViewerFragment.setArguments(getIntent().getExtras());
+            FoodViewerFragment foodViewerFragment = new FoodViewerFragment();
+            foodViewerFragment.setArguments(getIntent().getExtras());
 
             getSupportFragmentManager().beginTransaction()
-                                       .replace(R.id.meal_of_the_day_viewer_activity_fragment,
-                                                mealOfTheDayViewerFragment)
+                                       .replace(R.id.food_viewer_activity_fragment,
+                                                foodViewerFragment)
                                        .commit();
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_meal_of_the_day_viewer, menu);
+        getMenuInflater().inflate(R.menu.menu_food_viewer, menu);
         return true;
     }
 

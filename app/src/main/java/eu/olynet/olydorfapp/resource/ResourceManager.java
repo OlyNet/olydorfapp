@@ -211,9 +211,10 @@ public abstract class ResourceManager {
      */
     public abstract TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, long limit,
                                                                     @Nullable
-                                                                    AbstractMetaItem<?> after,
+                                                                            AbstractMetaItem<?>
+                                                                            after,
                                                                     @Nullable
-                                                                    Comparator<AbstractMetaItem<?>> comparator,
+                                                                            Comparator<AbstractMetaItem<?>> comparator,
                                                                     boolean forceUpdate);
 
     /**
@@ -239,9 +240,10 @@ public abstract class ResourceManager {
      */
     public abstract TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, long limit,
                                                                     @Nullable
-                                                                    AbstractMetaItem<?> after,
+                                                                            AbstractMetaItem<?>
+                                                                            after,
                                                                     @Nullable
-                                                                    Comparator<AbstractMetaItem<?>> comparator,
+                                                                            Comparator<AbstractMetaItem<?>> comparator,
                                                                     ItemFilter filter,
                                                                     boolean forceUpdate);
 }

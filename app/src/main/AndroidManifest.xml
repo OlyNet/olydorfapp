@@ -62,7 +62,16 @@
 
         <activity
             android:name="eu.olynet.olydorfapp.activities.MealOfTheDayViewerActivity"
-            android:label="@string/news_viewer"
+            android:label="@string/daily_meal_viewer"
+            android:parentActivityName="eu.olynet.olydorfapp.activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="eu.olynet.olydorfapp.activities.MainActivity"/>
+        </activity>
+
+        <activity
+            android:name="eu.olynet.olydorfapp.activities.FoodViewerActivity"
+            android:label="@string/food_viewer"
             android:parentActivityName="eu.olynet.olydorfapp.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

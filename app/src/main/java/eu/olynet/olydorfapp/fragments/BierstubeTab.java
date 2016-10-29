@@ -29,17 +29,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
-import eu.olynet.olydorfapp.adapters.DailyMealTabAdapter;
+import eu.olynet.olydorfapp.adapters.BierstubeTabAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
+import eu.olynet.olydorfapp.model.FoodMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
 import eu.olynet.olydorfapp.resource.ItemFilter;
@@ -52,7 +55,7 @@ import eu.olynet.olydorfapp.resource.ResourceManager;
 public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private SwipeRefreshLayout mRefreshLayout;
-    private DailyMealTabAdapter mAdapter;
+    private BierstubeTabAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -60,12 +63,12 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
         View view = inflater.inflate(R.layout.tab_bierstube, container, false);
 
         /* initiate NewsTabAdapter */
-        mAdapter = new DailyMealTabAdapter(getContext(), null, null);
+        mAdapter = new BierstubeTabAdapter(getContext(), null, null, new ArrayList<>());
 
         /* setup the LayoutManager */
         final GridLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 1,
-                GridLayoutManager.VERTICAL,
-                false);
+                                                                       GridLayoutManager.VERTICAL,
+                                                                       false);
 
         /* initiate RecycleView */
         RecyclerView mRecyclerView = (RecyclerView) view.findViewById(
@@ -139,6 +142,14 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
         protected ResultStructure doInBackground(Void... params) {
             ResourceManager rm = ProductionResourceManager.getInstance();
 
+            /* get all FoodItems */
+            List<Integer> foodIds = new ArrayList<>();
+            for(AbstractMetaItem<?> item : rm.getTreeOfMetaItems(FoodMetaItem.class,
+                                                                 this.forceUpdate)) {
+                foodIds.add(item.getId());
+            }
+            List<AbstractMetaItem<?>> foodItems = rm.getItems(FoodMetaItem.class, foodIds, null);
+
             /* the correct Comparator */
             Comparator<AbstractMetaItem<?>> comparator = new AbstractMetaItem.DateAscComparator();
 
@@ -181,10 +192,10 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
 
                 /* fetch the full item only if the date matches */
                 if (itemDate.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
-                        itemDate.get(Calendar.MONTH) == now.get(Calendar.MONTH) &&
-                        itemDate.get(Calendar.DAY_OF_MONTH) == now.get(Calendar.DAY_OF_MONTH)) {
+                    itemDate.get(Calendar.MONTH) == now.get(Calendar.MONTH) &&
+                    itemDate.get(Calendar.DAY_OF_MONTH) == now.get(Calendar.DAY_OF_MONTH)) {
                     mealOfTheDayItem = (MealOfTheDayItem) rm.getItem(MealOfTheDayMetaItem.class,
-                            metaItem.getId());
+                                                                     metaItem.getId());
                 }
             }
 
@@ -196,10 +207,11 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
             /* get the corresponding DailyMealItem */
             rm.getTreeOfMetaItems(DailyMealMetaItem.class, this.forceUpdate);
             DailyMealItem dailyMealItem = (DailyMealItem) rm.getItem(DailyMealMetaItem.class,
-                    mealOfTheDayItem.getDailyMeal());
+                                                                     mealOfTheDayItem
+                                                                             .getDailyMeal());
 
             /* return the combined results */
-            return new ResultStructure(mealOfTheDayItem, dailyMealItem);
+            return new ResultStructure(mealOfTheDayItem, dailyMealItem, foodItems);
         }
 
         @Override
@@ -207,7 +219,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
             super.onPostExecute(result);
 
             /* update the Adapter */
-            mAdapter.setItem(result.mealOfTheDayItem, result.dailyMealItem);
+            mAdapter.setData(result.mealOfTheDayItem, result.dailyMealItem, result.foodItems);
 
             /* perform the post-load actions */
             onLoadCompleted();
@@ -218,6 +230,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
 
         MealOfTheDayItem mealOfTheDayItem;
         DailyMealItem dailyMealItem;
+        List<AbstractMetaItem<?>> foodItems;
 
         /**
          * Empty result.
@@ -225,12 +238,14 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
         private ResultStructure() {
             this.mealOfTheDayItem = null;
             this.dailyMealItem = null;
+            this.foodItems = new ArrayList<>();
         }
 
         private ResultStructure(MealOfTheDayItem mealOfTheDayItem,
-                                DailyMealItem dailyMealItem) {
+                                DailyMealItem dailyMealItem, List<AbstractMetaItem<?>> foodItems) {
             this.mealOfTheDayItem = mealOfTheDayItem;
             this.dailyMealItem = dailyMealItem;
+            this.foodItems = foodItems;
         }
 
     }
