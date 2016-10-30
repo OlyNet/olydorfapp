@@ -27,33 +27,37 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 import eu.olynet.olydorfapp.R;
-import eu.olynet.olydorfapp.model.FoodItem;
+import eu.olynet.olydorfapp.model.DrinkItem;
+import eu.olynet.olydorfapp.model.DrinkSizeItem;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
-public class FoodViewerFragment extends Fragment
+public class DrinkViewerFragment extends Fragment
         implements SwipeRefreshLayout.OnRefreshListener {
 
-    public static final String FOOD_ITEM_KEY = "food_item";
+    public static final String DRINK_ITEM_KEY = "drink_item";
 
     private SwipeRefreshLayout mRefreshLayout;
 
-    private FoodItem foodItem = null;
+    private DrinkItem drinkItem = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /* get the FoodItem */
+        /* get the DrinkItem */
         Bundle arguments = getArguments();
         if (arguments != null) {
-            this.foodItem = arguments.getParcelable(FOOD_ITEM_KEY);
+            this.drinkItem = arguments.getParcelable(DRINK_ITEM_KEY);
         } else {
-            Log.e("FoodViewerFrag", "arguments bundle is null");
+            Log.e("DrinkViewerFrag", "arguments bundle is null");
         }
     }
 
@@ -61,39 +65,45 @@ public class FoodViewerFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         /* inflate the layout for this Fragment */
-        View view = inflater.inflate(R.layout.fragment_food_viewer, container, false);
+        View view = inflater.inflate(R.layout.fragment_drink_viewer, container, false);
 
         /* set SwipeRefreshLayout */
-        mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.food_view_swipe_refresh);
+        mRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.drink_view_swipe_refresh);
         mRefreshLayout.setOnRefreshListener(this);
         mRefreshLayout.setEnabled(false); /* disable for now */
 
         /* set the data */
-        if (foodItem != null) {
+        if (drinkItem != null) {
 
             /* Name */
-            TextView mealOfTheDayName = (TextView) view.findViewById(R.id.food_view_name);
-            mealOfTheDayName.setText(foodItem.getName());
-
-            /* Cook */
-//            TextView mealOfTheDayCook = (TextView) view.findViewById(R.id.food_view_cook);
-//            mealOfTheDayCook.setText(mealOfTheDayItem.getCook());
+            TextView drinkName = (TextView) view.findViewById(R.id.drink_view_name);
+            drinkName.setText(drinkItem.getName());
 
             /* Icon */
-            ImageView mealOfTheDayIcon = (ImageView) view.findViewById(R.id.food_view_icon);
-            mealOfTheDayIcon.setImageResource(foodItem.isVegetarian() ? R.drawable.carrot_48dp
-                    : R.drawable.meat_48dp);
+//            ImageView drinkIcon = (ImageView) view.findViewById(R.id.drink_view_icon);
+//            drinkIcon.setImageResource(drinkItem.isVegetarian() ? R.drawable.carrot_48dp
+//                                                                : R.drawable.meat_48dp);
 
             /* Image */
-            ImageView imageView = (ImageView) view.findViewById(R.id.food_view_image);
-            byte[] image = foodItem.getImage();
+            ImageView drinkImage = (ImageView) view.findViewById(R.id.drink_view_image);
+            byte[] image = drinkItem.getImage();
             int screenWidth = UtilsDevice.getScreenWidth(getContext());
             Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
             if (bitmap != null) {
-                imageView.setImageBitmap(bitmap);
+                drinkImage.setImageBitmap(bitmap);
             } else {
-                imageView.setImageResource(R.drawable.ic_account_circle_white_64dp);
+                drinkImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
             }
+
+            /* Amounts */
+            TextView drinkAmounts = (TextView) view.findViewById(R.id.drink_view_amounts);
+            String amountPrices = "";
+            NumberFormat deDE = NumberFormat.getCurrencyInstance(Locale.GERMANY);
+            for (DrinkSizeItem drinkSize : drinkItem.getDrinkSizes()) {
+                amountPrices += drinkSize.getSize() + " l" + "\t-\t"
+                                + deDE.format(drinkSize.getPrice()) + "\n";
+            }
+            drinkAmounts.setText(amountPrices.substring(0, amountPrices.length() - 1));
         }
 
         /* return the View */

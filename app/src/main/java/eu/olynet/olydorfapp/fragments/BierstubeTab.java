@@ -42,6 +42,7 @@ import eu.olynet.olydorfapp.adapters.BierstubeTabAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
+import eu.olynet.olydorfapp.model.DrinkMetaItem;
 import eu.olynet.olydorfapp.model.FoodMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
@@ -63,7 +64,8 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
         View view = inflater.inflate(R.layout.tab_bierstube, container, false);
 
         /* initiate NewsTabAdapter */
-        mAdapter = new BierstubeTabAdapter(getContext(), null, null, new ArrayList<>());
+        mAdapter = new BierstubeTabAdapter(getContext(), null, null, new ArrayList<>(),
+                                           new ArrayList<>());
 
         /* setup the LayoutManager */
         final GridLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 1,
@@ -142,10 +144,18 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
         protected ResultStructure doInBackground(Void... params) {
             ResourceManager rm = ProductionResourceManager.getInstance();
 
+            /* get all DrinkItems */
+            List<Integer> drinkIds = new ArrayList<>();
+            for (AbstractMetaItem<?> item : rm.getTreeOfMetaItems(DrinkMetaItem.class,
+                                                                  this.forceUpdate)) {
+                drinkIds.add(item.getId());
+            }
+            List<AbstractMetaItem<?>> drinkItems = rm.getItems(DrinkMetaItem.class, drinkIds, null);
+
             /* get all FoodItems */
             List<Integer> foodIds = new ArrayList<>();
-            for(AbstractMetaItem<?> item : rm.getTreeOfMetaItems(FoodMetaItem.class,
-                                                                 this.forceUpdate)) {
+            for (AbstractMetaItem<?> item : rm.getTreeOfMetaItems(FoodMetaItem.class,
+                                                                  this.forceUpdate)) {
                 foodIds.add(item.getId());
             }
             List<AbstractMetaItem<?>> foodItems = rm.getItems(FoodMetaItem.class, foodIds, null);
@@ -211,7 +221,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
                                                                              .getDailyMeal());
 
             /* return the combined results */
-            return new ResultStructure(mealOfTheDayItem, dailyMealItem, foodItems);
+            return new ResultStructure(mealOfTheDayItem, dailyMealItem, foodItems, drinkItems);
         }
 
         @Override
@@ -219,7 +229,8 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
             super.onPostExecute(result);
 
             /* update the Adapter */
-            mAdapter.setData(result.mealOfTheDayItem, result.dailyMealItem, result.foodItems);
+            mAdapter.setData(result.mealOfTheDayItem, result.dailyMealItem, result.foodItems,
+                             result.drinkItems);
 
             /* perform the post-load actions */
             onLoadCompleted();
@@ -231,6 +242,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
         MealOfTheDayItem mealOfTheDayItem;
         DailyMealItem dailyMealItem;
         List<AbstractMetaItem<?>> foodItems;
+        List<AbstractMetaItem<?>> drinkItems;
 
         /**
          * Empty result.
@@ -239,13 +251,16 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
             this.mealOfTheDayItem = null;
             this.dailyMealItem = null;
             this.foodItems = new ArrayList<>();
+            this.drinkItems = new ArrayList<>();
         }
 
         private ResultStructure(MealOfTheDayItem mealOfTheDayItem,
-                                DailyMealItem dailyMealItem, List<AbstractMetaItem<?>> foodItems) {
+                                DailyMealItem dailyMealItem, List<AbstractMetaItem<?>> foodItems,
+                                List<AbstractMetaItem<?>> drinkItems) {
             this.mealOfTheDayItem = mealOfTheDayItem;
             this.dailyMealItem = dailyMealItem;
             this.foodItems = foodItems;
+            this.drinkItems = drinkItems;
         }
 
     }

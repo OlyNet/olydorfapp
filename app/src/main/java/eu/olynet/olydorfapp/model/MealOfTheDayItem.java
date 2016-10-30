@@ -24,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -99,7 +98,7 @@ public class MealOfTheDayItem extends MealOfTheDayMetaItem {
     /**
      * Copy constructor. Performs a shallow copy.
      *
-     * @param item the OrganizationItem to be copied.
+     * @param item the MealOfTheDayItem to be copied.
      */
     public MealOfTheDayItem(MealOfTheDayItem item) {
         super(item);

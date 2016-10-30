@@ -97,7 +97,7 @@ public class DailyMealItem extends DailyMealMetaItem {
     /**
      * Copy constructor. Performs a shallow copy.
      *
-     * @param item the OrganizationItem to be copied.
+     * @param item the DailyMealItem to be copied.
      */
     public DailyMealItem(DailyMealItem item) {
         super(item);

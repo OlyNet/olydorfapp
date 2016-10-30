@@ -29,18 +29,23 @@ import android.widget.TextView;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
 import eu.olynet.olydorfapp.R;
+import eu.olynet.olydorfapp.activities.DrinkViewerActivity;
 import eu.olynet.olydorfapp.activities.FoodViewerActivity;
 import eu.olynet.olydorfapp.activities.MealOfTheDayViewerActivity;
+import eu.olynet.olydorfapp.fragments.DrinkViewerFragment;
 import eu.olynet.olydorfapp.fragments.FoodViewerFragment;
 import eu.olynet.olydorfapp.fragments.MealOfTheDayViewerFragment;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealItem;
+import eu.olynet.olydorfapp.model.DrinkItem;
+import eu.olynet.olydorfapp.model.DrinkSizeItem;
 import eu.olynet.olydorfapp.model.FoodItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
@@ -61,6 +66,7 @@ public class BierstubeTabAdapter
     private MealOfTheDayItem mealOfTheDayItem;
     private DailyMealItem dailyMealItem;
     private List<AbstractMetaItem<?>> foodItems;
+    private List<AbstractMetaItem<?>> drinkItems;
 
     private final Context context;
 
@@ -71,11 +77,14 @@ public class BierstubeTabAdapter
      * @param foodItems        the List containing the FoodItems.
      */
     public BierstubeTabAdapter(Context context, MealOfTheDayItem mealOfTheDayItem,
-                               DailyMealItem dailyMealItem, List<AbstractMetaItem<?>> foodItems) {
+                               DailyMealItem dailyMealItem, List<AbstractMetaItem<?>> foodItems,
+                               List<AbstractMetaItem<?>> drinkItems) {
         this.context = context;
         this.mealOfTheDayItem = mealOfTheDayItem;
         this.dailyMealItem = dailyMealItem;
         this.foodItems = foodItems;
+        this.drinkItems = drinkItems;
+        prepareData();
     }
 
     @Override
@@ -97,7 +106,9 @@ public class BierstubeTabAdapter
                                               .inflate(R.layout.card_food, parent, false);
                 return new FoodHolder(foodView);
             case DRINK_TYPE:
-                throw new NotImplementedException("not yet implemented");
+                View drinkView = LayoutInflater.from(parent.getContext())
+                                               .inflate(R.layout.card_drink, parent, false);
+                return new DrinkHolder(drinkView);
             default:
                 throw new RuntimeException("unknown item view type");
         }
@@ -105,26 +116,50 @@ public class BierstubeTabAdapter
 
     @Override
     public int getItemViewType(int position) {
-        if (position == 0) {
+        int headlineSpecial = 0;
+        int startSpecial = 1;
+        int headlineFood = 1 + (this.mealOfTheDayItem == null ? 0 : 1);
+        int startFood = headlineFood + 1;
+        int headlineDrink = startFood + foodItems.size();
+        int startDrink = headlineDrink + 1;
+
+        if (position == headlineSpecial) {
             return HEADLINE_TYPE;
-        } else if (position == 1) {
+        } else if (position == startSpecial && mealOfTheDayItem != null) {
             return DAILY_MEAL_TYPE;
-        } else if (position == 2) {
+        } else if (position == headlineFood) {
             return HEADLINE_TYPE;
-        } else {
+        } else if (position >= startFood && position < headlineDrink) {
             return FOOD_TYPE;
+        } else if (position == headlineDrink) {
+            return HEADLINE_TYPE;
+        } else if (position >= startDrink) {
+            return DRINK_TYPE;
+        } else {
+            throw new RuntimeException("unexpected position " + position);
         }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        int headlineSpecial = 0;
+        int startSpecial = 1;
+        int headlineFood = 1 + (this.mealOfTheDayItem == null ? 0 : 1);
+        int startFood = headlineFood + 1;
+        int headlineDrink = startFood + foodItems.size();
+        int startDrink = headlineDrink + 1;
+
         switch (getItemViewType(position)) {
             case HEADLINE_TYPE:
                 int resID;
-                if (position == 0) {
+                if (position == headlineSpecial) {
                     resID = R.string.bierstube_headline_daily;
-                } else {
+                } else if (position == headlineFood) {
                     resID = R.string.bierstube_headline_foods;
+                } else if (position == headlineDrink) {
+                    resID = R.string.bierstube_headline_drinks;
+                } else {
+                    throw new RuntimeException("something went wrong during type determination");
                 }
                 ((HeadlineHolder) holder).vTitle.setText(resID);
                 break;
@@ -135,14 +170,37 @@ public class BierstubeTabAdapter
                 // TODO
                 break;
             case FOOD_TYPE:
-                bindFoodHolder((FoodHolder) holder, position - 3);
+                bindFoodHolder((FoodHolder) holder, position - startFood);
                 break;
             case DRINK_TYPE:
-                // TODO
+                int n = startDrink;
+                int pos = 0;
+                int size = 0;
+                for (AbstractMetaItem<?> drinkItem : drinkItems) {
+                    int prevN = n;
+                    n += ((DrinkItem) drinkItem).getDrinkSizes().size();
+                    if (n > position) {
+                        size = position - prevN;
+                        break;
+                    }
+                    pos++;
+                }
+                bindDrinkHolder((DrinkHolder) holder, pos, size);
                 break;
             default:
                 throw new RuntimeException("unknown item view type");
         }
+    }
+
+    /**
+     * @return the number of drink cards present.
+     */
+    private int numberOfDrinkCards() {
+        int n = 0;
+        for (AbstractMetaItem<?> drinkItem : drinkItems) {
+            n += ((DrinkItem) drinkItem).getDrinkSizes().size();
+        }
+        return n;
     }
 
     /**
@@ -197,7 +255,7 @@ public class BierstubeTabAdapter
     }
 
     /**
-     * Fills the ViewHolder with the information about today's special meal.
+     * Fills the ViewHolder with the information about the food.
      *
      * @param holder the ViewHolder to be filled.
      */
@@ -231,25 +289,77 @@ public class BierstubeTabAdapter
     }
 
     /**
+     * Fills the ViewHolder with the information about the drink.
+     *
+     * @param holder the ViewHolder to be filled.
+     */
+    private void bindDrinkHolder(DrinkHolder holder, int pos, int size) {
+        holder.drinkItem = (DrinkItem) drinkItems.get(pos);
+        DrinkSizeItem drinkSize = holder.drinkItem.getDrinkSizes().get(size);
+
+        /* Name */
+        holder.vName.setText(holder.drinkItem.getName());
+
+        /* Icon */
+//        holder.vIcon.setImageResource(holder.drinkItem.isVegetarian() ? R.drawable.carrot_48dp
+//                                                                      : R.drawable.meat_48dp);
+
+        /* Price */
+        NumberFormat deDE = NumberFormat.getCurrencyInstance(Locale.GERMANY);
+        holder.vPrice.setText(deDE.format(drinkSize.getPrice()));
+
+        /* Size */
+        holder.vSize.setText(drinkSize.getSize() + " l");
+
+        /* Image */
+        byte[] image = holder.drinkItem.getImage();
+        int screenWidth = UtilsDevice.getScreenWidth(context);
+        Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
+        if (bitmap != null) {
+            holder.vImage.setImageBitmap(bitmap);
+        } else {
+            holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+        }
+    }
+
+    /**
      * Return the size of your data-set (invoked by the layout manager).
      *
      * @return the number of items present.
      */
     @Override
     public int getItemCount() {
-        return foodItems.size() + 2 + 1;
+        return 1 + (mealOfTheDayItem == null ? 0 : 1) +
+               1 + foodItems.size() +
+               1 + numberOfDrinkCards();
     }
 
     /**
      * @param mealOfTheDayItem the new MealOfTheDayItem.
      * @param dailyMealItem    the new DailyMealItem.
      * @param foodItems        the new List of FoodItems.
+     * @param drinkItems       the new List of DrinkItems.
      */
     public void setData(MealOfTheDayItem mealOfTheDayItem, DailyMealItem dailyMealItem,
-                        List<AbstractMetaItem<?>> foodItems) {
+                        List<AbstractMetaItem<?>> foodItems, List<AbstractMetaItem<?>> drinkItems) {
         this.mealOfTheDayItem = mealOfTheDayItem;
         this.dailyMealItem = dailyMealItem;
         this.foodItems = foodItems;
+        this.drinkItems = drinkItems;
+        prepareData();
+    }
+
+    /**
+     * Prepares the data for use. Drinks without sizes are removed.
+     */
+    private void prepareData() {
+        List<AbstractMetaItem<?>> newDrinkItems = new ArrayList<>();
+        for (AbstractMetaItem<?> drinkItem : drinkItems) {
+            if (((DrinkItem) drinkItem).getDrinkSizes().size() > 0) {
+                newDrinkItems.add(drinkItem);
+            }
+        }
+        drinkItems = newDrinkItems;
     }
 
     private class HeadlineHolder extends RecyclerView.ViewHolder {
@@ -321,6 +431,34 @@ public class BierstubeTabAdapter
             vIcon = (ImageView) view.findViewById(R.id.food_icon);
             vImage = (ImageView) view.findViewById(R.id.food_image);
             vPrice = (TextView) view.findViewById(R.id.food_price);
+        }
+    }
+
+    private class DrinkHolder extends RecyclerView.ViewHolder {
+
+        DrinkItem drinkItem;
+
+        final TextView vName;
+        final ImageView vIcon;
+        final ImageView vImage;
+        final TextView vPrice;
+        final TextView vSize;
+
+        DrinkHolder(View view) {
+            super(view);
+
+            view.setOnClickListener(v -> {
+                Intent drinkViewerIntent = new Intent(context, DrinkViewerActivity.class);
+                drinkViewerIntent.setAction(Intent.ACTION_VIEW);
+                drinkViewerIntent.putExtra(DrinkViewerFragment.DRINK_ITEM_KEY, drinkItem);
+                context.startActivity(drinkViewerIntent);
+            });
+
+            vName = (TextView) view.findViewById(R.id.drink_title);
+            vIcon = (ImageView) view.findViewById(R.id.drink_icon);
+            vImage = (ImageView) view.findViewById(R.id.drink_image);
+            vPrice = (TextView) view.findViewById(R.id.drink_price);
+            vSize = (TextView) view.findViewById(R.id.drink_amount);
         }
     }
 }

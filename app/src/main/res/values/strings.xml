@@ -8,6 +8,7 @@
     <string name="news_viewer">OlydorfApp News Viewer</string>
     <string name="daily_meal_viewer">OlydorfApp Daily Meal Viewer</string>
     <string name="food_viewer">OlydorfApp Food Viewer</string>
+    <string name="drink_viewer">OlydorfApp Drink Viewer</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>

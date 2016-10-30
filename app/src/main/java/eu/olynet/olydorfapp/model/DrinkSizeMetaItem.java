@@ -17,7 +17,6 @@
 package eu.olynet.olydorfapp.model;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -33,51 +32,50 @@ import java.util.Date;
                 getterVisibility = JsonAutoDetect.Visibility.NONE,
                 setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class MealOfTheDayMetaItem extends AbstractMetaItem<MealOfTheDayMetaItem> {
+public class DrinkSizeMetaItem extends AbstractMetaItem<DrinkSizeMetaItem> {
 
     /**
      * CREATOR necessary for the Parcelable interface.
      */
-    public static final Parcelable.Creator<MealOfTheDayMetaItem> CREATOR
-            = new Parcelable.Creator<MealOfTheDayMetaItem>() {
+    public static final Creator<DrinkSizeMetaItem> CREATOR
+            = new Creator<DrinkSizeMetaItem>() {
 
-        public MealOfTheDayMetaItem createFromParcel(Parcel in) {
-            return new MealOfTheDayMetaItem(in);
+        public DrinkSizeMetaItem createFromParcel(Parcel in) {
+            return new DrinkSizeMetaItem(in);
         }
 
-        public MealOfTheDayMetaItem[] newArray(int size) {
-            return new MealOfTheDayMetaItem[size];
+        public DrinkSizeMetaItem[] newArray(int size) {
+            return new DrinkSizeMetaItem[size];
         }
     };
 
     /**
-     * Constructor for creating MealOfTheDayMetaItem from Parcels.
+     * Constructor for creating DrinkSizeMetaItem from Parcels.
      *
-     * @param in the Parcel this MealOfTheDayMetaItem is to be created from.
+     * @param in the Parcel this DrinkSizeMetaItem is to be created from.
      */
-    protected MealOfTheDayMetaItem(Parcel in) {
+    protected DrinkSizeMetaItem(Parcel in) {
         super(in);
     }
 
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
      */
-    protected MealOfTheDayMetaItem() {
+    protected DrinkSizeMetaItem() {
         super();
     }
 
     /**
      * Copy constructor. Performs a shallow copy.
      *
-     * @param item the MealOfTheDayMetaItem to be copied.
+     * @param item the DrinkSizeMetaItem to be copied.
      */
-    public MealOfTheDayMetaItem(MealOfTheDayMetaItem item) {
+    public DrinkSizeMetaItem(DrinkSizeMetaItem item) {
         super(item);
     }
 
-    public MealOfTheDayMetaItem(int id, Date createDate, Date editDate, String createUser,
-                                String editUser, Date date, String link,
-                                int organization, Date lastUsedDate) {
+    public DrinkSizeMetaItem(int id, Date createDate, Date editDate, String createUser, String editUser,
+                             Date date, String link, int organization, Date lastUsedDate) {
         super(id, createDate, editDate, createUser, editUser, date, link, organization,
               lastUsedDate);
     }
@@ -87,21 +85,21 @@ public class MealOfTheDayMetaItem extends AbstractMetaItem<MealOfTheDayMetaItem>
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof MealOfTheDayMetaItem)) {
+        if (!(obj instanceof DrinkSizeMetaItem)) {
             return false;
         }
-        MealOfTheDayMetaItem item = (MealOfTheDayMetaItem) obj;
+        DrinkSizeMetaItem item = (DrinkSizeMetaItem) obj;
 
         return this.getId() == item.getId();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(35759, 81).append(this.getId()).build();
+        return new HashCodeBuilder(35913, 822547).append(this.getId()).build();
     }
 
     @Override
-    public void updateItem(MealOfTheDayMetaItem updatedItem) throws ItemMismatchException {
+    public void updateItem(DrinkSizeMetaItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
     }
 }

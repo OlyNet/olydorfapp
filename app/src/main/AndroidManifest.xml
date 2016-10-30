@@ -78,6 +78,15 @@
                 android:value="eu.olynet.olydorfapp.activities.MainActivity"/>
         </activity>
 
+        <activity
+            android:name="eu.olynet.olydorfapp.activities.DrinkViewerActivity"
+            android:label="@string/drink_viewer"
+            android:parentActivityName="eu.olynet.olydorfapp.activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="eu.olynet.olydorfapp.activities.MainActivity"/>
+        </activity>
+
         <!-- Cloud Messaging -->
         <service
             android:name=".messaging.MessagingService">

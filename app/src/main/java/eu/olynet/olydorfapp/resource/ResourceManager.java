@@ -31,6 +31,8 @@ import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
+import eu.olynet.olydorfapp.model.DrinkMetaItem;
+import eu.olynet.olydorfapp.model.DrinkSizeMetaItem;
 import eu.olynet.olydorfapp.model.FoodMetaItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
@@ -69,12 +71,16 @@ public abstract class ResourceManager {
         Map<Class, String> initTreeCaches = new LinkedHashMap<>();
         initTreeCaches.put(NewsMetaItem.class, "news");
         initTreeCaches.put(FoodMetaItem.class, "food");
+        initTreeCaches.put(DrinkMetaItem.class, "drink");
+        initTreeCaches.put(DrinkSizeMetaItem.class, "drinksize");
         initTreeCaches.put(DailyMealMetaItem.class, "dailymeal");
         initTreeCaches.put(OrganizationMetaItem.class, "organization");
         initTreeCaches.put(MealOfTheDayMetaItem.class, "mealoftheday");
 
         Set<Class> initSkipDuringCleanup = new LinkedHashSet<>();
         initSkipDuringCleanup.add(FoodMetaItem.class);
+        initSkipDuringCleanup.add(DrinkMetaItem.class);
+        initSkipDuringCleanup.add(DrinkSizeMetaItem.class);
         initSkipDuringCleanup.add(DailyMealMetaItem.class);
         initSkipDuringCleanup.add(OrganizationMetaItem.class);
 

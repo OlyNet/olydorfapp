@@ -17,15 +17,16 @@
 package eu.olynet.olydorfapp.model;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
@@ -35,44 +36,45 @@ import java.util.Date;
                 setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("unused")
-public class FoodItem extends FoodMetaItem {
+public class DrinkItem extends DrinkMetaItem {
 
     /**
      * CREATOR necessary for the Parcelable interface.
      */
-    public static final Parcelable.Creator<FoodItem> CREATOR = new Parcelable.Creator<FoodItem>() {
+    public static final Creator<DrinkItem> CREATOR = new Creator<DrinkItem>() {
 
-        public FoodItem createFromParcel(Parcel in) {
-            return new FoodItem(in);
+        public DrinkItem createFromParcel(Parcel in) {
+            return new DrinkItem(in);
         }
 
-        public FoodItem[] newArray(int size) {
-            return new FoodItem[size];
+        public DrinkItem[] newArray(int size) {
+            return new DrinkItem[size];
         }
     };
 
     @JsonProperty("name") protected String name;
 
-    @JsonProperty("englishname") protected String englishname;
+    @JsonProperty("category") protected int category;
 
-    @JsonProperty("vegetarian") protected boolean vegetarian;
+    @JsonProperty("order") protected int order;
 
-    @JsonProperty("price") protected float price;
+    @JsonProperty("drinkSizes") protected List<DrinkSizeItem> drinkSizes = new ArrayList<>();
 
     @JsonDeserialize(using = ImageDeserializer.class)
-    @JsonProperty("image") protected byte[] image;
+    @JsonProperty("image")
+    protected byte[] image;
 
     /**
-     * Constructor for creating FoodItem from Parcels.
+     * Constructor for creating DrinkItem from Parcels.
      *
-     * @param in the Parcel this FoodItem is to be created from.
+     * @param in the Parcel this DrinkItem is to be created from.
      */
-    protected FoodItem(Parcel in) {
+    protected DrinkItem(Parcel in) {
         super(in);
         this.name = in.readString();
-        this.englishname = in.readString();
-        this.vegetarian = in.readByte() != 0; /* byte -> boolean */
-        this.price = in.readFloat();
+        this.category = in.readInt();
+        this.order = in.readInt();
+        in.readTypedList(this.drinkSizes, DrinkSizeItem.CREATOR);
 
         int imageLength = in.readInt();
         if (imageLength < 0) {
@@ -87,34 +89,34 @@ public class FoodItem extends FoodMetaItem {
     /**
      * Default constructor for deserialization. <b>Do not use!</b>
      */
-    protected FoodItem() {
+    protected DrinkItem() {
         super();
     }
 
     /**
      * Copy constructor. Performs a shallow copy.
      *
-     * @param item the FoodItem to be copied.
+     * @param item the DrinkItem to be copied.
      */
-    public FoodItem(FoodItem item) {
+    public DrinkItem(DrinkItem item) {
         super(item);
         this.name = item.name;
-        this.englishname = item.englishname;
-        this.price = item.price;
-        this.vegetarian = item.vegetarian;
+        this.category = item.category;
+        this.order = item.order;
+        this.drinkSizes = item.drinkSizes;
         this.image = item.image;
     }
 
-    public FoodItem(int id, Date createDate, Date editDate, String createUser, String editUser,
-                    Date date, String link, int organization, Date lastUsedDate,
-                    String name, String englishname, boolean vegetarian, float price,
-                    byte[] image) {
+    public DrinkItem(int id, Date createDate, Date editDate, String createUser, String editUser,
+                     Date date, String link, int organization, Date lastUsedDate,
+                     String name, int category, int order, List<DrinkSizeItem> drinkSizes,
+                     byte[] image) {
         super(id, createDate, editDate, createUser, editUser, date, link, organization,
               lastUsedDate);
         this.name = name;
-        this.englishname = englishname;
-        this.price = price;
-        this.vegetarian = vegetarian;
+        this.category = category;
+        this.order = order;
+        this.drinkSizes = drinkSizes;
         this.image = image;
     }
 
@@ -129,9 +131,9 @@ public class FoodItem extends FoodMetaItem {
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(name);
-        dest.writeString(englishname);
-        dest.writeByte((byte) (vegetarian ? 1 : 0)); /* boolean -> byte */
-        dest.writeFloat(price);
+        dest.writeInt(category);
+        dest.writeInt(order);
+        dest.writeTypedList(drinkSizes);
 
         int imageLength = (image != null ? image.length : -1);
         dest.writeInt(imageLength);
@@ -150,28 +152,28 @@ public class FoodItem extends FoodMetaItem {
         this.name = name;
     }
 
-    public String getEnglishname() {
-        return englishname;
+    public int getCategory() {
+        return category;
     }
 
-    public void setEnglishname(String englishname) {
-        this.englishname = englishname;
+    public void setCategory(int category) {
+        this.category = category;
     }
 
-    public float getPrice() {
-        return price;
+    public int getOrder() {
+        return order;
     }
 
-    public void setPrice(float price) {
-        this.price = price;
+    public void setOrder(int order) {
+        this.order = order;
     }
 
-    public boolean isVegetarian() {
-        return vegetarian;
+    public List<DrinkSizeItem> getDrinkSizes() {
+        return drinkSizes;
     }
 
-    public void setVegetarian(boolean vegetarian) {
-        this.vegetarian = vegetarian;
+    public void setDrinkSizes(List<DrinkSizeItem> drinkSizes) {
+        this.drinkSizes = drinkSizes;
     }
 
     public byte[] getImage() {
@@ -182,32 +184,32 @@ public class FoodItem extends FoodMetaItem {
         this.image = image;
     }
 
-    public void updateItem(FoodItem updatedItem) throws ItemMismatchException {
+    public void updateItem(DrinkItem updatedItem) throws ItemMismatchException {
         super.updateItem(updatedItem);
         this.name = updatedItem.name;
-        this.englishname = updatedItem.englishname;
-        this.price = updatedItem.price;
-        this.vegetarian = updatedItem.vegetarian;
+        this.category = updatedItem.category;
+        this.order = updatedItem.order;
+        this.drinkSizes = updatedItem.drinkSizes;
         this.image = updatedItem.image;
     }
 
     @Override
     public boolean exactlyEquals(AbstractMetaItem<?> another) {
         return (super.exactlyEquals(another) &&
-                this.name.equals(((FoodItem) another).name) &&
-                this.englishname.equals(((FoodItem) another).englishname) &&
-                this.vegetarian == ((FoodItem) another).vegetarian &&
-                this.price == ((FoodItem) another).price &&
-                Arrays.equals(this.image, ((FoodItem) another).image));
+                this.name.equals(((DrinkItem) another).name) &&
+                this.category == ((DrinkItem) another).category &&
+                this.order == ((DrinkItem) another).order &&
+                this.drinkSizes.equals(((DrinkItem) another).drinkSizes) &&
+                Arrays.equals(this.image, ((DrinkItem) another).image));
     }
 
     @Override
     public String toString() {
         String result = super.toString() + "\n";
         result += "name = " + this.name + "\n";
-        result += "englishname = " + this.englishname + "\n";
-        result += "price = " + this.price + "\n";
-        result += "vegetarian = " + this.vegetarian + "\n";
+        result += "category = " + this.category + "\n";
+        result += "order = " + this.order + "\n";
+        result += "drinkSizes = " + this.drinkSizes.size() + "\n";
         result += "image = " + ((image != null) ? image.length : 0) + " Byte";
 
         return result;
