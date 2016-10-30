@@ -1,31 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (c) OlyNet 2016 - All Rights Reserved
-  ~ Unauthorized copying of this file, via any medium is strictly prohibited.
-  ~ Proprietary and confidential
-  -->
-
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-                                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-                                    android:id="@+id/headline_card_view"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_margin="5dp"
-                                    android:clickable="false"
-                                    card_view:cardBackgroundColor="@color/CardRegular"
-                                    card_view:cardCornerRadius="0dp"
-                                    card_view:cardElevation="0dp">
-
-    <TextView
-        android:id="@+id/headline_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|left"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        android:adjustViewBounds="true"
-        android:text="Headline"
-        android:textSize="24sp"
-        android:textStyle="bold"/>
-
-
-</android.support.v7.widget.CardView>
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+          android:id="@+id/headline_title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center|left"
+          android:layout_margin="5dp"
+          android:clickable="false"
+          android:textSize="24sp"
+          android:textStyle="bold|italic"/>

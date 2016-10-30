@@ -71,6 +71,7 @@
 
     <!-- Card colors -->
     <color name="CardRegular">#E0E0E0</color>
+    <color name="Transparent">#00000000</color>
 
     <!-- Settings -->
     <color name="accent">@color/OlympiaOrange</color>

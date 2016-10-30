@@ -5,16 +5,16 @@
   -->
 
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drink_card_view"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="5dp"
-    android:clickable="true"
-    android:foreground="?android:attr/selectableItemBackground"
-    card_view:cardBackgroundColor="@color/CardRegular"
-    card_view:cardCornerRadius="4dp"
-    card_view:cardElevation="2dp">
+                                    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                                    android:id="@+id/drink_card_view"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="5dp"
+                                    android:clickable="true"
+                                    android:foreground="?android:attr/selectableItemBackground"
+                                    card_view:cardBackgroundColor="@color/CardRegular"
+                                    card_view:cardCornerRadius="4dp"
+                                    card_view:cardElevation="2dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -28,10 +28,8 @@
             android:layout_gravity="center|left"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
-            android:adjustViewBounds="true"
-            android:text="Helles"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <ImageView
             android:id="@+id/drink_icon"
@@ -71,8 +69,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 android:gravity="left|bottom"
-                android:text="4,40 €"
-                android:textSize="16sp" />
+                android:textSize="16sp"/>
 
             <TextView
                 android:id="@+id/drink_amount"
@@ -83,8 +80,7 @@
                 android:gravity="bottom|right"
                 android:paddingLeft="2pt"
                 android:paddingRight="2pt"
-                android:text="0.5 l"
-                android:textSize="16sp" />
+                android:textSize="16sp"/>
 
         </LinearLayout>
 

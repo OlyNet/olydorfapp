@@ -89,26 +89,27 @@ public class BierstubeTabAdapter
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view;
         switch (viewType) {
             case HEADLINE_TYPE:
-                View headlineView = LayoutInflater.from(parent.getContext())
-                                                  .inflate(R.layout.card_headline, parent, false);
-                return new HeadlineHolder(headlineView);
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_headline,
+                                                                        parent, false);
+                return new HeadlineHolder(view);
             case DAILY_MEAL_TYPE:
-                View dailyMealView = LayoutInflater.from(parent.getContext())
+                view = LayoutInflater.from(parent.getContext())
                                                    .inflate(R.layout.card_meal_of_the_day, parent,
                                                             false);
-                return new DailyMealHolder(dailyMealView);
+                return new DailyMealHolder(view);
             case DAILY_DRINK_TYPE:
                 throw new NotImplementedException("not yet implemented");
             case FOOD_TYPE:
-                View foodView = LayoutInflater.from(parent.getContext())
+                view = LayoutInflater.from(parent.getContext())
                                               .inflate(R.layout.card_food, parent, false);
-                return new FoodHolder(foodView);
+                return new FoodHolder(view);
             case DRINK_TYPE:
-                View drinkView = LayoutInflater.from(parent.getContext())
+                view = LayoutInflater.from(parent.getContext())
                                                .inflate(R.layout.card_drink, parent, false);
-                return new DrinkHolder(drinkView);
+                return new DrinkHolder(view);
             default:
                 throw new RuntimeException("unknown item view type");
         }
@@ -167,8 +168,7 @@ public class BierstubeTabAdapter
                 bindDailyMealHolder((DailyMealHolder) holder);
                 break;
             case DAILY_DRINK_TYPE:
-                // TODO
-                break;
+                throw new NotImplementedException("not yet implemented");
             case FOOD_TYPE:
                 bindFoodHolder((FoodHolder) holder, position - startFood);
                 break;
