@@ -24,6 +24,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import eu.olynet.olydorfapp.model.CategoryItem;
+import eu.olynet.olydorfapp.model.CategoryMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
 import eu.olynet.olydorfapp.model.DrinkItem;
@@ -116,6 +118,27 @@ public interface OlyNetClient {
     @GET
     @Path("/food")
     List<FoodItem> getFood();
+
+    /* Category API */
+    @GET
+    @Path("/category/meta/{id}")
+    CategoryMetaItem getMetaCategory(@PathParam("id") int id);
+
+    @GET
+    @Path("/category/meta")
+    List<CategoryMetaItem> getMetaCategory();
+
+    @GET
+    @Path("/category/{id}")
+    CategoryItem getCategory(@PathParam("id") int id);
+
+    @GET
+    @Path("/category/any/{ids}")
+    List<CategoryItem> getCategory(@PathParam("ids") String ids);
+
+    @GET
+    @Path("/category")
+    List<CategoryItem> getCategory();
 
     /* Drink API */
     @GET

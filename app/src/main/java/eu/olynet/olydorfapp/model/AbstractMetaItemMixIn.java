@@ -35,6 +35,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
          @JsonSubTypes.Type(value = NewsItem.class, name = "NewsItem"),
          @JsonSubTypes.Type(value = FoodMetaItem.class, name = "FoodMetaItem"),
          @JsonSubTypes.Type(value = FoodItem.class, name = "FoodItem"),
+         @JsonSubTypes.Type(value = CategoryMetaItem.class, name = "CategoryMetaItem"),
+         @JsonSubTypes.Type(value = CategoryItem.class, name = "CategoryItem"),
          @JsonSubTypes.Type(value = DrinkMetaItem.class, name = "DrinkMetaItem"),
          @JsonSubTypes.Type(value = DrinkItem.class, name = "DrinkItem"),
          @JsonSubTypes.Type(value = DrinkSizeMetaItem.class, name = "DrinkSizeMetaItem"),

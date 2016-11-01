@@ -54,7 +54,7 @@ import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */
-public class BierstubeTabAdapter
+public class BierstubeMenuTabAdapter
         extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int HEADLINE_TYPE = 0;
@@ -67,8 +67,9 @@ public class BierstubeTabAdapter
     private DailyMealItem dailyMealItem;
     private List<AbstractMetaItem<?>> foodItems;
     private List<AbstractMetaItem<?>> drinkItems;
+    private List<AbstractMetaItem<?>> categoryItems;
 
-    private int headlineSpecial = -0;
+    private int headlineSpecial = -1;
     private int startSpecial = -1;
     private int headlineFood = -1;
     private int startFood = -1;
@@ -80,7 +81,7 @@ public class BierstubeTabAdapter
     /**
      * @param context the Context.
      */
-    public BierstubeTabAdapter(Context context) {
+    public BierstubeMenuTabAdapter(Context context) {
         this.context = context;
         this.mealOfTheDayItem = null;
         this.dailyMealItem = null;
@@ -328,12 +329,16 @@ public class BierstubeTabAdapter
      * @param foodItems        the new List of FoodItems.
      * @param drinkItems       the new List of DrinkItems.
      */
-    public void setData(MealOfTheDayItem mealOfTheDayItem, DailyMealItem dailyMealItem,
-                        List<AbstractMetaItem<?>> foodItems, List<AbstractMetaItem<?>> drinkItems) {
+    public void setData(MealOfTheDayItem mealOfTheDayItem,
+                        DailyMealItem dailyMealItem,
+                        List<AbstractMetaItem<?>> foodItems,
+                        List<AbstractMetaItem<?>> drinkItems,
+                        List<AbstractMetaItem<?>> categoryItems) {
         this.mealOfTheDayItem = mealOfTheDayItem;
         this.dailyMealItem = dailyMealItem;
         this.foodItems = foodItems;
         this.drinkItems = drinkItems;
+        this.categoryItems = categoryItems;
         prepareData();
     }
 

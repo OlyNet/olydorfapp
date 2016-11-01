@@ -30,7 +30,7 @@ import java.util.Map;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.fragments.AboutFragment;
-import eu.olynet.olydorfapp.fragments.BierstubeTab;
+import eu.olynet.olydorfapp.fragments.BierstubeMenuFragment;
 import eu.olynet.olydorfapp.fragments.JoinUsTab;
 import eu.olynet.olydorfapp.fragments.LaundryTab;
 import eu.olynet.olydorfapp.fragments.MealOfTheDayListFragment;
@@ -73,7 +73,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
         bierstubeNewsTab.setArguments(bierstubeNewsBundle);
         bierstubeTabs.add(new Tab(R.string.tabTitleNews, bierstubeNewsTab));
 
-        bierstubeTabs.add(new Tab(R.string.tabTitleMenu, new BierstubeTab()));
+        bierstubeTabs.add(new Tab(R.string.tabTitleMenu, new BierstubeMenuFragment()));
 
         bierstubeTabs.add(new Tab(R.string.tabTitleMealOfTheDay, new MealOfTheDayListFragment()));
 
