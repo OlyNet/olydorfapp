@@ -27,11 +27,11 @@ import eu.olynet.olydorfapp.model.AbstractMetaItem;
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
-public abstract class RestManager {
+abstract class RestManager {
 
-    protected static final int DEFAULT_RETRY_COUNT = 3;
+    static final int DEFAULT_RETRY_COUNT = 3;
 
-    protected final Context context;
+    final Context context;
 
     /**
      * Do not use.
@@ -45,7 +45,7 @@ public abstract class RestManager {
      *
      * @param context the application Context.
      */
-    public RestManager(Context context) {
+    RestManager(Context context) {
         this.context = context;
         this.init();
     }

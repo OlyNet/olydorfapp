@@ -89,8 +89,8 @@ public class MealOfTheDayViewerFragment extends Fragment
             /* Icon */
             ImageView mealOfTheDayIcon = (ImageView) view.findViewById(
                     R.id.meal_of_the_day_view_icon);
-            mealOfTheDayIcon.setImageResource(dailyMealItem.isVegetarian() ? R.drawable.carrot_48dp
-                    : R.drawable.meat_48dp);
+            mealOfTheDayIcon.setImageResource(dailyMealItem.isVegetarian() ? R.drawable.carrot
+                    : R.drawable.meat);
 
             /* Image */
             ImageView imageView = (ImageView) view.findViewById(R.id.meal_of_the_day_view_image);

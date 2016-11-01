@@ -138,8 +138,8 @@ public class MealOfTheDayListAdapter
         holder.vHeadline.setText(df.format(mealOfTheDayItem.getDate()));
 
         /* Icon */
-        holder.vIcon.setImageResource(dailyMealItem.isVegetarian() ? R.drawable.carrot_48dp
-                : R.drawable.meat_48dp);
+        holder.vIcon.setImageResource(dailyMealItem.isVegetarian() ? R.drawable.carrot
+                : R.drawable.meat);
 
         /* Name */
         holder.vName.setText(dailyMealItem.getName());

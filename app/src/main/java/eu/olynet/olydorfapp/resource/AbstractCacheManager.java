@@ -27,9 +27,9 @@ import eu.olynet.olydorfapp.model.AbstractMetaItem;
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
-public abstract class AbstractCacheManager {
+abstract class AbstractCacheManager {
 
-    protected final Context context;
+    final Context context;
 
     /**
      * Do not use.
@@ -43,7 +43,7 @@ public abstract class AbstractCacheManager {
      *
      * @param context the application Context.
      */
-    public AbstractCacheManager(Context context) {
+    AbstractCacheManager(Context context) {
         this.context = context;
         this.init();
     }

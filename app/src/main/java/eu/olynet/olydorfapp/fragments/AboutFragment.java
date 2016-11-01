@@ -71,7 +71,7 @@ public class AboutFragment extends Fragment {
         return view;
     }
 
-    public void setupLicenseDialog(final Button button) {
+    private void setupLicenseDialog(final Button button) {
         button.setOnClickListener(v -> {
             final Notices notices = new Notices();
             final License apacheLicense = new ApacheSoftwareLicense20();

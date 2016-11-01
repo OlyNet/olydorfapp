@@ -104,10 +104,10 @@ dependencies {
     // Apache Commons
     compile 'org.apache.commons:commons-lang3:3.4'
     // RESTEasy support
-    compile 'com.fasterxml.jackson.core:jackson-core:2.7.3'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.7.3'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.7.3'
-    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.7.3'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.8.4'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.4'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.4'
+    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.8.4'
     compile 'org.jboss.resteasy:resteasy-client:3.0.16.Final'
     // Caching
     compile('com.vincentbrison.openlibraries.android:dualcache:2.2.2@jar') {
@@ -120,4 +120,9 @@ dependencies {
     androidTestCompile('com.android.support.test:runner:0.3') {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
+}
+configurations {
+    // Not necessary, part of Android
+    compile.exclude module: 'httpclient'
+    compile.exclude group: 'org.apache.httpcomponents'
 }

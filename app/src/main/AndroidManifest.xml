@@ -89,14 +89,16 @@
 
         <!-- Cloud Messaging -->
         <service
-            android:name=".messaging.MessagingService">
+            android:name=".messaging.MessagingService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
 
         <service
-            android:name=".messaging.InstanceIDService">
+            android:name=".messaging.InstanceIDService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>

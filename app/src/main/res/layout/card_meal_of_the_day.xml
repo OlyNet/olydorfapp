@@ -45,7 +45,7 @@
             android:layout_alignTop="@+id/meal_of_the_day_headline"
             android:adjustViewBounds="true"
             android:scaleType="centerInside"
-            android:src="@drawable/meat_48dp"/>
+            android:src="@drawable/meat"/>
 
         <ImageView
             android:id="@+id/meal_of_the_day_image"

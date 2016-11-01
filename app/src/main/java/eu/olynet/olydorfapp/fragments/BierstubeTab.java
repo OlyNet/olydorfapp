@@ -64,8 +64,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
         View view = inflater.inflate(R.layout.tab_bierstube, container, false);
 
         /* initiate NewsTabAdapter */
-        mAdapter = new BierstubeTabAdapter(getContext(), null, null, new ArrayList<>(),
-                                           new ArrayList<>());
+        mAdapter = new BierstubeTabAdapter(getContext());
 
         /* setup the LayoutManager */
         final GridLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 1,
@@ -103,7 +102,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
      *
      * @param forceUpdate whether an update of the cached data should be forced.
      */
-    public void loadData(boolean forceUpdate) {
+    private void loadData(boolean forceUpdate) {
         /* disable swipe to refresh while already refreshing */
         mRefreshLayout.setEnabled(false);
 
@@ -131,7 +130,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
     /**
      *
      */
-    protected class BierstubeUpdateTask extends AsyncTask<Void, Void, ResultStructure> {
+    class BierstubeUpdateTask extends AsyncTask<Void, Void, ResultStructure> {
 
         private final boolean forceUpdate;
 
@@ -239,20 +238,10 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
 
     private class ResultStructure {
 
-        MealOfTheDayItem mealOfTheDayItem;
-        DailyMealItem dailyMealItem;
-        List<AbstractMetaItem<?>> foodItems;
-        List<AbstractMetaItem<?>> drinkItems;
-
-        /**
-         * Empty result.
-         */
-        private ResultStructure() {
-            this.mealOfTheDayItem = null;
-            this.dailyMealItem = null;
-            this.foodItems = new ArrayList<>();
-            this.drinkItems = new ArrayList<>();
-        }
+        final MealOfTheDayItem mealOfTheDayItem;
+        final DailyMealItem dailyMealItem;
+        final List<AbstractMetaItem<?>> foodItems;
+        final List<AbstractMetaItem<?>> drinkItems;
 
         private ResultStructure(MealOfTheDayItem mealOfTheDayItem,
                                 DailyMealItem dailyMealItem, List<AbstractMetaItem<?>> foodItems,

@@ -68,22 +68,24 @@ public class BierstubeTabAdapter
     private List<AbstractMetaItem<?>> foodItems;
     private List<AbstractMetaItem<?>> drinkItems;
 
+    private int headlineSpecial = -0;
+    private int startSpecial = -1;
+    private int headlineFood = -1;
+    private int startFood = -1;
+    private int headlineDrink = -1;
+    private int startDrink = -1;
+
     private final Context context;
 
     /**
-     * @param context          the Context.
-     * @param mealOfTheDayItem the MealOfTheDayItem.
-     * @param dailyMealItem    the DailyMealItem.
-     * @param foodItems        the List containing the FoodItems.
+     * @param context the Context.
      */
-    public BierstubeTabAdapter(Context context, MealOfTheDayItem mealOfTheDayItem,
-                               DailyMealItem dailyMealItem, List<AbstractMetaItem<?>> foodItems,
-                               List<AbstractMetaItem<?>> drinkItems) {
+    public BierstubeTabAdapter(Context context) {
         this.context = context;
-        this.mealOfTheDayItem = mealOfTheDayItem;
-        this.dailyMealItem = dailyMealItem;
-        this.foodItems = foodItems;
-        this.drinkItems = drinkItems;
+        this.mealOfTheDayItem = null;
+        this.dailyMealItem = null;
+        this.foodItems = new ArrayList<>();
+        this.drinkItems = new ArrayList<>();
         prepareData();
     }
 
@@ -97,18 +99,18 @@ public class BierstubeTabAdapter
                 return new HeadlineHolder(view);
             case DAILY_MEAL_TYPE:
                 view = LayoutInflater.from(parent.getContext())
-                                                   .inflate(R.layout.card_meal_of_the_day, parent,
-                                                            false);
+                                     .inflate(R.layout.card_meal_of_the_day, parent,
+                                              false);
                 return new DailyMealHolder(view);
             case DAILY_DRINK_TYPE:
                 throw new NotImplementedException("not yet implemented");
             case FOOD_TYPE:
                 view = LayoutInflater.from(parent.getContext())
-                                              .inflate(R.layout.card_food, parent, false);
+                                     .inflate(R.layout.card_food, parent, false);
                 return new FoodHolder(view);
             case DRINK_TYPE:
                 view = LayoutInflater.from(parent.getContext())
-                                               .inflate(R.layout.card_drink, parent, false);
+                                     .inflate(R.layout.card_drink, parent, false);
                 return new DrinkHolder(view);
             default:
                 throw new RuntimeException("unknown item view type");
@@ -117,13 +119,6 @@ public class BierstubeTabAdapter
 
     @Override
     public int getItemViewType(int position) {
-        int headlineSpecial = 0;
-        int startSpecial = 1;
-        int headlineFood = 1 + (this.mealOfTheDayItem == null ? 0 : 1);
-        int startFood = headlineFood + 1;
-        int headlineDrink = startFood + foodItems.size();
-        int startDrink = headlineDrink + 1;
-
         if (position == headlineSpecial) {
             return HEADLINE_TYPE;
         } else if (position == startSpecial && mealOfTheDayItem != null) {
@@ -143,13 +138,6 @@ public class BierstubeTabAdapter
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        int headlineSpecial = 0;
-        int startSpecial = 1;
-        int headlineFood = 1 + (this.mealOfTheDayItem == null ? 0 : 1);
-        int startFood = headlineFood + 1;
-        int headlineDrink = startFood + foodItems.size();
-        int startDrink = headlineDrink + 1;
-
         switch (getItemViewType(position)) {
             case HEADLINE_TYPE:
                 int resID;
@@ -226,8 +214,8 @@ public class BierstubeTabAdapter
 
         /* Icon */
         holder.vIcon.setImageResource(
-                dailyMealItem.isVegetarian() ? R.drawable.carrot_48dp
-                                             : R.drawable.meat_48dp);
+                dailyMealItem.isVegetarian() ? R.drawable.carrot
+                                             : R.drawable.meat);
 
         /* Name */
         holder.vName.setText(dailyMealItem.getName());
@@ -270,8 +258,8 @@ public class BierstubeTabAdapter
         holder.vName.setText(holder.foodItem.getName());
 
         /* Icon */
-        holder.vIcon.setImageResource(holder.foodItem.isVegetarian() ? R.drawable.carrot_48dp
-                                                                     : R.drawable.meat_48dp);
+        holder.vIcon.setImageResource(holder.foodItem.isVegetarian() ? R.drawable.carrot
+                                                                     : R.drawable.meat);
 
         /* Price */
         NumberFormat deDE = NumberFormat.getCurrencyInstance(Locale.GERMANY);
@@ -301,8 +289,8 @@ public class BierstubeTabAdapter
         holder.vName.setText(holder.drinkItem.getName());
 
         /* Icon */
-//        holder.vIcon.setImageResource(holder.drinkItem.isVegetarian() ? R.drawable.carrot_48dp
-//                                                                      : R.drawable.meat_48dp);
+//        holder.vIcon.setImageResource(holder.drinkItem.isVegetarian() ? R.drawable.carrot
+//                                                                      : R.drawable.meat);
 
         /* Price */
         NumberFormat deDE = NumberFormat.getCurrencyInstance(Locale.GERMANY);
@@ -359,7 +347,14 @@ public class BierstubeTabAdapter
                 newDrinkItems.add(drinkItem);
             }
         }
-        drinkItems = newDrinkItems;
+
+        this.drinkItems = newDrinkItems;
+        this.headlineSpecial = 0;
+        this.startSpecial = 1;
+        this.headlineFood = 1 + (this.mealOfTheDayItem == null ? 0 : 1);
+        this.startFood = this.headlineFood + 1;
+        this.headlineDrink = this.startFood + this.foodItems.size();
+        this.startDrink = this.headlineDrink + 1;
     }
 
     private class HeadlineHolder extends RecyclerView.ViewHolder {

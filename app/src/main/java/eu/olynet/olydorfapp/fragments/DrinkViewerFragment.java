@@ -81,8 +81,8 @@ public class DrinkViewerFragment extends Fragment
 
             /* Icon */
 //            ImageView drinkIcon = (ImageView) view.findViewById(R.id.drink_view_icon);
-//            drinkIcon.setImageResource(drinkItem.isVegetarian() ? R.drawable.carrot_48dp
-//                                                                : R.drawable.meat_48dp);
+//            drinkIcon.setImageResource(drinkItem.isVegetarian() ? R.drawable.carrot
+//                                                                : R.drawable.meat);
 
             /* Image */
             ImageView drinkImage = (ImageView) view.findViewById(R.id.drink_view_image);

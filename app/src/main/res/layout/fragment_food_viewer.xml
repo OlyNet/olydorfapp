@@ -48,7 +48,7 @@
                 android:layout_alignTop="@+id/food_view_name"
                 android:adjustViewBounds="true"
                 android:scaleType="centerInside"
-                android:src="@drawable/meat_48dp"/>
+                android:src="@drawable/meat"/>
 
             <ImageView
                 android:id="@+id/food_view_image"

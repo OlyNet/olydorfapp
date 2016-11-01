@@ -16,8 +16,6 @@
  */
 package eu.olynet.olydorfapp.resource;
 
-import android.util.Log;
-
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -40,7 +38,7 @@ import javax.net.ssl.X509TrustManager;
  *
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
-public class CustomTrustManager implements X509TrustManager {
+class CustomTrustManager implements X509TrustManager {
 
     private X509TrustManager defaultTrustManager;
     private X509TrustManager localTrustManager;

@@ -81,8 +81,8 @@ public class FoodViewerFragment extends Fragment
 
             /* Icon */
             ImageView mealOfTheDayIcon = (ImageView) view.findViewById(R.id.food_view_icon);
-            mealOfTheDayIcon.setImageResource(foodItem.isVegetarian() ? R.drawable.carrot_48dp
-                    : R.drawable.meat_48dp);
+            mealOfTheDayIcon.setImageResource(foodItem.isVegetarian() ? R.drawable.carrot
+                    : R.drawable.meat);
 
             /* Image */
             ImageView imageView = (ImageView) view.findViewById(R.id.food_view_image);
