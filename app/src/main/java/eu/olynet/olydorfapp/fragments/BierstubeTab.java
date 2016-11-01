@@ -183,8 +183,8 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
 
             /* sanity check */
             if (metaTree == null || metaTree.isEmpty()) {
-                Log.w("BierstubeTab", "metaTree is null or empty");
-                return new ResultStructure();
+                Log.w("BierstubeTab", "MealOfTheDayItem metaTree is null or empty");
+                return new ResultStructure(null, null, foodItems, drinkItems);
             }
 
             /* filter out the correct meta item */
@@ -211,7 +211,7 @@ public class BierstubeTab extends Fragment implements SwipeRefreshLayout.OnRefre
 
             /* sanity check */
             if (mealOfTheDayItem == null) {
-                return new ResultStructure();
+                return new ResultStructure(null, null, foodItems, drinkItems);
             }
 
             /* get the corresponding DailyMealItem */
