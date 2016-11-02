@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        checkGooglePlayServices();
+//        checkGooglePlayServices();
     }
 
     @Override
@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressWarnings("unused")
     private void checkGooglePlayServices() {
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int status = googleApiAvailability.isGooglePlayServicesAvailable(this);
