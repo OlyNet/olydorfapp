@@ -56,10 +56,11 @@
     <string name="tools_text_account_information_username">Max Mustermann</string>
     <string name="tools_text_account_information_email">max.mustermann@olynet.eu</string>
 
-    <!--Bierstube Fragment-->
-    <string name="bierstube_headline_daily">Today\'s Specials</string>
-    <string name="bierstube_headline_foods">Foods</string>
-    <string name="bierstube_headline_drinks">Drinks</string>
+    <!--Bierstube Menu Fragment-->
+    <string name="bierstube_menu_headline_daily">Today\'s Specials</string>
+    <string name="bierstube_menu_headline_foods">Foods</string>
+    <string name="bierstube_menu_headline_drinks">Drinks</string>
+    <string name="bierstube_menu_size_liters">%1$s l</string>
 
     <!--Organization Fragment-->
     <string name="organization_image">Organization image</string>

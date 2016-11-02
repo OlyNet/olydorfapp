@@ -31,6 +31,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
@@ -43,6 +44,7 @@ import eu.olynet.olydorfapp.fragments.DrinkViewerFragment;
 import eu.olynet.olydorfapp.fragments.FoodViewerFragment;
 import eu.olynet.olydorfapp.fragments.MealOfTheDayViewerFragment;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.CategoryItem;
 import eu.olynet.olydorfapp.model.DailyMealItem;
 import eu.olynet.olydorfapp.model.DrinkItem;
 import eu.olynet.olydorfapp.model.DrinkSizeItem;
@@ -51,11 +53,12 @@ import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
+import static android.R.attr.version;
+
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */
-public class BierstubeMenuTabAdapter
-        extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int HEADLINE_TYPE = 0;
     private static final int DAILY_MEAL_TYPE = 1;
@@ -65,9 +68,9 @@ public class BierstubeMenuTabAdapter
 
     private MealOfTheDayItem mealOfTheDayItem;
     private DailyMealItem dailyMealItem;
-    private List<AbstractMetaItem<?>> foodItems;
-    private List<AbstractMetaItem<?>> drinkItems;
-    private List<AbstractMetaItem<?>> categoryItems;
+    private List<FoodItem> foodItems;
+    private List<DrinkItem> drinkItems;
+    private List<CategoryItem> categoryItems;
 
     private int headlineSpecial = -1;
     private int startSpecial = -1;
@@ -81,13 +84,9 @@ public class BierstubeMenuTabAdapter
     /**
      * @param context the Context.
      */
-    public BierstubeMenuTabAdapter(Context context) {
+    public BierstubeMenuAdapter(Context context) {
         this.context = context;
-        this.mealOfTheDayItem = null;
-        this.dailyMealItem = null;
-        this.foodItems = new ArrayList<>();
-        this.drinkItems = new ArrayList<>();
-        prepareData();
+        setData(null, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
     @Override
@@ -143,11 +142,11 @@ public class BierstubeMenuTabAdapter
             case HEADLINE_TYPE:
                 int resID;
                 if (position == headlineSpecial) {
-                    resID = R.string.bierstube_headline_daily;
+                    resID = R.string.bierstube_menu_headline_daily;
                 } else if (position == headlineFood) {
-                    resID = R.string.bierstube_headline_foods;
+                    resID = R.string.bierstube_menu_headline_foods;
                 } else if (position == headlineDrink) {
-                    resID = R.string.bierstube_headline_drinks;
+                    resID = R.string.bierstube_menu_headline_drinks;
                 } else {
                     throw new RuntimeException("something went wrong during type determination");
                 }
@@ -165,9 +164,9 @@ public class BierstubeMenuTabAdapter
                 int n = startDrink;
                 int pos = 0;
                 int size = 0;
-                for (AbstractMetaItem<?> drinkItem : drinkItems) {
+                for (DrinkItem drinkItem : drinkItems) {
                     int prevN = n;
-                    n += ((DrinkItem) drinkItem).getDrinkSizes().size();
+                    n += drinkItem.getDrinkSizes().size();
                     if (n > position) {
                         size = position - prevN;
                         break;
@@ -186,8 +185,8 @@ public class BierstubeMenuTabAdapter
      */
     private int numberOfDrinkCards() {
         int n = 0;
-        for (AbstractMetaItem<?> drinkItem : drinkItems) {
-            n += ((DrinkItem) drinkItem).getDrinkSizes().size();
+        for (DrinkItem drinkItem : drinkItems) {
+            n += drinkItem.getDrinkSizes().size();
         }
         return n;
     }
@@ -253,7 +252,7 @@ public class BierstubeMenuTabAdapter
             return;
         }
 
-        holder.foodItem = (FoodItem) foodItems.get(pos);
+        holder.foodItem = foodItems.get(pos);
 
         /* Name */
         holder.vName.setText(holder.foodItem.getName());
@@ -283,7 +282,7 @@ public class BierstubeMenuTabAdapter
      * @param holder the ViewHolder to be filled.
      */
     private void bindDrinkHolder(DrinkHolder holder, int pos, int size) {
-        holder.drinkItem = (DrinkItem) drinkItems.get(pos);
+        holder.drinkItem = drinkItems.get(pos);
         DrinkSizeItem drinkSize = holder.drinkItem.getDrinkSizes().get(size);
 
         /* Name */
@@ -298,7 +297,8 @@ public class BierstubeMenuTabAdapter
         holder.vPrice.setText(deDE.format(drinkSize.getPrice()));
 
         /* Size */
-        holder.vSize.setText(drinkSize.getSize() + " l");
+        holder.vSize.setText(context.getResources().getString(R.string.bierstube_menu_size_liters,
+                                                              "" + drinkSize.getSize()));
 
         /* Image */
         byte[] image = holder.drinkItem.getImage();
@@ -336,24 +336,29 @@ public class BierstubeMenuTabAdapter
                         List<AbstractMetaItem<?>> categoryItems) {
         this.mealOfTheDayItem = mealOfTheDayItem;
         this.dailyMealItem = dailyMealItem;
-        this.foodItems = foodItems;
-        this.drinkItems = drinkItems;
-        this.categoryItems = categoryItems;
-        prepareData();
-    }
 
-    /**
-     * Prepares the data for use. Drinks without sizes are removed.
-     */
-    private void prepareData() {
-        List<AbstractMetaItem<?>> newDrinkItems = new ArrayList<>();
+        /* prase FoodItems */
+        this.foodItems = new ArrayList<>();
+        for (AbstractMetaItem<?> foodItem : foodItems) {
+            this.foodItems.add((FoodItem) foodItem);
+        }
+
+        /* parse CategoryItems */
+        this.categoryItems = new ArrayList<>();
+        for (AbstractMetaItem<?> categoryItem : categoryItems) {
+            this.categoryItems.add((CategoryItem) categoryItem);
+        }
+        Collections.sort(this.categoryItems, (c1, c2) -> c1.getOrder() - c2.getOrder());
+
+        /* parse DrinkItems */
+        this.drinkItems = new ArrayList<>();
         for (AbstractMetaItem<?> drinkItem : drinkItems) {
             if (((DrinkItem) drinkItem).getDrinkSizes().size() > 0) {
-                newDrinkItems.add(drinkItem);
+                this.drinkItems.add((DrinkItem) drinkItem);
             }
         }
 
-        this.drinkItems = newDrinkItems;
+        /* calculate offsets */
         this.headlineSpecial = 0;
         this.startSpecial = 1;
         this.headlineFood = 1 + (this.mealOfTheDayItem == null ? 0 : 1);
@@ -362,6 +367,9 @@ public class BierstubeMenuTabAdapter
         this.startDrink = this.headlineDrink + 1;
     }
 
+    /**
+     * The ViewHolder for major headlines.
+     */
     private class HeadlineHolder extends RecyclerView.ViewHolder {
 
         final TextView vTitle;
@@ -372,6 +380,9 @@ public class BierstubeMenuTabAdapter
         }
     }
 
+    /**
+     * The ViewHolder for daily meals.
+     */
     private class DailyMealHolder extends RecyclerView.ViewHolder {
 
         MealOfTheDayItem mealOfTheDayItem;
@@ -392,8 +403,7 @@ public class BierstubeMenuTabAdapter
                                                              MealOfTheDayViewerActivity.class);
                 mealOfTheDayViewerIntent.setAction(Intent.ACTION_VIEW);
                 mealOfTheDayViewerIntent.putExtra(
-                        MealOfTheDayViewerFragment.MEAL_OF_THE_DAY_ITEM_KEY,
-                        mealOfTheDayItem);
+                        MealOfTheDayViewerFragment.MEAL_OF_THE_DAY_ITEM_KEY, mealOfTheDayItem);
                 mealOfTheDayViewerIntent.putExtra(MealOfTheDayViewerFragment.DAILY_MEAL_KEY,
                                                   dailyMealItem);
                 context.startActivity(mealOfTheDayViewerIntent);
@@ -408,6 +418,9 @@ public class BierstubeMenuTabAdapter
         }
     }
 
+    /**
+     * The ViewHolder for regular foods.
+     */
     private class FoodHolder extends RecyclerView.ViewHolder {
 
         FoodItem foodItem;
@@ -434,6 +447,9 @@ public class BierstubeMenuTabAdapter
         }
     }
 
+    /**
+     * The ViewHolder for regular drinks.
+     */
     private class DrinkHolder extends RecyclerView.ViewHolder {
 
         DrinkItem drinkItem;

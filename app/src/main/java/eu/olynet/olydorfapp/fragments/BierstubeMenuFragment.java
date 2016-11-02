@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
-import eu.olynet.olydorfapp.adapters.BierstubeMenuTabAdapter;
+import eu.olynet.olydorfapp.adapters.BierstubeMenuAdapter;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.CategoryMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealItem;
@@ -57,7 +57,7 @@ import eu.olynet.olydorfapp.resource.ResourceManager;
 public class BierstubeMenuFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private SwipeRefreshLayout mRefreshLayout;
-    private BierstubeMenuTabAdapter mAdapter;
+    private BierstubeMenuAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -65,7 +65,7 @@ public class BierstubeMenuFragment extends Fragment implements SwipeRefreshLayou
         View view = inflater.inflate(R.layout.tab_bierstube_menu, container, false);
 
         /* initiate NewsTabAdapter */
-        mAdapter = new BierstubeMenuTabAdapter(getContext());
+        mAdapter = new BierstubeMenuAdapter(getContext());
 
         /* setup the LayoutManager */
         final GridLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 1,
@@ -152,10 +152,6 @@ public class BierstubeMenuFragment extends Fragment implements SwipeRefreshLayou
             }
             List<AbstractMetaItem<?>> categoryItems = rm.getItems(CategoryMetaItem.class,
                                                                   categoryIds, null);
-
-            for(AbstractMetaItem<?> categoryItem : categoryItems) {
-                Log.e("Debug", categoryItem.toString());
-            }
 
             /* get all DrinkItems */
             List<Integer> drinkIds = new ArrayList<>();
