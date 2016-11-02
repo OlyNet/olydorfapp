@@ -53,8 +53,6 @@ import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
-import static android.R.attr.version;
-
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */

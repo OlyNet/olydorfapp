@@ -54,7 +54,10 @@ import eu.olynet.olydorfapp.resource.ResourceManager;
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */
-public class BierstubeMenuFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class BierstubeMenuFragment extends Fragment
+        implements SwipeRefreshLayout.OnRefreshListener {
+
+    private static final int BIERSTUBE_ID = 2;
 
     private SwipeRefreshLayout mRefreshLayout;
     private BierstubeMenuAdapter mAdapter;
@@ -135,7 +138,7 @@ public class BierstubeMenuFragment extends Fragment implements SwipeRefreshLayou
 
         private final boolean forceUpdate;
 
-        public BierstubeMenuUpdateTask(boolean forceUpdate) {
+        BierstubeMenuUpdateTask(boolean forceUpdate) {
             super();
             this.forceUpdate = forceUpdate;
         }
@@ -144,9 +147,14 @@ public class BierstubeMenuFragment extends Fragment implements SwipeRefreshLayou
         protected ResultStructure doInBackground(Void... params) {
             ResourceManager rm = ProductionResourceManager.getInstance();
 
+            /* create a filter for the Bierstube organization */
+            ItemFilter organizationFilter = abstractMetaItem ->
+                    abstractMetaItem.getOrganization() == BIERSTUBE_ID;
+
             /* get all CategoryItems */
             List<Integer> categoryIds = new ArrayList<>();
-            for (AbstractMetaItem<?> item : rm.getTreeOfMetaItems(CategoryMetaItem.class,
+            for (AbstractMetaItem<?> item : rm.getTreeOfMetaItems(CategoryMetaItem.class, 0, null,
+                                                                  null, organizationFilter,
                                                                   this.forceUpdate)) {
                 categoryIds.add(item.getId());
             }
@@ -155,7 +163,8 @@ public class BierstubeMenuFragment extends Fragment implements SwipeRefreshLayou
 
             /* get all DrinkItems */
             List<Integer> drinkIds = new ArrayList<>();
-            for (AbstractMetaItem<?> item : rm.getTreeOfMetaItems(DrinkMetaItem.class,
+            for (AbstractMetaItem<?> item : rm.getTreeOfMetaItems(DrinkMetaItem.class, 0, null,
+                                                                  null, organizationFilter,
                                                                   this.forceUpdate)) {
                 drinkIds.add(item.getId());
             }
@@ -163,7 +172,8 @@ public class BierstubeMenuFragment extends Fragment implements SwipeRefreshLayou
 
             /* get all FoodItems */
             List<Integer> foodIds = new ArrayList<>();
-            for (AbstractMetaItem<?> item : rm.getTreeOfMetaItems(FoodMetaItem.class,
+            for (AbstractMetaItem<?> item : rm.getTreeOfMetaItems(FoodMetaItem.class, 0, null, null,
+                                                                  organizationFilter,
                                                                   this.forceUpdate)) {
                 foodIds.add(item.getId());
             }
@@ -178,7 +188,7 @@ public class BierstubeMenuFragment extends Fragment implements SwipeRefreshLayou
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
-            ItemFilter filter = abstractMetaItem ->
+            ItemFilter dateFilter = abstractMetaItem ->
                     abstractMetaItem.getDate().compareTo(cal.getTime()) >= 0;
 
             /* querying the ResourceManager for the needed data */
@@ -187,7 +197,7 @@ public class BierstubeMenuFragment extends Fragment implements SwipeRefreshLayou
                     1,
                     null,
                     comparator,
-                    filter,
+                    dateFilter,
                     forceUpdate);
 
             /* sanity check */
@@ -247,6 +257,9 @@ public class BierstubeMenuFragment extends Fragment implements SwipeRefreshLayou
         }
     }
 
+    /**
+     * Internal result data-structure.
+     */
     private class ResultStructure {
 
         final MealOfTheDayItem mealOfTheDayItem;
