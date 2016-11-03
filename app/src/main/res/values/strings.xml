@@ -15,6 +15,10 @@
 
     <string name="bullet">&#8226;</string>
 
+    <!-- ResourceManager -->
+    <string name="resourcemanager_client_certificate">This version of the OlydorfApp is no longer
+        supported!</string>
+
     <!-- Toolbar titles -->
     <string name="toolbarTitleHome">Home</string>
     <string name="toolbarTitleExplore">Explore</string>

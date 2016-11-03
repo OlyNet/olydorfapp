@@ -37,6 +37,7 @@ import java.util.TreeSet;
 
 import javax.ws.rs.NotFoundException;
 
+import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 
 /**
@@ -118,9 +119,9 @@ public class ProductionResourceManager extends ResourceManager {
     private void abortIfNotInitialized() {
         if (!isInitialized()) {
             throw new IllegalStateException("The ResourceManager has not been initialized." +
-                    "Initialize it by calling 'ResourceManager" +
-                    ".getInstance().init(this); '" +
-                    "in the MainActivity's onCreate()!");
+                                            "Initialize it by calling 'ResourceManager" +
+                                            ".getInstance().init(this); '" +
+                                            "in the MainActivity's onCreate()!");
         }
     }
 
@@ -145,6 +146,23 @@ public class ProductionResourceManager extends ResourceManager {
             /* update the date */
             lastNotifiedDate = new Date();
         }
+    }
+
+    /**
+     * Handles the event that a client certificate is not accepted by the server.
+     *
+     * @param e the Exception that caused this method call. May be null.
+     */
+    private void handleClientCertError(@Nullable Throwable e) {
+        /* detailed log */
+        if (e == null) {
+            Log.e("ResourceManager", "Client certificate not accepted!");
+        } else {
+            Log.e("ResourceManager", "Client certificate not accepted!", e);
+        }
+
+        /* inform the user */
+        informUser(this.context.getString(R.string.resourcemanager_client_certificate));
     }
 
     /**
@@ -221,7 +239,13 @@ public class ProductionResourceManager extends ResourceManager {
 
     @Override
     public byte[] getImage(String type, int id, String field) throws NoConnectionException {
-        return this.rest.fetchImage(type, id, field);
+        byte[] image = null;
+        try {
+            image = this.rest.fetchImage(type, id, field);
+        } catch (ClientCertificateInvalidException e) {
+            handleClientCertError(e);
+        }
+        return image;
     }
 
     @Override
@@ -240,13 +264,13 @@ public class ProductionResourceManager extends ResourceManager {
             try {
                 /* create a dummy item with the same id */
                 AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz).setId(id)
-                        .build();
+                                                                                        .build();
 
                 /* use the dummy item to search for the real item within the tree */
                 AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
                 if (metaItem == null || metaItem.getId() != id || metaItem.getEditDate() == null) {
                     throw new RuntimeException("meta-data tree of type '" + clazz +
-                            "' does not contain the requested element " + id);
+                                               "' does not contain the requested element " + id);
                 }
 
                 /* check cache and query server on miss or createDate mismatch */
@@ -263,6 +287,9 @@ public class ProductionResourceManager extends ResourceManager {
                         tree.remove(dummyItem);
                     } catch (NoConnectionException e) {
                         webItem = null;
+                    } catch (ClientCertificateInvalidException e) {
+                        handleClientCertError(e);
+                        webItem = null;
                     }
 
                     /* return webItem instead of the cached item if successful */
@@ -270,11 +297,11 @@ public class ProductionResourceManager extends ResourceManager {
                         item = webItem;
                     } else {
                         Log.w("ResourceManager",
-                                "Fetch failed for some reason (getItem) " + clazz + id);
+                              "Fetch failed for some reason (getItem) " + clazz + id);
                     }
                 } else {
                     Log.d("ResourceManager", "Cached item " + id + " of type '" + clazz +
-                            "' was up-to-createDate, no fetch necessary");
+                                             "' was up-to-createDate, no fetch necessary");
                 }
 
                 /* check if we have some valid item (up-to-createDate or not) */
@@ -288,8 +315,8 @@ public class ProductionResourceManager extends ResourceManager {
 
                     /* write item to cache */
                     Log.d("ResourceManager",
-                            "Updating cache for item with id " + id + " and meta-data tree '" +
-                                    clazz + "'");
+                          "Updating cache for item with id " + id + " and meta-data tree '" +
+                          clazz + "'");
                     this.cache.putCachedItem(clazz, item);
                 }
 
@@ -337,10 +364,10 @@ public class ProductionResourceManager extends ResourceManager {
                     /* use the dummy item to search for the real item within the tree */
                     AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
                     if (metaItem == null || metaItem.getId() != id ||
-                            metaItem.getEditDate() == null) {
+                        metaItem.getEditDate() == null) {
                         throw new RuntimeException("meta-data tree of type '" + clazz +
-                                "' does not contain the requested element " +
-                                id);
+                                                   "' does not contain the requested element " +
+                                                   id);
                     }
 
                     /* check cache and query server on miss or editDate mismatch */
@@ -357,6 +384,9 @@ public class ProductionResourceManager extends ResourceManager {
                             tree.remove(dummyItem);
                         } catch (NoConnectionException e) {
                             webItem = null;
+                        } catch (ClientCertificateInvalidException e) {
+                            handleClientCertError(e);
+                            webItem = null;
                         }
 
                         /* return webItem instead of the cached item if successful */
@@ -367,7 +397,7 @@ public class ProductionResourceManager extends ResourceManager {
                         }
                     } else {
                         Log.d("ResourceManager", "Cached item " + id + " of type '" + clazz +
-                                "' was up-to-createDate, no fetch necessary");
+                                                 "' was up-to-createDate, no fetch necessary");
                     }
 
                     /* check if we have some valid item (up-to-createDate or not) */
@@ -381,7 +411,7 @@ public class ProductionResourceManager extends ResourceManager {
 
                         /* write updated item to cache */
                         Log.d("ResourceManager",
-                                "Updating cache for item " + id + " of type " + clazz);
+                              "Updating cache for item " + id + " of type " + clazz);
                         this.cache.putCachedItem(clazz, item);
 
                         /* add item to the Collection of items to be returned */
@@ -390,9 +420,9 @@ public class ProductionResourceManager extends ResourceManager {
                 }
             } catch (Exception e) {
                 Log.e("ResourceManager", "exception information in case it gets wrapped to often",
-                        e);
+                      e);
                 throw new RuntimeException("during the getItems() for '" + clazz + "' with ids: " +
-                        Arrays.toString(ids.toArray()), e);
+                                           Arrays.toString(ids.toArray()), e);
             }
 
             Log.d("ResourceManager", "Updating meta-data tree cache of type '" + clazz + "'");
@@ -418,11 +448,14 @@ public class ProductionResourceManager extends ResourceManager {
             List<AbstractMetaItem<?>> items = null;
             boolean noConnection = false;
             boolean generalError = false;
+            boolean certificateError = false;
             if (this.cache.isCacheStale(clazz) || forceUpdate || cachedTree == null) {
                 try {
                     items = rest.fetchMetaItems(clazz);
                 } catch (NoConnectionException nce) {
                     noConnection = true;
+                } catch (ClientCertificateInvalidException e) {
+                    certificateError = true;
                 }
 
                 if (!noConnection && items == null) {
@@ -435,7 +468,7 @@ public class ProductionResourceManager extends ResourceManager {
             TreeSet<AbstractMetaItem<?>> result = new TreeSet<>();
             if (items != null) {
                 Log.d("ResourceManager",
-                        "Received " + items.size() + " meta-data items from server");
+                      "Received " + items.size() + " meta-data items from server");
 
                 /* add all items to the result to be returned */
                 result.addAll(items);
@@ -445,8 +478,8 @@ public class ProductionResourceManager extends ResourceManager {
                     cachedTree.removeAll(result);
                     for (AbstractMetaItem<?> metaItem : cachedTree) {
                         Log.d("ResourceManager",
-                                "Deleting cached item " + metaItem.getId() + " of type '" + clazz +
-                                        "'");
+                              "Deleting cached item " + metaItem.getId() + " of type '" + clazz +
+                              "'");
                         this.cache.deleteCachedItem(clazz, metaItem.getId());
                     }
                 }
@@ -458,6 +491,8 @@ public class ProductionResourceManager extends ResourceManager {
                 /* inform user of problem */
                 if (noConnection) {
                     informUser("No internet connection detected, using cached data instead.");
+                } else if (certificateError) {
+                    handleClientCertError(null);
                 } else if (generalError) {
                     informUser("Unable to contact the server, using cached data instead.");
                 }
@@ -479,7 +514,7 @@ public class ProductionResourceManager extends ResourceManager {
     public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, long limit,
                                                            @Nullable AbstractMetaItem<?> after,
                                                            @Nullable
-                                                           Comparator<AbstractMetaItem<?>>
+                                                                   Comparator<AbstractMetaItem<?>>
                                                                    comparator,
                                                            boolean forceUpdate) {
         abortIfNotInitialized();
@@ -536,7 +571,7 @@ public class ProductionResourceManager extends ResourceManager {
     public TreeSet<AbstractMetaItem<?>> getTreeOfMetaItems(Class<?> clazz, long limit,
                                                            @Nullable AbstractMetaItem<?> after,
                                                            @Nullable
-                                                           Comparator<AbstractMetaItem<?>>
+                                                                   Comparator<AbstractMetaItem<?>>
                                                                    comparator,
                                                            ItemFilter filter,
                                                            boolean forceUpdate) {

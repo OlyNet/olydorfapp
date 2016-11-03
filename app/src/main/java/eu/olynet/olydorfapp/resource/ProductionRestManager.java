@@ -38,9 +38,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLProtocolException;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.ProcessingException;
 
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 
@@ -107,11 +110,11 @@ public class ProductionRestManager extends RestManager {
             /* instantiate the ResteasyClient */
             ResteasyClient client = new ResteasyClientBuilder().providerFactory(
                     new ResteasyProviderFactory().register(JacksonJsonProvider.class))
-                    .register(ByteArrayProvider.class)
-                    .connectionPoolSize(4)
-                    .connectionTTL(5, TimeUnit.MINUTES)
-                    .httpEngine(engine)
-                    .build();
+                                                               .register(ByteArrayProvider.class)
+                                                               .connectionPoolSize(4)
+                                                               .connectionTTL(5, TimeUnit.MINUTES)
+                                                               .httpEngine(engine)
+                                                               .build();
 
             this.onc = client.target(Configuration.SERVER_BASE_URL).proxy(OlyNetClient.class);
 
@@ -140,13 +143,14 @@ public class ProductionRestManager extends RestManager {
     }
 
     @Override
-    public byte[] fetchImage(String type, int id, String field) throws NoConnectionException {
+    public byte[] fetchImage(String type, int id, String field)
+            throws NoConnectionException, ClientCertificateInvalidException {
         return fetchImage(type, id, field, 3);
     }
 
     @Override
-    public byte[] fetchImage(String type, int id, String field, int retryCount) throws
-            NoConnectionException {
+    public byte[] fetchImage(String type, int id, String field, int retryCount)
+            throws NoConnectionException, ClientCertificateInvalidException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -157,7 +161,20 @@ public class ProductionRestManager extends RestManager {
             } catch (NotFoundException e) {
                 image = null;
                 break;
+            } catch (ProcessingException e) {
+                Throwable cause = e.getCause();
+                if (cause != null && cause instanceof SSLHandshakeException) {
+                    Throwable subCause = cause.getCause();
+                    if (subCause != null && subCause instanceof SSLProtocolException) {
+                        throw new ClientCertificateInvalidException("the client certificate " +
+                                                                    "used by this version " +
+                                                                    "seems to be invalid",
+                                                                    cause);
+                    }
+                }
+
             } catch (Exception e) {
+
                 Log.e("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
                 image = null;
             }
@@ -168,14 +185,15 @@ public class ProductionRestManager extends RestManager {
     }
 
     @Override
-    public AbstractMetaItem<?> fetchItem(Class clazz, int id) throws NoConnectionException {
+    public AbstractMetaItem<?> fetchItem(Class clazz, int id)
+            throws NoConnectionException, ClientCertificateInvalidException {
         return fetchItem(clazz, id, RestManager.DEFAULT_RETRY_COUNT);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount) throws
-            NoConnectionException {
+    public AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount)
+            throws NoConnectionException, ClientCertificateInvalidException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -204,6 +222,17 @@ public class ProductionRestManager extends RestManager {
                 if (cause != null && cause instanceof NotFoundException) {
                     Log.i("ResourceManager", "HTTP 404: '" + clazz + "' with id " + id, cause);
                     throw new NotFoundException("HTTP 404: '" + clazz + "' with id " + id, cause);
+                } else if (cause != null && cause instanceof ProcessingException) {
+                    Throwable subCause = cause.getCause();
+                    if (subCause != null && subCause instanceof SSLHandshakeException) {
+                        Throwable subSubCause = subCause.getCause();
+                        if (subSubCause != null && subSubCause instanceof SSLProtocolException) {
+                            throw new ClientCertificateInvalidException("the client certificate " +
+                                                                        "used by this version " +
+                                                                        "seems to be invalid",
+                                                                        subCause);
+                        }
+                    }
                 } else {
                     System.err.println("class=" + clazz + " id=" + id);
                     e.printStackTrace();
@@ -219,14 +248,15 @@ public class ProductionRestManager extends RestManager {
     }
 
     @Override
-    public List<AbstractMetaItem<?>> fetchItems(Class clazz) throws NoConnectionException {
+    public List<AbstractMetaItem<?>> fetchItems(Class clazz)
+            throws NoConnectionException, ClientCertificateInvalidException {
         return fetchItems(clazz, RestManager.DEFAULT_RETRY_COUNT);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<AbstractMetaItem<?>> fetchItems(Class clazz, int retryCount) throws
-            NoConnectionException {
+    public List<AbstractMetaItem<?>> fetchItems(Class clazz, int retryCount)
+            throws NoConnectionException, ClientCertificateInvalidException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -255,6 +285,17 @@ public class ProductionRestManager extends RestManager {
                 if (cause != null && cause instanceof NotFoundException) {
                     Log.e("ResourceManager", "HTTP 404: '" + clazz + "'", cause);
                     // TODO: implement better logging
+                } else if (cause != null && cause instanceof ProcessingException) {
+                    Throwable subCause = cause.getCause();
+                    if (subCause != null && subCause instanceof SSLHandshakeException) {
+                        Throwable subSubCause = subCause.getCause();
+                        if (subSubCause != null && subSubCause instanceof SSLProtocolException) {
+                            throw new ClientCertificateInvalidException("the client certificate " +
+                                                                        "used by this version " +
+                                                                        "seems to be invalid",
+                                                                        subCause);
+                        }
+                    }
                 }
             } catch (Exception e) {
                 Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
@@ -268,15 +309,14 @@ public class ProductionRestManager extends RestManager {
 
     @Override
     public List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids)
-            throws NoConnectionException {
+            throws NoConnectionException, ClientCertificateInvalidException {
         return fetchItems(clazz, ids, RestManager.DEFAULT_RETRY_COUNT);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids, int retryCount)
-            throws
-            NoConnectionException {
+            throws NoConnectionException, ClientCertificateInvalidException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -320,6 +360,17 @@ public class ProductionRestManager extends RestManager {
                 if (cause != null && cause instanceof NotFoundException) {
                     Log.e("ResourceManager", "HTTP 404: '" + clazz + "'", cause);
                     // TODO: implement better logging
+                } else if (cause != null && cause instanceof ProcessingException) {
+                    Throwable subCause = cause.getCause();
+                    if (subCause != null && subCause instanceof SSLHandshakeException) {
+                        Throwable subSubCause = subCause.getCause();
+                        if (subSubCause != null && subSubCause instanceof SSLProtocolException) {
+                            throw new ClientCertificateInvalidException("the client certificate " +
+                                                                        "used by this version " +
+                                                                        "seems to be invalid",
+                                                                        subCause);
+                        }
+                    }
                 }
             } catch (Exception e) {
                 Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
@@ -333,14 +384,15 @@ public class ProductionRestManager extends RestManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public AbstractMetaItem<?> fetchMetaItem(Class clazz, int id) throws NoConnectionException {
+    public AbstractMetaItem<?> fetchMetaItem(Class clazz, int id)
+            throws NoConnectionException, ClientCertificateInvalidException {
         return fetchMetaItem(clazz, id, RestManager.DEFAULT_RETRY_COUNT);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public AbstractMetaItem<?> fetchMetaItem(Class clazz, int id, int retryCount) throws
-            NoConnectionException {
+    public AbstractMetaItem<?> fetchMetaItem(Class clazz, int id, int retryCount)
+            throws NoConnectionException, ClientCertificateInvalidException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -370,6 +422,17 @@ public class ProductionRestManager extends RestManager {
                     Log.e("ResourceManager", "HTTP 404: meta '" + clazz + "' with id " + id, cause);
                     // TODO: implement better logging
                     break;
+                } else if (cause != null && cause instanceof ProcessingException) {
+                    Throwable subCause = cause.getCause();
+                    if (subCause != null && subCause instanceof SSLHandshakeException) {
+                        Throwable subSubCause = subCause.getCause();
+                        if (subSubCause != null && subSubCause instanceof SSLProtocolException) {
+                            throw new ClientCertificateInvalidException("the client certificate " +
+                                                                        "used by this version " +
+                                                                        "seems to be invalid",
+                                                                        subCause);
+                        }
+                    }
                 }
             } catch (Exception e) {
                 Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
@@ -383,14 +446,15 @@ public class ProductionRestManager extends RestManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<AbstractMetaItem<?>> fetchMetaItems(Class clazz) throws NoConnectionException {
+    public List<AbstractMetaItem<?>> fetchMetaItems(Class clazz)
+            throws NoConnectionException, ClientCertificateInvalidException {
         return fetchMetaItems(clazz, RestManager.DEFAULT_RETRY_COUNT);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<AbstractMetaItem<?>> fetchMetaItems(Class clazz, int retryCount) throws
-            NoConnectionException {
+    public List<AbstractMetaItem<?>> fetchMetaItems(Class clazz, int retryCount)
+            throws NoConnectionException, ClientCertificateInvalidException {
         /* terminate if we do not have an internet connection */
         verifyConnectivity();
 
@@ -420,6 +484,17 @@ public class ProductionRestManager extends RestManager {
                     Log.e("ResourceManager", "HTTP 404: meta '" + clazz + "'", cause);
                     // TODO: implement better logging
                     break;
+                } else if (cause != null && cause instanceof ProcessingException) {
+                    Throwable subCause = cause.getCause();
+                    if (subCause != null && subCause instanceof SSLHandshakeException) {
+                        Throwable subSubCause = subCause.getCause();
+                        if (subSubCause != null && subSubCause instanceof SSLProtocolException) {
+                            throw new ClientCertificateInvalidException("the client certificate " +
+                                                                        "used by this version " +
+                                                                        "seems to be invalid",
+                                                                        subCause);
+                        }
+                    }
                 }
 
                 e.printStackTrace();
