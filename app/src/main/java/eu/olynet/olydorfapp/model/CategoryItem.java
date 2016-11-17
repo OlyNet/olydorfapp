@@ -19,6 +19,7 @@ package eu.olynet.olydorfapp.model;
 import android.os.Parcel;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -31,6 +32,7 @@ import java.util.Date;
                 getterVisibility = JsonAutoDetect.Visibility.NONE,
                 setterVisibility = JsonAutoDetect.Visibility.NONE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIgnoreProperties("drinks")
 @SuppressWarnings("unused")
 public class CategoryItem extends CategoryMetaItem {
 

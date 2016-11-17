@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,11 +31,14 @@ import org.apache.commons.lang3.NotImplementedException;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.activities.DrinkViewerActivity;
@@ -47,7 +51,6 @@ import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.CategoryItem;
 import eu.olynet.olydorfapp.model.DailyMealItem;
 import eu.olynet.olydorfapp.model.DrinkItem;
-import eu.olynet.olydorfapp.model.DrinkSizeItem;
 import eu.olynet.olydorfapp.model.FoodItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
@@ -60,12 +63,14 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     private static final int HEADLINE_TYPE = 0;
     private static final int DAILY_MEAL_TYPE = 1;
-    private static final int DAILY_DRINK_TYPE = 2;
-    private static final int FOOD_TYPE = 3;
-    private static final int DRINK_TYPE = 4;
+    private static final int CATEGORY_TYPE = 2;
+    private static final int DAILY_DRINK_TYPE = 3;
+    private static final int FOOD_TYPE = 4;
+    private static final int DRINK_TYPE = 5;
 
     private MealOfTheDayItem mealOfTheDayItem;
     private DailyMealItem dailyMealItem;
+    private DrinkItem drinkOfTheDayItem = null; /* dummy for now */
     private List<FoodItem> foodItems;
     private List<DrinkItem> drinkItems;
     private List<CategoryItem> categoryItems;
@@ -76,6 +81,7 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
     private int startFood = -1;
     private int headlineDrink = -1;
     private int startDrink = -1;
+    private Map<Integer, CategoryItem> categoryPositions = new HashMap<>();
 
     private final Context context;
 
@@ -106,6 +112,10 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
                 view = LayoutInflater.from(parent.getContext())
                                      .inflate(R.layout.card_food, parent, false);
                 return new FoodHolder(view);
+            case CATEGORY_TYPE:
+                view = LayoutInflater.from(parent.getContext())
+                                     .inflate(R.layout.card_category, parent, false);
+                return new CategoryHolder(view);
             case DRINK_TYPE:
                 view = LayoutInflater.from(parent.getContext())
                                      .inflate(R.layout.card_drink, parent, false);
@@ -127,8 +137,12 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
             return FOOD_TYPE;
         } else if (position == headlineDrink) {
             return HEADLINE_TYPE;
-        } else if (position >= startDrink) {
-            return DRINK_TYPE;
+        } else if (position >= startDrink && position < getItemCount()) {
+            if (this.categoryPositions.containsKey(position)) {
+                return CATEGORY_TYPE;
+            } else {
+                return DRINK_TYPE;
+            }
         } else {
             throw new RuntimeException("unexpected position " + position);
         }
@@ -158,35 +172,47 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
             case FOOD_TYPE:
                 bindFoodHolder((FoodHolder) holder, position - startFood);
                 break;
+            case CATEGORY_TYPE:
+                ((CategoryHolder) holder).vTitle.setText(
+                        this.categoryPositions.get(position).getName());
+                break;
             case DRINK_TYPE:
-                int n = startDrink;
-                int pos = 0;
-                int size = 0;
-                for (DrinkItem drinkItem : drinkItems) {
-                    int prevN = n;
-                    n += drinkItem.getDrinkSizes().size();
-                    if (n > position) {
-                        size = position - prevN;
+                List<Integer> catPos = new ArrayList<>(this.categoryPositions.keySet());
+                Collections.sort(catPos);
+
+                CategoryItem category = null;
+                int prev = -1;
+                int prevOffset = -1;
+                for (int offset : catPos) {
+                    if (offset > position) {
                         break;
                     }
-                    pos++;
+                    prev++;
+                    prevOffset = offset;
                 }
-                bindDrinkHolder((DrinkHolder) holder, pos, size);
+                category = this.categoryItems.get(prev);
+
+                int numInCat = position - prevOffset - 1;
+                DrinkItem drinkItem = null;
+                int n = 0;
+                for (DrinkItem item : this.drinkItems) {
+                    if (item.getCategory() != category.getId()) {
+                        continue;
+                    }
+
+                    if (n == numInCat) {
+                        drinkItem = item;
+                        break;
+                    }
+
+                    n++;
+                }
+
+                bindDrinkHolder((DrinkHolder) holder, drinkItem);
                 break;
             default:
                 throw new RuntimeException("unknown item view type");
         }
-    }
-
-    /**
-     * @return the number of drink cards present.
-     */
-    private int numberOfDrinkCards() {
-        int n = 0;
-        for (DrinkItem drinkItem : drinkItems) {
-            n += drinkItem.getDrinkSizes().size();
-        }
-        return n;
     }
 
     /**
@@ -279,27 +305,28 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
      *
      * @param holder the ViewHolder to be filled.
      */
-    private void bindDrinkHolder(DrinkHolder holder, int pos, int size) {
-        holder.drinkItem = drinkItems.get(pos);
-        DrinkSizeItem drinkSize = holder.drinkItem.getDrinkSizes().get(size);
+    private void bindDrinkHolder(DrinkHolder holder, DrinkItem drinkItem) {
+        holder.drinkItem = drinkItem;
+
+        // TODO reformat card to include all sizes
 
         /* Name */
-        holder.vName.setText(holder.drinkItem.getName());
+        holder.vName.setText(drinkItem.getName());
 
         /* Icon */
-//        holder.vIcon.setImageResource(holder.drinkItem.isVegetarian() ? R.drawable.carrot
-//                                                                      : R.drawable.meat);
+//        holder.vIcon.setImageResource(drinkItem.isVegetarian() ? R.drawable.carrot
+//                                                               : R.drawable.meat);
 
         /* Price */
         NumberFormat deDE = NumberFormat.getCurrencyInstance(Locale.GERMANY);
-        holder.vPrice.setText(deDE.format(drinkSize.getPrice()));
+//        holder.vPrice.setText(deDE.format(drinkSize.getPrice()));
 
         /* Size */
-        holder.vSize.setText(context.getResources().getString(R.string.bierstube_menu_size_liters,
-                                                              "" + drinkSize.getSize()));
+//        holder.vSize.setText(context.getResources().getString(R.string.bierstube_menu_size_liters,
+//                                                              "" + drinkSize.getSize()));
 
         /* Image */
-        byte[] image = holder.drinkItem.getImage();
+        byte[] image = drinkItem.getImage();
         int screenWidth = UtilsDevice.getScreenWidth(context);
         Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
         if (bitmap != null) {
@@ -316,9 +343,9 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
      */
     @Override
     public int getItemCount() {
-        return 1 + (mealOfTheDayItem == null ? 0 : 1) +
+        return 1 + (mealOfTheDayItem == null ? 0 : 1) + (this.drinkOfTheDayItem == null ? 0 : 1) +
                1 + foodItems.size() +
-               1 + numberOfDrinkCards();
+               1 + this.categoryItems.size() + this.drinkItems.size();
     }
 
     /**
@@ -326,6 +353,7 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
      * @param dailyMealItem    the new DailyMealItem.
      * @param foodItems        the new List of FoodItems.
      * @param drinkItems       the new List of DrinkItems.
+     * @param categoryItems    the new List of CategoryItems.
      */
     public void setData(MealOfTheDayItem mealOfTheDayItem,
                         DailyMealItem dailyMealItem,
@@ -335,16 +363,20 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
         this.mealOfTheDayItem = mealOfTheDayItem;
         this.dailyMealItem = dailyMealItem;
 
-        /* prase FoodItems */
+        /* parse FoodItems */
         this.foodItems = new ArrayList<>();
         for (AbstractMetaItem<?> foodItem : foodItems) {
             this.foodItems.add((FoodItem) foodItem);
         }
 
         /* parse CategoryItems */
+        SparseIntArray catIdToPos = new SparseIntArray();
         this.categoryItems = new ArrayList<>();
+        int i = 0;
         for (AbstractMetaItem<?> categoryItem : categoryItems) {
             this.categoryItems.add((CategoryItem) categoryItem);
+            catIdToPos.put(categoryItem.getId(), i);
+            i++;
         }
         Collections.sort(this.categoryItems, (c1, c2) -> c1.getOrder() - c2.getOrder());
 
@@ -355,14 +387,31 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
                 this.drinkItems.add((DrinkItem) drinkItem);
             }
         }
+        Collections.sort(this.drinkItems, (d1, d2) -> d1.getOrder() - d2.getOrder());
 
         /* calculate offsets */
         this.headlineSpecial = 0;
         this.startSpecial = 1;
-        this.headlineFood = 1 + (this.mealOfTheDayItem == null ? 0 : 1);
+        this.headlineFood = 1 + (this.mealOfTheDayItem == null ? 0 : 1) +
+                            (this.drinkOfTheDayItem == null ? 0 : 1);
         this.startFood = this.headlineFood + 1;
         this.headlineDrink = this.startFood + this.foodItems.size();
         this.startDrink = this.headlineDrink + 1;
+
+        int drinksPerCategory[] = new int[this.categoryItems.size()];
+        Arrays.fill(drinksPerCategory, 0);
+        for (AbstractMetaItem<?> drinkItem : this.drinkItems) {
+            drinksPerCategory[catIdToPos.get(((DrinkItem) drinkItem).getCategory())]++;
+        }
+
+        this.categoryPositions.clear();
+        int curPos = this.startDrink;
+        i = 0;
+        for (int offset : drinksPerCategory) {
+            this.categoryPositions.put(curPos, this.categoryItems.get(i));
+            curPos += offset + 1;
+            i++;
+        }
     }
 
     /**
@@ -375,6 +424,19 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
         HeadlineHolder(View view) {
             super(view);
             vTitle = (TextView) view.findViewById(R.id.headline_title);
+        }
+    }
+
+    /**
+     * The ViewHolder for category headlines.
+     */
+    private class CategoryHolder extends RecyclerView.ViewHolder {
+
+        final TextView vTitle;
+
+        CategoryHolder(View view) {
+            super(view);
+            vTitle = (TextView) view.findViewById(R.id.category_title);
         }
     }
 
