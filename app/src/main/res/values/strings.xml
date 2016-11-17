@@ -2,22 +2,23 @@
     <string name="app_name">OlydorfApp</string>
 
     <string name="app_qr_scanner">QR Scanner</string>
-    <string name="QR_scan_return">ScanResult</string>
+    <string name="QR_scan_return"
+            translatable="false">ScanResult</string>
     <string name="menu_action_refresh">Refresh</string>
 
     <string name="news_viewer">OlydorfApp News Viewer</string>
-    <string name="daily_meal_viewer">OlydorfApp Daily Meal Viewer</string>
+    <string name="daily_meal_viewer">OlydorfApp Daily Meal</string>
     <string name="food_viewer">OlydorfApp Food Viewer</string>
-    <string name="drink_viewer">OlydorfApp Drink Viewer</string>
+    <string name="drink_viewer">OlydorfApp Drink</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
-    <string name="bullet">&#8226;</string>
+    <string name="bullet"
+            translatable="false">&#8226;</string>
 
     <!-- ResourceManager -->
-    <string name="resourcemanager_client_certificate">This version of the OlydorfApp is no longer
-        supported!</string>
+    <string name="resourcemanager_client_certificate">This version of the OlydorfApp is no longer supported!</string>
 
     <!-- Toolbar titles -->
     <string name="toolbarTitleHome">Home</string>
@@ -55,8 +56,10 @@
     <string name="emptyList">Nothing yet :(</string>
     <string name="navigation_drawer_opened">The navigation drawer is opened</string>
     <string name="navigation_drawer_closed">The navigation drawer is closed</string>
-    <string name="tag_nav_drawer_main_entry">nav_drawer_main_entry</string>
-    <string name="tag_nav_drawer_special_entry">nav_drawer_special_entry</string>
+    <string name="tag_nav_drawer_main_entry"
+            translatable="false">nav_drawer_main_entry</string>
+    <string name="tag_nav_drawer_special_entry"
+            translatable="false">nav_drawer_special_entry</string>
     <string name="tools_text_account_information_username">Max Mustermann</string>
     <string name="tools_text_account_information_email">max.mustermann@olynet.eu</string>
 
@@ -64,57 +67,46 @@
     <string name="bierstube_menu_headline_daily">Today\'s Specials</string>
     <string name="bierstube_menu_headline_foods">Foods</string>
     <string name="bierstube_menu_headline_drinks">Drinks</string>
-    <string name="bierstube_menu_size_liters">%1$s l</string>
+    <string name="bierstube_menu_size_liters"
+            translatable="false">%1$s l</string>
 
     <!--Organization Fragment-->
     <string name="organization_image">Organization image</string>
 
     <!-- Join Us Fragment -->
-    <string name="join_us_opening">The OlyNet is an association that assists students living in
-        the olympic village when they experience internet or general pc problems. As this can
-        get a bit boring after a while we are always looking for new challenges (have a look at
-        our projects). It is our goal to make life here in the dorms even more enjoyable than it
-        already is. Of course, we all still have to go to university and work and therefor don’t
-        have as much time to work on our ideas as we might like. This is where you come into the
-        picture: do you want to join us? We are always looking for new dedicated members that
-        want to work with us!</string>
-    <string name="join_us_closing">Are you interested? Let us know! Send a mail to
-        joinus@olynet.eu or visit us in one of our consultation hours.</string>
+    <string name="join_us_opening">The OlyNet is an association that assists students living in the olympic village when they experience internet or general pc problems. As this can get a bit boring after a while we are always looking for new challenges (have a look at our projects). It is our goal to make life here in the dorms even more enjoyable than it already is. Of course, we all still have to go to university and work and therefor don’t have as much time to work on our ideas as we might like. This is where you come into the picture: do you want to join us? We are always looking for new dedicated members that want to work with us!</string>
+    <string name="join_us_closing">Are you interested? Let us know! Send a mail to joinus@olynet.eu or visit us in one of our consultation hours.</string>
 
     <string name="join_us_headline_expect">What we expect:</string>
     <string name="join_us_headline_looking_for">What we are especially looking for:</string>
     <string name="join_us_headline_offer">What we offer:</string>
 
-    <string name="join_us_expectation1">interest in diverse topics such as technology, management
-        or graphics &amp; design</string>
+    <string name="join_us_expectation1">interest in diverse topics such as technology, management or graphics &amp; design</string>
     <string name="join_us_expectation2">being able to work independently and in teams</string>
-    <string name="join_us_expectation3">dedication: willingness to invest time and becoming
-        acquainted with completely new topics and concepts</string>
+    <string name="join_us_expectation3">dedication: willingness to invest time and becoming acquainted with completely new topics and concepts</string>
     <string name="join_us_expectation4">a good portion of humor. ;)</string>
 
     <string name="join_us_looking_for1">people interested in bookkeeping and/or management</string>
-    <string name="join_us_looking_for2">software developers (iOS, Android, Java, Webdevelopment,
-        Embedded, …) or people who want to collect experience in this field</string>
+    <string name="join_us_looking_for2">software developers (iOS, Android, Java, Webdevelopment, Embedded, ...) or people who want to collect experience in this field</string>
     <string name="join_us_looking_for3">anyone else that is interested and motivated.</string>
 
-    <string name="join_us_offer1">gathering experience in an interesting and innovative
-        environment</string>
+    <string name="join_us_offer1">gathering experience in an interesting and innovative environment</string>
     <string name="join_us_offer2">the possibility to be a part of something bigger</string>
     <string name="join_us_offer3">a team that does things together outside of its work</string>
-    <string name="join_us_offer4">a performance record by us and the IT department of the
-        Studentenwerk Munich</string>
+    <string name="join_us_offer4">a performance record by us and the IT department of the Studentenwerk Munich</string>
     <string name="join_us_offer5">extended lease in the dorms of the Studentenwerk.</string>
 
     <!-- About Fragment -->
     <string name="about_version_string">Version %1$s</string>
-    <string name="about_help_us">Want to help improve this app? Let us know at
-        app@olynet.eu!</string>
+    <string name="about_help_us">Want to help improve this app? Let us know at app@olynet.eu!</string>
     <string name="about_licenses">Open Source Licenses</string>
 
 
     <!-- Typeface names -->
-    <string name="typeface_roboto_regular">Roboto-Regular</string>
-    <string name="typeface_roboto_medium">Roboto-Medium</string>
+    <string name="typeface_roboto_regular"
+            translatable="false">Roboto-Regular</string>
+    <string name="typeface_roboto_medium"
+            translatable="false">Roboto-Medium</string>
 
     <!-- Laundry strings -->
     <string name="laundryCameraScanMessage">Scan the QR code attached to the machines</string>

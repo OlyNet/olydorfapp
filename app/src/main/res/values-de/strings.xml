@@ -1,0 +1,107 @@
+<resources>
+    <string name="app_name">OlydorfApp</string>
+
+    <string name="app_qr_scanner">QR Scanner</string>
+    <string name="QR_scan_return">ScanResult</string>
+    <string name="menu_action_refresh">Aktualisieren</string>
+
+    <string name="news_viewer">OlydorfApp News</string>
+    <string name="daily_meal_viewer">OlydorfApp Tagesessen</string>
+    <string name="food_viewer">OlydorfApp Essen</string>
+    <string name="drink_viewer">OlydorfApp Getränk</string>
+
+    <string name="hello_world">Hallo Welt!</string>
+    <string name="action_settings">Einstellungen</string>
+
+    <string name="bullet">&#8226;</string>
+
+    <!-- ResourceManager -->
+    <string name="resourcemanager_client_certificate">Diese Version der OlydorfApp wird nicht mehr unterstützt!</string>
+
+    <!-- Toolbar titles -->
+    <string name="toolbarTitleHome">Home</string>
+    <string name="toolbarTitleExplore">Erkunden</string>
+
+    <!-- Navigation Drawer -->
+    <string name="navDrawerHomeEntry">Home</string>
+    <string name="navDrawerBierstubeEntry">Die Bierstube</string>
+    <string name="navDrawerDiscoEntry">OlyDisco</string>
+    <string name="navDrawerLoungeEntry">The O(n)ly</string>
+    <string name="navDrawerOlynetEntry">OlyNet e.V.</string>
+    <string name="navDrawerLaundryEntry">Waschraum</string>
+    <string name="navDrawerHelpEntry">Hilfe</string>
+    <string name="navDrawerSettingsEntry">Einstellungen</string>
+    <string name="navDrawerAboutEntry">Über</string>
+
+    <!-- Tab titles -->
+    <string name="tabTitleNews">Neuigkeiten</string>
+    <string name="tabTitleGeneral">Allgemein</string>
+    <string name="tabTitleMenu">Speisekarte</string>
+    <string name="tabTitleMealOfTheDay">Angebote</string>
+    <string name="tabTitleJoinUs">Mitmachen!</string>
+    <string name="tabTitleEvents">Events</string>
+    <string name="tabTitleSettings">Einstellungen</string>
+    <string name="tabTitleAbout">Über</string>
+
+    <!-- Preferences -->
+    <string name="pref_category_general">Allgemein</string>
+    <string name="pref_rotate_summary">Dreht die Inhalte passend zur Position des Telefons</string>
+    <string name="pref_language">Sprache</string>
+    <string name="pref_select_language">Wähle deine bevorzugte Sprache aus</string>
+    <string name="pref_select_language_default">Systemstandard</string>
+
+    <string name="emptyList">Bisher nichts :(</string>
+    <string name="navigation_drawer_opened">Das Navigationsmenü wurde geöffnet</string>
+    <string name="navigation_drawer_closed">Das Navigationsmenü wurde geschlossen</string>
+    <string name="tag_nav_drawer_main_entry">nav_drawer_main_entry</string>
+    <string name="tag_nav_drawer_special_entry">nav_drawer_special_entry</string>
+    <string name="tools_text_account_information_username">Max Mustermann</string>
+    <string name="tools_text_account_information_email">max.mustermann@olynet.eu</string>
+
+    <!--Bierstube Menu Fragment-->
+    <string name="bierstube_menu_headline_drinks">Getränke</string>
+    <string name="bierstube_menu_size_liters">%1$s l</string>
+
+    <!--Organization Fragment-->
+    <string name="organization_image">Bild der Organization</string>
+
+    <!-- Join Us Fragment -->
+    <string name="join_us_opening">Das OlyNet ist ein Verein, der sich um die Betreuung aller Bewohner hier im Dorf in PC- und Internetfragen kümmert. Da das auf Dauer natürlich etwas eintönig wird, sind wir ständig auf der Suche nach neuen Herausforderungen (aktuelle Projekte könnt ihr hier einsehen). Unser Ziel ist es, das Leben hier im Dorf noch angenehmer für alle zu machen. Da wir alle nebenbei auch noch studieren und arbeiten, können wir natürlich nicht Vollzeit an unseren Ideen arbeiten. Hier kommt ihr ins Spiel: wollt ihr bei uns mitmachen? Wir suchen jederzeit neue Mitglieder, die engagiert mitarbeiten wollen.</string>
+    <string name="join_us_closing">Konnten wir euer Interesse wecken? Meldet euch bei uns z. B. per Mail an mitmachen@olynet.eu oder schaut in einer unserer Sprechstunden vorbei!</string>
+
+    <string name="join_us_headline_expect">Mitbringen solltet ihr allgemein:</string>
+    <string name="join_us_headline_looking_for">Im Speziellen suchen wir:</string>
+    <string name="join_us_headline_offer">Was wir euch bieten:</string>
+
+    <string name="join_us_expectation1">Interesse an vielfältigen Themen wie zum Beispiel Technik, Vereinsmanagement, Grafik und Design, ...</string>
+    <string name="join_us_expectation2">die Fähigkeit selbstständig und in einem Team zu arbeiten</string>
+    <string name="join_us_expectation3">den Willen Zeit zu investieren und sich auch in neue Themengebiete einzuarbeiten</string>
+    <string name="join_us_expectation4">eine gute Portion Humor. ;)</string>
+
+    <string name="join_us_looking_for1">an Buchhaltung und allgemeiner Vereinsverwaltung Interessierte</string>
+    <string name="join_us_looking_for2">Softwareentwickler (iOS, Android, Java, Webentwicklung, Embedded, ...) oder solche, die es werden wollen</string>
+    <string name="join_us_looking_for3">und alle anderen, die Interesse und die nötige Motivation mitbringen.</string>
+
+    <string name="join_us_offer1">Erfahrungen sammeln in einem interessanten Umfeld</string>
+    <string name="join_us_offer2">die Möglichkeit selber etwas mit aufzubauen</string>
+    <string name="join_us_offer3">ein Team, das auch außerhalb des Vereinsarbeit etwas zusammen unternimmt</string>
+    <string name="join_us_offer4">Tätigkeitsnachweis von uns und der IT Abteilung des Studentenwerk Münchens</string>
+    <string name="join_us_offer5">Wohnzeitverlängerung.</string>
+
+    <!-- About Fragment -->
+    <string name="about_version_string">Version %1$s</string>
+    <string name="about_help_us">Du möchtest diese App verbessern? Schreib eine Email an app@olynet.eu!</string>
+    <string name="about_licenses">Open Source Lizenzen</string>
+
+
+    <!-- Typeface names -->
+    <string name="typeface_roboto_regular">Roboto-Regular</string>
+    <string name="typeface_roboto_medium">Roboto-Medium</string>
+
+    <!-- Laundry strings -->
+    <string name="laundryCameraScanMessage">Scanne den QR Code auf den Maschinen</string>
+    <string name="bierstube_menu_headline_daily">Tagesangebote</string>
+    <string name="bierstube_menu_headline_foods">Essen</string>
+    <string name="pref_rotate">Displaydrehung erlauben</string>
+
+</resources>
