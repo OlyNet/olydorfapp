@@ -276,17 +276,20 @@ public class ProductionResourceManager extends ResourceManager {
                 /* check cache and query server on miss or createDate mismatch */
                 AbstractMetaItem<?> item = this.cache.getCachedItem(clazz, id);
                 if (item == null || !item.getEditDate().equals(metaItem.getEditDate())) {
-                    Log.i("ResourceManager", "Cached item is outdated, fetch necessary");
+                    Log.i("ResourceManager", "Cached item is outdated or missing, fetch necessary");
                     AbstractMetaItem<?> webItem;
                     try {
                         webItem = rest.fetchItem(clazz, id);
                     } catch (NotFoundException e) { /* HTTP 404 */
                         webItem = null;
+                        Log.i("ResourceManager", "Received 404 for item " + id + " of '"
+                                                                + clazz + "'");
 
                         /* remove the item from the meta-data tree */
                         tree.remove(dummyItem);
                     } catch (NoConnectionException e) {
                         webItem = null;
+                        Log.w("ResourceManager", "NoConnectionException");
                     } catch (ClientCertificateInvalidException e) {
                         handleClientCertError(e);
                         webItem = null;
@@ -373,17 +376,21 @@ public class ProductionResourceManager extends ResourceManager {
                     /* check cache and query server on miss or editDate mismatch */
                     AbstractMetaItem<?> item = this.cache.getCachedItem(clazz, id);
                     if (item == null || !item.getEditDate().equals(metaItem.getEditDate())) {
-                        Log.i("ResourceManager", "Cached item is outdated, fetch necessary");
+                        Log.i("ResourceManager", "Cached item is outdated or missing, " +
+                                                 "fetch necessary");
                         AbstractMetaItem<?> webItem;
                         try {
                             webItem = rest.fetchItem(clazz, id);
                         } catch (NotFoundException e) { /* HTTP 404 */
                             webItem = null;
+                            Log.i("ResourceManager", "Received 404 for item " + id + " of '"
+                                                     + clazz + "'");
 
                             /* remove the item from the meta-data tree */
                             tree.remove(dummyItem);
                         } catch (NoConnectionException e) {
                             webItem = null;
+                            Log.w("ResourceManager", "NoConnectionException");
                         } catch (ClientCertificateInvalidException e) {
                             handleClientCertError(e);
                             webItem = null;
@@ -393,7 +400,8 @@ public class ProductionResourceManager extends ResourceManager {
                         if (webItem != null) {
                             item = webItem;
                         } else {
-                            Log.w("ResourceManager", "Fetch failed for some reason (getItems)");
+                            Log.w("ResourceManager", "Fetch failed for some reason (getItems): " +
+                                                     id + " of " + ids);
                         }
                     } else {
                         Log.d("ResourceManager", "Cached item " + id + " of type '" + clazz +

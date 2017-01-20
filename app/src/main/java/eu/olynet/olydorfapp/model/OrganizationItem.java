@@ -61,7 +61,7 @@ public class OrganizationItem extends OrganizationMetaItem {
     @JsonProperty("description") protected String description;
 
     @JsonDeserialize(using = ImageDeserializer.class)
-    @JsonProperty("logo") protected byte[] image;
+    @JsonProperty("image") protected byte[] image;
 
     /**
      * Constructor for creating OrganizationItem from Parcels.

@@ -170,7 +170,13 @@ public class ProductionRestManager extends RestManager {
                                                                     "used by this version " +
                                                                     "seems to be invalid",
                                                                     cause);
+                    } else {
+                        System.err.println("image type=" + type + " id=" + id);
+                        e.printStackTrace();
                     }
+                } else {
+                    System.err.println("image type=" + type + " id=" + id);
+                    e.printStackTrace();
                 }
 
             } catch (Exception e) {
@@ -231,7 +237,13 @@ public class ProductionRestManager extends RestManager {
                                                                         "used by this version " +
                                                                         "seems to be invalid",
                                                                         subCause);
+                        } else {
+                            System.err.println("class=" + clazz + " id=" + id);
+                            e.printStackTrace();
                         }
+                    } else {
+                        System.err.println("class=" + clazz + " id=" + id);
+                        e.printStackTrace();
                     }
                 } else {
                     System.err.println("class=" + clazz + " id=" + id);
@@ -294,8 +306,17 @@ public class ProductionRestManager extends RestManager {
                                                                         "used by this version " +
                                                                         "seems to be invalid",
                                                                         subCause);
+                        } else {
+                            System.err.println("class=" + clazz);
+                            e.printStackTrace();
                         }
+                    } else {
+                        System.err.println("class=" + clazz);
+                        e.printStackTrace();
                     }
+                } else {
+                    System.err.println("class=" + clazz);
+                    e.printStackTrace();
                 }
             } catch (Exception e) {
                 Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
@@ -369,8 +390,17 @@ public class ProductionRestManager extends RestManager {
                                                                         "used by this version " +
                                                                         "seems to be invalid",
                                                                         subCause);
+                        } else {
+                            System.err.println("class=" + clazz);
+                            e.printStackTrace();
                         }
+                    } else {
+                        System.err.println("class=" + clazz);
+                        e.printStackTrace();
                     }
+                } else {
+                    System.err.println("class=" + clazz);
+                    e.printStackTrace();
                 }
             } catch (Exception e) {
                 Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
@@ -431,8 +461,17 @@ public class ProductionRestManager extends RestManager {
                                                                         "used by this version " +
                                                                         "seems to be invalid",
                                                                         subCause);
+                        } else {
+                            System.err.println("class=" + clazz + " id=" + id);
+                            e.printStackTrace();
                         }
+                    } else {
+                        System.err.println("class=" + clazz + " id=" + id);
+                        e.printStackTrace();
                     }
+                } else {
+                    System.err.println("class=" + clazz + " id=" + id);
+                    e.printStackTrace();
                 }
             } catch (Exception e) {
                 Log.w("ResourceManager", "Exception during fetch - try " + i + "/" + retryCount, e);
@@ -493,8 +532,17 @@ public class ProductionRestManager extends RestManager {
                                                                         "used by this version " +
                                                                         "seems to be invalid",
                                                                         subCause);
+                        } else {
+                            System.err.println("class=" + clazz);
+                            e.printStackTrace();
                         }
+                    } else {
+                        System.err.println("class=" + clazz);
+                        e.printStackTrace();
                     }
+                } else {
+                    System.err.println("class=" + clazz);
+                    e.printStackTrace();
                 }
 
                 e.printStackTrace();
