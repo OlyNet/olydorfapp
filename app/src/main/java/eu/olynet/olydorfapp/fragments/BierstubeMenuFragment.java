@@ -151,11 +151,34 @@ public class BierstubeMenuFragment extends Fragment
             ItemFilter organizationFilter = abstractMetaItem ->
                     abstractMetaItem.getOrganization() == BIERSTUBE_ID;
 
+            /* prepare meta-data trees */
+            TreeSet<AbstractMetaItem<?>> catTree = rm.getTreeOfMetaItems(CategoryMetaItem.class,
+                                                                         0,
+                                                                         null,
+                                                                         null,
+                                                                         organizationFilter,
+                                                                         this.forceUpdate);
+            TreeSet<AbstractMetaItem<?>> drinkTree = rm.getTreeOfMetaItems(DrinkMetaItem.class,
+                                                                           0,
+                                                                           null,
+                                                                           null,
+                                                                           organizationFilter,
+                                                                           this.forceUpdate);
+            TreeSet<AbstractMetaItem<?>> foodTree = rm.getTreeOfMetaItems(FoodMetaItem.class,
+                                                                          0,
+                                                                          null,
+                                                                          null,
+                                                                          organizationFilter,
+                                                                          this.forceUpdate);
+
+            /* sanity check */
+            if (catTree == null || drinkTree == null || foodTree == null) {
+                return null;
+            }
+
             /* get all CategoryItems */
             List<Integer> categoryIds = new ArrayList<>();
-            for (AbstractMetaItem<?> item : rm.getTreeOfMetaItems(CategoryMetaItem.class, 0, null,
-                                                                  null, organizationFilter,
-                                                                  this.forceUpdate)) {
+            for (AbstractMetaItem<?> item : catTree) {
                 categoryIds.add(item.getId());
             }
             List<AbstractMetaItem<?>> categoryItems = rm.getItems(CategoryMetaItem.class,
@@ -163,18 +186,14 @@ public class BierstubeMenuFragment extends Fragment
 
             /* get all DrinkItems */
             List<Integer> drinkIds = new ArrayList<>();
-            for (AbstractMetaItem<?> item : rm.getTreeOfMetaItems(DrinkMetaItem.class, 0, null,
-                                                                  null, organizationFilter,
-                                                                  this.forceUpdate)) {
+            for (AbstractMetaItem<?> item : drinkTree) {
                 drinkIds.add(item.getId());
             }
             List<AbstractMetaItem<?>> drinkItems = rm.getItems(DrinkMetaItem.class, drinkIds, null);
 
             /* get all FoodItems */
             List<Integer> foodIds = new ArrayList<>();
-            for (AbstractMetaItem<?> item : rm.getTreeOfMetaItems(FoodMetaItem.class, 0, null, null,
-                                                                  organizationFilter,
-                                                                  this.forceUpdate)) {
+            for (AbstractMetaItem<?> item : foodTree) {
                 foodIds.add(item.getId());
             }
             List<AbstractMetaItem<?>> foodItems = rm.getItems(FoodMetaItem.class, foodIds, null);
@@ -249,8 +268,10 @@ public class BierstubeMenuFragment extends Fragment
             super.onPostExecute(result);
 
             /* update the Adapter */
-            mAdapter.setData(result.mealOfTheDayItem, result.dailyMealItem, result.foodItems,
-                             result.drinkItems, result.categoryItems);
+            if (result != null) {
+                mAdapter.setData(result.mealOfTheDayItem, result.dailyMealItem, result.foodItems,
+                                 result.drinkItems, result.categoryItems);
+            }
 
             /* perform the post-load actions */
             onLoadCompleted();
