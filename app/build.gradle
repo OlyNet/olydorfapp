@@ -106,6 +106,8 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.6'
     compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.8.6'
     compile 'org.jboss.resteasy:resteasy-client:3.0.19.Final'
+    // Tutorial
+    compile 'com.github.amlcurran.showcaseview:library:5.4.3'
     // Caching
     compile('com.vincentbrison.openlibraries.android:dualcache:2.2.2@jar') {
         transitive = true
