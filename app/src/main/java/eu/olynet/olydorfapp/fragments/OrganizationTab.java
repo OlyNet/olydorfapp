@@ -149,7 +149,7 @@ public class OrganizationTab extends Fragment implements SwipeRefreshLayout.OnRe
         private final OrganizationMetaItem organizationDummyItem;
         private final boolean forceUpdate;
 
-        public OrganizationUpdateTask(OrganizationMetaItem organizationDummyItem,
+        OrganizationUpdateTask(OrganizationMetaItem organizationDummyItem,
                                       boolean forceUpdate) {
             super();
             this.organizationDummyItem = organizationDummyItem;
@@ -161,7 +161,7 @@ public class OrganizationTab extends Fragment implements SwipeRefreshLayout.OnRe
             ResourceManager rm = ProductionResourceManager.getInstance();
 
             /* update OrganizationMetaItem tree */
-            rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);
+            rm.getTreeOfMetaItems(OrganizationMetaItem.class, this.forceUpdate);
 
             return (OrganizationItem) rm.getItem(OrganizationMetaItem.class,
                     this.organizationDummyItem.getId());

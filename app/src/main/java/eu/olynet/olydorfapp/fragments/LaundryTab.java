@@ -41,11 +41,12 @@ public class LaundryTab extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.tab_laundry, container, false);
 
-        // Handle click on the floating action button
+        /* Handle click on the floating action button */
         FloatingActionButton cameraButton = (FloatingActionButton) v.findViewById(
                 R.id.laundryCameraActionButton);
-        cameraButton.setOnClickListener(view -> startActivityForResult(new Intent(getActivity(), LaundryQRScannerActivity.class),
-                               QRScannerRequestCode));
+        cameraButton.setOnClickListener(view -> startActivityForResult(
+                new Intent(getActivity(), LaundryQRScannerActivity.class),
+                QRScannerRequestCode));
 
         return v;
     }

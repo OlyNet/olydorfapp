@@ -198,7 +198,7 @@ public class BierstubeMenuFragment extends Fragment
                     null,
                     comparator,
                     dateFilter,
-                    forceUpdate);
+                    this.forceUpdate);
 
             /* sanity check */
             if (metaTree == null || metaTree.isEmpty()) {

@@ -35,8 +35,7 @@ import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
-public class FoodViewerFragment extends Fragment
-        implements SwipeRefreshLayout.OnRefreshListener {
+public class FoodViewerFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     public static final String FOOD_ITEM_KEY = "food_item";
 
@@ -82,7 +81,7 @@ public class FoodViewerFragment extends Fragment
             /* Icon */
             ImageView mealOfTheDayIcon = (ImageView) view.findViewById(R.id.food_view_icon);
             mealOfTheDayIcon.setImageResource(foodItem.isVegetarian() ? R.drawable.carrot
-                    : R.drawable.meat);
+                                                                      : R.drawable.meat);
 
             /* Image */
             ImageView imageView = (ImageView) view.findViewById(R.id.food_view_image);

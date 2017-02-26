@@ -47,7 +47,7 @@ public class AboutFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        context = getContext();
+        this.context = getContext();
         Resources res = getResources();
 
         /* inflate the layout for this Fragment */
@@ -55,7 +55,7 @@ public class AboutFragment extends Fragment {
 
         PackageInfo info;
         try {
-            info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            info = this.context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
         } catch (PackageManager.NameNotFoundException e) {
             throw new RuntimeException(e);
         }

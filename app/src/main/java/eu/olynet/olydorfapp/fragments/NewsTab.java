@@ -190,7 +190,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
         private final int limit;
         private final boolean forceUpdate;
 
-        public NewsUpdateTask(Action action, int limit, OrganizationMetaItem filterOrganization,
+        NewsUpdateTask(Action action, int limit, OrganizationMetaItem filterOrganization,
                               boolean forceUpdate) {
             super();
             this.action = action;
@@ -212,7 +212,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
             ResourceManager rm = ProductionResourceManager.getInstance();
 
             /* Organization filter */
-            ItemFilter filter = abstractMetaItem -> filterOrganization == null ||
+            ItemFilter filter = abstractMetaItem -> this.filterOrganization == null ||
                     abstractMetaItem.getOrganization() == this.filterOrganization.getId();
 
             /* querying the ResourceManager for the needed data and order it correctly */
@@ -221,7 +221,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
                     this.lastItem,
                     new AbstractMetaItem.DateDescComparator(),
                     filter,
-                    forceUpdate);
+                    this.forceUpdate);
 
             /* sanity check */
             if (resultTree == null || resultTree.isEmpty()) {
@@ -243,7 +243,7 @@ public class NewsTab extends Fragment implements SwipeRefreshLayoutWithEmpty.OnR
                     new AbstractMetaItem.DateDescComparator());
 
             /* get the necessary OrganizationItems */
-            rm.getTreeOfMetaItems(OrganizationMetaItem.class, forceUpdate);
+            rm.getTreeOfMetaItems(OrganizationMetaItem.class, this.forceUpdate);
             List<AbstractMetaItem<?>> organizationItems = rm.getItems(OrganizationMetaItem.class,
                     orgIds, null);
 

@@ -39,8 +39,7 @@ import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
-public class DrinkViewerFragment extends Fragment
-        implements SwipeRefreshLayout.OnRefreshListener {
+public class DrinkViewerFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     public static final String DRINK_ITEM_KEY = "drink_item";
 
