@@ -243,6 +243,7 @@ public class ProductionResourceManager extends ResourceManager {
         try {
             image = this.rest.fetchImage(type, id, field);
         } catch (ClientCertificateInvalidException e) {
+            e.printStackTrace();
             handleClientCertError(e);
         }
         return image;
@@ -291,6 +292,7 @@ public class ProductionResourceManager extends ResourceManager {
                         webItem = null;
                         Log.w("ResourceManager", "NoConnectionException");
                     } catch (ClientCertificateInvalidException e) {
+                        e.printStackTrace();
                         handleClientCertError(e);
                         webItem = null;
                     }
@@ -392,6 +394,7 @@ public class ProductionResourceManager extends ResourceManager {
                             webItem = null;
                             Log.w("ResourceManager", "NoConnectionException");
                         } catch (ClientCertificateInvalidException e) {
+                            e.printStackTrace();
                             handleClientCertError(e);
                             webItem = null;
                         }
@@ -463,6 +466,7 @@ public class ProductionResourceManager extends ResourceManager {
                 } catch (NoConnectionException nce) {
                     noConnection = true;
                 } catch (ClientCertificateInvalidException e) {
+                    e.printStackTrace();
                     certificateError = true;
                 }
 

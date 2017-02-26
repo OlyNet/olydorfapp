@@ -101,17 +101,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_refresh:
-                /* start animation */
-                LayoutInflater inflater = (LayoutInflater) getSystemService(
-                        Context.LAYOUT_INFLATER_SERVICE);
-                ImageView iv = (ImageView) inflater.inflate(R.layout.ic_refresh, null);
-                Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate_refresh);
-                rotation.setRepeatCount(Animation.INFINITE);
-                iv.startAnimation(rotation);
-                item.setActionView(iv);
-                new UpdateTask(this).execute();
-                return true;
+//            case R.id.action_refresh:
+//                /* start animation */
+//                LayoutInflater inflater = (LayoutInflater) getSystemService(
+//                        Context.LAYOUT_INFLATER_SERVICE);
+//                ImageView iv = (ImageView) inflater.inflate(R.layout.ic_refresh, null);
+//                Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotate_refresh);
+//                rotation.setRepeatCount(Animation.INFINITE);
+//                iv.startAnimation(rotation);
+//                item.setActionView(iv);
+//                new UpdateTask(this).execute();
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -179,20 +179,20 @@ public class MainActivity extends AppCompatActivity {
                 case 2:
                     selectTabGroup(ViewPagerAdapter.Category.OLYNET);
                     break;
-                case 3:
-                    selectTabGroup(ViewPagerAdapter.Category.LAUNDRY);
-                    break;
+//                case 3:
+//                    selectTabGroup(ViewPagerAdapter.Category.LAUNDRY);
+//                    break;
                 default:
                     Log.e("onItemClick", "Unknown position " + position);
             }
             mDrawerLayout.closeDrawers();
         });
 
-        FrameLayout settingsButton = (FrameLayout) findViewById(R.id.navigation_drawer_settings);
-        settingsButton.setOnClickListener(v -> {
-            selectTabGroup(ViewPagerAdapter.Category.SETTINGS);
-            mDrawerLayout.closeDrawers();
-        });
+//        FrameLayout settingsButton = (FrameLayout) findViewById(R.id.navigation_drawer_settings);
+//        settingsButton.setOnClickListener(v -> {
+//            selectTabGroup(ViewPagerAdapter.Category.SETTINGS);
+//            mDrawerLayout.closeDrawers();
+//        });
 
         FrameLayout aboutButton = (FrameLayout) findViewById(R.id.navigation_drawer_about);
         aboutButton.setOnClickListener(v -> {
@@ -224,14 +224,14 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Stops the animation of the refresh button.
      */
-    public void resetUpdating() {
-        MenuItem m = optionsMenu.findItem(R.id.action_refresh);
-        if (m.getActionView() != null) {
-            /* stop animation */
-            m.getActionView().clearAnimation();
-            m.setActionView(null);
-        }
-    }
+//    public void resetUpdating() {
+//        MenuItem m = optionsMenu.findItem(R.id.action_refresh);
+//        if (m.getActionView() != null) {
+//            /* stop animation */
+//            m.getActionView().clearAnimation();
+//            m.setActionView(null);
+//        }
+//    }
 
     @Override
     protected void attachBaseContext(Context base) {

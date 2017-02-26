@@ -56,9 +56,9 @@ public class NavigationDrawerItemsAdapter extends BaseAdapter {
                                        context.getResources()
                                               .getString(R.string.navDrawerOlynetEntry)));
         /* Laundry */
-        navDrawerItems.add(Pair.create(R.drawable.ic_local_laundry_service_white_24dp,
-                                       context.getResources()
-                                              .getString(R.string.navDrawerLaundryEntry)));
+//        navDrawerItems.add(Pair.create(R.drawable.ic_local_laundry_service_white_24dp,
+//                                       context.getResources()
+//                                              .getString(R.string.navDrawerLaundryEntry)));
     }
 
     @Override

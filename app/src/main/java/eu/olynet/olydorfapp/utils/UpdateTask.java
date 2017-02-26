@@ -46,6 +46,6 @@ public class UpdateTask extends AsyncTask<Void, Void, Void> {
         Toast.makeText(context, "Invalidated the cache!", Toast.LENGTH_LONG).show();
 
         // Change the menu back
-        ((MainActivity) context).resetUpdating();
+//        ((MainActivity) context).resetUpdating();
     }
 }

@@ -105,24 +105,24 @@
 
                 <include layout="@layout/navigation_drawer_divider"/>
 
-                <FrameLayout
-                    android:id="@+id/navigation_drawer_settings"
-                    style="@style/NavDrawerRowLayout.Secondary"
-                    android:clickable="false">
+                <!--<FrameLayout-->
+                    <!--android:id="@+id/navigation_drawer_settings"-->
+                    <!--style="@style/NavDrawerRowLayout.Secondary"-->
+                    <!--android:clickable="false">-->
 
-                    <eu.olynet.olydorfapp.customViews.TintOnStateImageView
-                        android:id="@+id/navigation_drawer_settings_icon"
-                        style="@style/NavDrawerRowItemIcon"
-                        android:src="@drawable/ic_help_white_24dp"
-                        tools:ignore="ContentDescription"/>
+                    <!--<eu.olynet.olydorfapp.customViews.TintOnStateImageView-->
+                        <!--android:id="@+id/navigation_drawer_settings_icon"-->
+                        <!--style="@style/NavDrawerRowItemIcon"-->
+                        <!--android:src="@drawable/ic_help_white_24dp"-->
+                        <!--tools:ignore="ContentDescription"/>-->
 
-                    <TextView
-                        android:id="@+id/navigation_drawer_settings_text"
-                        style="@style/NavDrawerRowItemText"
-                        android:text="@string/navDrawerSettingsEntry"
-                        tools:fontFamily="sans-serif-medium"/>
+                    <!--<TextView-->
+                        <!--android:id="@+id/navigation_drawer_settings_text"-->
+                        <!--style="@style/NavDrawerRowItemText"-->
+                        <!--android:text="@string/navDrawerSettingsEntry"-->
+                        <!--tools:fontFamily="sans-serif-medium"/>-->
 
-                </FrameLayout>
+                <!--</FrameLayout>-->
 
                 <FrameLayout
                     android:id="@+id/navigation_drawer_about"
