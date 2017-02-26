@@ -28,7 +28,7 @@ android {
         if (System.getenv("BUILD_NUMBER") != null) {
             versionCode Integer.parseInt(System.getenv("BUILD_NUMBER"))
         } else {
-            versionCode 14
+            versionCode 15
         }
 
         versionName "0.9"
