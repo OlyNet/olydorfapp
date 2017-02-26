@@ -32,7 +32,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.TreeSet;
+
 import eu.olynet.olydorfapp.R;
+import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.OrganizationItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
@@ -150,7 +153,7 @@ public class OrganizationTab extends Fragment implements SwipeRefreshLayout.OnRe
         private final boolean forceUpdate;
 
         OrganizationUpdateTask(OrganizationMetaItem organizationDummyItem,
-                                      boolean forceUpdate) {
+                               boolean forceUpdate) {
             super();
             this.organizationDummyItem = organizationDummyItem;
             this.forceUpdate = forceUpdate;
@@ -161,10 +164,16 @@ public class OrganizationTab extends Fragment implements SwipeRefreshLayout.OnRe
             ResourceManager rm = ProductionResourceManager.getInstance();
 
             /* update OrganizationMetaItem tree */
-            rm.getTreeOfMetaItems(OrganizationMetaItem.class, this.forceUpdate);
+            TreeSet<AbstractMetaItem<?>> tree = rm.getTreeOfMetaItems(OrganizationMetaItem.class,
+                                                                      this.forceUpdate);
 
-            return (OrganizationItem) rm.getItem(OrganizationMetaItem.class,
-                    this.organizationDummyItem.getId());
+            /* sanity check */
+            if (tree == null || tree.isEmpty()) {
+                return null;
+            } else {
+                return (OrganizationItem) rm.getItem(OrganizationMetaItem.class,
+                                                     this.organizationDummyItem.getId());
+            }
         }
 
         @Override
