@@ -31,10 +31,12 @@ import java.util.List;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import okhttp3.CertificatePinner;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -104,9 +106,18 @@ class RetrofitRestManager extends RestManager {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(kmf.getKeyManagers(), new TrustManager[]{tm}, null);
 
+            /* configure Certificate Pinning */
+            CertificatePinner certificatePinner = new CertificatePinner.Builder()
+                    .add("ws.olynet.eu", "sha256//H/QPseo6W0BUWhLpmRtIftFl0uc/Ykmdm0SrSHB/co=")
+                    .add("ws.olynet.eu", "sha256/ulSAvQ2yMNIdIO0B9hjPcD/nmMgYwFwvlM+zz847Jgs=")
+                    .add("wstest.olynet.eu", "sha256/0giX4MXFp5Z4udLOp7b+Crark6agMeE/P/KWa+YcFHs=")
+                    .add("wstest.olynet.eu", "sha256/ulSAvQ2yMNIdIO0B9hjPcD/nmMgYwFwvlM+zz847Jgs=")
+                    .build();
+
             /* create the OKHttpClient that will be used for all queries */
             OkHttpClient client = new OkHttpClient.Builder()
                     .sslSocketFactory(sslContext.getSocketFactory(), tm)
+                    .certificatePinner(certificatePinner)
                     .build();
 
             /* create the Retrofit instance with the correct configuration */
@@ -198,6 +209,9 @@ class RetrofitRestManager extends RestManager {
                 if (image != null) {
                     break;
                 }
+            } catch (SSLPeerUnverifiedException e) {
+                Log.e("ResourceManager", "TLS server verification failed", e);
+                throw new NoConnectionException("TLS server verification failed", e);
             } catch (Exception e) {
                 throw new RuntimeException("fetchImage '" + type + "' - '" + id + "' - '" +
                                            field + "'", e);
@@ -257,6 +271,9 @@ class RetrofitRestManager extends RestManager {
                 }
             } catch (Http404Exception e) {
                 throw new Http404Exception();
+            } catch (SSLPeerUnverifiedException e) {
+                Log.e("ResourceManager", "TLS server verification failed", e);
+                throw new NoConnectionException("TLS server verification failed", e);
             } catch (Exception e) {
                 throw new RuntimeException("fetchItem '" + clazz + "' - '" + id + "'", e);
             }
@@ -312,6 +329,9 @@ class RetrofitRestManager extends RestManager {
                 if (result != null) {
                     break;
                 }
+            } catch (SSLPeerUnverifiedException e) {
+                Log.e("ResourceManager", "TLS server verification failed", e);
+                throw new NoConnectionException("TLS server verification failed", e);
             } catch (Exception e) {
                 throw new RuntimeException("fetchItems '" + clazz + "'", e);
             }
@@ -372,6 +392,9 @@ class RetrofitRestManager extends RestManager {
                 if (result != null) {
                     break;
                 }
+            } catch (SSLPeerUnverifiedException e) {
+                Log.e("ResourceManager", "TLS server verification failed", e);
+                throw new NoConnectionException("TLS server verification failed", e);
             } catch (Exception e) {
                 throw new RuntimeException("fetchItems '" + clazz + "' - '" + ids + "'", e);
             }
@@ -431,6 +454,9 @@ class RetrofitRestManager extends RestManager {
                 }
             } catch (Http404Exception e) {
                 throw new Http404Exception();
+            } catch (SSLPeerUnverifiedException e) {
+                Log.e("ResourceManager", "TLS server verification failed", e);
+                throw new NoConnectionException("TLS server verification failed", e);
             } catch (Exception e) {
                 throw new RuntimeException("fetchMetaItem '" + clazz + "' - " + id + "'", e);
             }
@@ -487,6 +513,9 @@ class RetrofitRestManager extends RestManager {
                 if (result != null) {
                     break;
                 }
+            } catch (SSLPeerUnverifiedException e) {
+                Log.e("ResourceManager", "TLS server verification failed", e);
+                throw new NoConnectionException("TLS server verification failed", e);
             } catch (Exception e) {
                 throw new RuntimeException("fetchMetaItems '" + clazz + "'", e);
             }
