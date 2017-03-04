@@ -20,9 +20,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import eu.olynet.olydorfapp.activities.MainActivity;
-import eu.olynet.olydorfapp.resource.ProductionResourceManager;
-
 /**
  * @author <a href="mailto:simon.domke@olynet.eu">Simon Domke</a>
  */
@@ -36,7 +33,8 @@ public class UpdateTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... nope) {
-        ProductionResourceManager.getInstance().invalidateCache();
+//        ProductionResourceManager rm = ProductionResourceManager.getInstance();
+//        rm.invalidateCache();
         return null;
     }
 

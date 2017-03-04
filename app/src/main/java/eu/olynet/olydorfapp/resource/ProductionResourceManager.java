@@ -33,9 +33,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
-
-import javax.ws.rs.NotFoundException;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
@@ -59,10 +58,12 @@ public class ProductionResourceManager extends ResourceManager {
      * Singleton instance
      */
     private static final ProductionResourceManager ourInstance = new ProductionResourceManager();
+
     /**
      * The RestManager.
      */
     private RestManager rest = null;
+
     /**
      * The CacheManager.
      */
@@ -99,7 +100,7 @@ public class ProductionResourceManager extends ResourceManager {
             this.cache = new DualCacheManager(context);
 
             /* setup rest */
-            this.rest = new ProductionRestManager(context);
+            this.rest = new RetrofitRestManager(context);
         } else {
             Log.w("ResourceManager", "Duplicate init");
         }
@@ -281,10 +282,10 @@ public class ProductionResourceManager extends ResourceManager {
                     AbstractMetaItem<?> webItem;
                     try {
                         webItem = rest.fetchItem(clazz, id);
-                    } catch (NotFoundException e) { /* HTTP 404 */
+                    } catch (Http404Exception e) {
                         webItem = null;
                         Log.i("ResourceManager", "Received 404 for item " + id + " of '"
-                                                                + clazz + "'");
+                                                 + clazz + "'");
 
                         /* remove the item from the meta-data tree */
                         tree.remove(dummyItem);
@@ -361,6 +362,7 @@ public class ProductionResourceManager extends ResourceManager {
             }
 
             try {
+                List<Integer> idsToFetch = new ArrayList<>();
                 for (int id : ids) {
                     /* create a dummy item with the same id */
                     AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz).setId(
@@ -378,41 +380,8 @@ public class ProductionResourceManager extends ResourceManager {
                     /* check cache and query server on miss or editDate mismatch */
                     AbstractMetaItem<?> item = this.cache.getCachedItem(clazz, id);
                     if (item == null || !item.getEditDate().equals(metaItem.getEditDate())) {
-                        Log.i("ResourceManager", "Cached item is outdated or missing, " +
-                                                 "fetch necessary");
-                        AbstractMetaItem<?> webItem;
-                        try {
-                            webItem = rest.fetchItem(clazz, id);
-                        } catch (NotFoundException e) { /* HTTP 404 */
-                            webItem = null;
-                            Log.i("ResourceManager", "Received 404 for item " + id + " of '"
-                                                     + clazz + "'");
-
-                            /* remove the item from the meta-data tree */
-                            tree.remove(dummyItem);
-                        } catch (NoConnectionException e) {
-                            webItem = null;
-                            Log.w("ResourceManager", "NoConnectionException");
-                        } catch (ClientCertificateInvalidException e) {
-                            e.printStackTrace();
-                            handleClientCertError(e);
-                            webItem = null;
-                        }
-
-                        /* return webItem instead of the cached item if successful */
-                        if (webItem != null) {
-                            item = webItem;
-                        } else {
-                            Log.w("ResourceManager", "Fetch failed for some reason (getItems): " +
-                                                     id + " of " + ids);
-                        }
+                        idsToFetch.add(id);
                     } else {
-                        Log.d("ResourceManager", "Cached item " + id + " of type '" + clazz +
-                                                 "' was up-to-createDate, no fetch necessary");
-                    }
-
-                    /* check if we have some valid item (up-to-createDate or not) */
-                    if (item != null) {
                         /* update last used */
                         item.setLastUsedDate();
 
@@ -421,14 +390,80 @@ public class ProductionResourceManager extends ResourceManager {
                         updateItem.invoke(clazz.cast(metaItem), clazz.cast(item));
 
                         /* write updated item to cache */
-                        Log.d("ResourceManager",
-                              "Updating cache for item " + id + " of type " + clazz);
+                        Log.d("ResourceManager", "Updating cache for item " + id + " of type "
+                                                 + clazz);
                         this.cache.putCachedItem(clazz, item);
 
                         /* add item to the Collection of items to be returned */
                         itemTree.add(item);
+                        Log.d("ResourceManager", "Cached item " + id + " of type '" + clazz +
+                                                 "' was up-to-createDate, no fetch necessary");
                     }
                 }
+
+                /* check if we need to fetch additional items from the server */
+                if (!idsToFetch.isEmpty()) {
+                    List<AbstractMetaItem<?>> fetchedItems;
+                    try {
+                        if (idsToFetch.size() == 1) {
+                            /* use the single-item endpoint if we only want one */
+                            fetchedItems = new ArrayList<>();
+                            AbstractMetaItem<?> item = rest.fetchItem(clazz, idsToFetch.get(0));
+                            if (item != null) {
+                                fetchedItems.add(item);
+                            }
+                        } else {
+                            /* use any otherwise */
+                            fetchedItems = rest.fetchItems(clazz, idsToFetch);
+                        }
+                    } catch (NoConnectionException e) {
+                        fetchedItems = null;
+                        Log.w("ResourceManager", "NoConnectionException");
+                    } catch (ClientCertificateInvalidException e) {
+                        e.printStackTrace();
+                        handleClientCertError(e);
+                        fetchedItems = null;
+                    }
+
+                    if (fetchedItems != null) {
+                        Map<Integer, AbstractMetaItem<?>> fetchedItemsMap = new TreeMap<>();
+                        for (AbstractMetaItem<?> item : fetchedItems) {
+                            fetchedItemsMap.put(item.getId(), item);
+                        }
+
+                        for (int id : idsToFetch) {
+                            /* create a dummy item */
+                            AbstractMetaItem<?> dummyItem = new AbstractMetaItem.DummyFactory(clazz)
+                                    .setId(id).build();
+
+                            /* get the matching meta item from the meta-data tree */
+                            AbstractMetaItem<?> metaItem = tree.floor(dummyItem);
+
+                            /* see if the requested item is present in the fetchedItems */
+                            AbstractMetaItem<?> fetchedItem = fetchedItemsMap.get(id);
+                            if (fetchedItem != null) {
+                                /* update last used */
+                                fetchedItem.setLastUsedDate();
+
+                                /* update meta-data tree */
+                                Method updateItem = clazz.getMethod("updateItem", clazz);
+                                updateItem.invoke(clazz.cast(metaItem), clazz.cast(fetchedItem));
+
+                                /* write updated item to cache */
+                                Log.d("ResourceManager",
+                                      "Updating cache for item " + id + " of type " + clazz);
+                                this.cache.putCachedItem(clazz, fetchedItem);
+
+                                /* add item to the Collection of items to be returned */
+                                itemTree.add(fetchedItem);
+                            } else {
+                                /* absence implies that the item has been deleted from the server */
+                                tree.remove(dummyItem);
+                            }
+                        }
+                    }
+                }
+
             } catch (Exception e) {
                 Log.e("ResourceManager", "exception information in case it gets wrapped to often",
                       e);
@@ -438,7 +473,6 @@ public class ProductionResourceManager extends ResourceManager {
 
             Log.d("ResourceManager", "Updating meta-data tree cache of type '" + clazz + "'");
             this.cache.putCachedMetaDataTree(clazz, tree);
-
 
             /* convert and return result */
             return new ArrayList<>(itemTree);

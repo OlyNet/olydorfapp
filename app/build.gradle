@@ -28,7 +28,7 @@ android {
         if (System.getenv("BUILD_NUMBER") != null) {
             versionCode Integer.parseInt(System.getenv("BUILD_NUMBER"))
         } else {
-            versionCode 15
+            versionCode 16
         }
 
         versionName "0.9"
@@ -100,12 +100,13 @@ dependencies {
     compile('de.psdev.licensesdialog:licensesdialog:1.8.1')
     // Apache Commons
     compile 'org.apache.commons:commons-lang3:3.4'
-    // RESTEasy support
+    // Jackson for (de)serialization of JSON
     compile 'com.fasterxml.jackson.core:jackson-core:2.8.6'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.6'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.6'
-    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.8.6'
-    compile 'org.jboss.resteasy:resteasy-client:3.0.19.Final'
+    // Retrofit
+    compile 'com.squareup.retrofit2:retrofit:2.2.0'
+    compile 'com.squareup.retrofit2:converter-jackson:2.2.0'
     // Tutorial
     compile 'com.github.amlcurran.showcaseview:library:5.4.3'
     // Caching
@@ -119,9 +120,4 @@ dependencies {
     androidTestCompile('com.android.support.test:runner:0.3') {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
-}
-configurations {
-    // Not necessary, part of Android
-    compile.exclude module: 'httpclient'
-    compile.exclude group: 'org.apache.httpcomponents'
 }

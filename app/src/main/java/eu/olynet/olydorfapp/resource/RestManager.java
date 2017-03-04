@@ -20,8 +20,6 @@ import android.content.Context;
 
 import java.util.List;
 
-import javax.ws.rs.NotFoundException;
-
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 
 /**
@@ -66,7 +64,6 @@ abstract class RestManager {
      * @return the fetched image or <b>null</b> if this operation was not successful.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
-     * @throws NotFoundException        if a HTTP 404 has been received.
      */
     public abstract byte[] fetchImage(String type, int id, String field)
             throws NoConnectionException, ClientCertificateInvalidException;
@@ -81,7 +78,6 @@ abstract class RestManager {
      * @return the fetched image or <b>null</b> if this operation was not successful.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
-     * @throws NotFoundException        if a HTTP 404 has been received.
      */
     public abstract byte[] fetchImage(String type, int id, String field, int retryCount)
             throws NoConnectionException, ClientCertificateInvalidException;
@@ -95,10 +91,10 @@ abstract class RestManager {
      * @return the fetched item or <b>null</b> if this operation was not successful.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
-     * @throws NotFoundException        if a HTTP 404 has been received.
+     * @throws Http404Exception         if a HTTP 404 (Not Found) was received.
      */
     public abstract AbstractMetaItem<?> fetchItem(Class clazz, int id)
-            throws NoConnectionException, ClientCertificateInvalidException;
+            throws NoConnectionException, ClientCertificateInvalidException, Http404Exception;
 
     /**
      * Tries to fetch a specific item from the server.
@@ -110,10 +106,10 @@ abstract class RestManager {
      * @return the fetched item or <b>null</b> if this operation was not successful.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
-     * @throws NotFoundException        if a HTTP 404 has been received.
+     * @throws Http404Exception         if a HTTP 404 (Not Found) was received.
      */
     public abstract AbstractMetaItem<?> fetchItem(Class clazz, int id, int retryCount)
-            throws NoConnectionException, ClientCertificateInvalidException;
+            throws NoConnectionException, ClientCertificateInvalidException, Http404Exception;
 
     /**
      * Tries to fetch all items of a specific type from the server. Defaults to 3 retries.
@@ -180,9 +176,10 @@ abstract class RestManager {
      * @return the meta-data item or <b>null</b> if this operation failed.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
+     * @throws Http404Exception         if a HTTP 404 (Not Found) was received.
      */
     public abstract AbstractMetaItem<?> fetchMetaItem(Class clazz, int id)
-            throws NoConnectionException, ClientCertificateInvalidException;
+            throws NoConnectionException, ClientCertificateInvalidException, Http404Exception;
 
     /**
      * Tries to fetch the up-to-createDate meta-data information for one specific item from the
@@ -195,9 +192,10 @@ abstract class RestManager {
      * @return the meta-data item or <b>null</b> if this operation failed.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
+     * @throws Http404Exception         if a HTTP 404 (Not Found) was received.
      */
     public abstract AbstractMetaItem<?> fetchMetaItem(Class clazz, int id, int retryCount)
-            throws NoConnectionException, ClientCertificateInvalidException;
+            throws NoConnectionException, ClientCertificateInvalidException, Http404Exception;
 
     /**
      * Tries to fetch the up-to-createDate meta-data information from the server. Defaults to 3
