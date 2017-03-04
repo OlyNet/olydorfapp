@@ -54,20 +54,20 @@
                     android:gravity="center_vertical"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/navigation_drawer_account_information_display_name"
-                        style="@style/NavDrawerAccountInfoText"
-                        android:text="@string/tools_text_account_information_username"
-                        tools:fontFamily="sans-serif-medium"/>
+                    <!--<TextView-->
+                        <!--android:id="@+id/navigation_drawer_account_information_display_name"-->
+                        <!--style="@style/NavDrawerAccountInfoText"-->
+                        <!--android:text="@string/tools_text_account_information_username"-->
+                        <!--tools:fontFamily="sans-serif-medium"/>-->
 
                 </LinearLayout>
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/navigation_drawer_user_account_picture_profile"
-                    android:layout_width="@dimen/navigation_drawer_profile_image_size"
-                    android:layout_height="@dimen/navigation_drawer_profile_image_size"
-                    android:layout_above="@id/navigation_drawer_account_information"
-                    android:src="@drawable/ic_account_circle_white_64dp"/>
+                <!--<de.hdodenhof.circleimageview.CircleImageView-->
+                    <!--android:id="@+id/navigation_drawer_user_account_picture_profile"-->
+                    <!--android:layout_width="@dimen/navigation_drawer_profile_image_size"-->
+                    <!--android:layout_height="@dimen/navigation_drawer_profile_image_size"-->
+                    <!--android:layout_above="@id/navigation_drawer_account_information"-->
+                    <!--android:src="@drawable/ic_account_circle_white_64dp"/>-->
 
             </RelativeLayout>
 
