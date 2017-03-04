@@ -20,11 +20,13 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -113,8 +115,13 @@ public class OrganizationTab extends Fragment implements SwipeRefreshLayout.OnRe
      */
     private void onLoadCompleted(OrganizationItem item) {
         if (item != null) {
-            String description = item.getDescription();
-            contentView.setText(Html.fromHtml(description != null ? description : ""));
+            Spanned content;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                content = Html.fromHtml(item.getDescription(), Html.FROM_HTML_MODE_COMPACT);
+            } else {
+                content = Html.fromHtml(item.getDescription());
+            }
+            contentView.setText(content);
 
             /* set the image if one is available */
             byte[] image = item.getImage();

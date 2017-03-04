@@ -17,9 +17,12 @@
 package eu.olynet.olydorfapp.fragments;
 
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,7 +97,13 @@ public class NewsViewerFragment extends Fragment implements SwipeRefreshLayout.O
 
             /* Content */
             TextView newsContent = (TextView) view.findViewById(R.id.newsViewContent);
-            newsContent.setText(newsItem.getText());
+            Spanned content;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                content = Html.fromHtml(newsItem.getText(), Html.FROM_HTML_MODE_COMPACT);
+            } else {
+                content = Html.fromHtml(newsItem.getText());
+            }
+            newsContent.setText(content);
         }
 
         /* return the View */
