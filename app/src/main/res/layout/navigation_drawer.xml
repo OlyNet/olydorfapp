@@ -62,12 +62,12 @@
 
                 </LinearLayout>
 
-                <!--<de.hdodenhof.circleimageview.CircleImageView-->
-                    <!--android:id="@+id/navigation_drawer_user_account_picture_profile"-->
-                    <!--android:layout_width="@dimen/navigation_drawer_profile_image_size"-->
-                    <!--android:layout_height="@dimen/navigation_drawer_profile_image_size"-->
-                    <!--android:layout_above="@id/navigation_drawer_account_information"-->
-                    <!--android:src="@drawable/ic_account_circle_white_64dp"/>-->
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/navigation_drawer_user_account_picture_profile"
+                    android:layout_width="@dimen/navigation_drawer_profile_image_size"
+                    android:layout_height="@dimen/navigation_drawer_profile_image_size"
+                    android:layout_above="@id/navigation_drawer_account_information"
+                    android:src="@mipmap/launcher_icon"/>
 
             </RelativeLayout>
 
