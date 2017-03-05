@@ -99,17 +99,10 @@ public class AboutFragment extends Fragment {
                                          "https://github.com/hdodenhof/CircleImageView",
                                          "Copyright 2014 - 2016 Henning Dodenhof",
                                          apacheLicense));
-//            notices.addNotice(new Notice("barcodescanner",
-//                                         "https://github.com/dm77/barcodescanner",
-//                                         "Copyright (c) 2014 Dushyanth Maguluru",
-//                                         apacheLicense));
-//            notices.addNotice(new Notice("zxing",
-//                                         "https://github.com/zxing/zxing",
-//                                         "Copyright (c) 2005 Sun Microsystems, Inc.\n" +
-//                                         "Copyright (c) 2010-2014 University of Manchester\n" +
-//                                         "Copyright (c) 2010-2015 Stian Soiland-Reyes\n" +
-//                                         "Copyright (c) 2015 Peter Hull",
-//                                         apacheLicense));
+            notices.addNotice(new Notice("barcodescanner",
+                                         "https://github.com/dm77/barcodescanner",
+                                         "Copyright (c) 2014 Dushyanth Maguluru",
+                                         apacheLicense));
             notices.addNotice(new Notice("Disk LRU Cache",
                                          "https://github.com/JakeWharton/DiskLruCache",
                                          "Copyright 2012 Jake Wharton\n" +
@@ -119,6 +112,10 @@ public class AboutFragment extends Fragment {
                                          "https://github.com/vincentbrison/dualcache",
                                          "Copyright 2016 Vincent Brison.",
                                          apacheLicense));
+            notices.addNotice(new Notice("Hamcrest",
+                                         "Copyright (c) 2000-2006, www.hamcrest.org",
+                                         "http://hamcrest.org/",
+                                         bsdLicense));
             notices.addNotice(new Notice("Jackson",
                                          "https://github.com/FasterXML",
                                          "Copyright 2016 FasterXML, LLC",
@@ -131,6 +128,19 @@ public class AboutFragment extends Fragment {
                                          "http://mockito.org/",
                                          "Copyright (c) 2007 Mockito contributors",
                                          mitLicense));
+            notices.addNotice(new Notice("Objenesis",
+                                         "http://objenesis.org/",
+                                         "Copyright 2006-2013 Joe Walnes, Henri Tremblay, " +
+                                         "Leonardo Mesquita",
+                                         apacheLicense));
+            notices.addNotice(new Notice("Okio",
+                                         "https://github.com/square/okio",
+                                         "Copyright 2013 Square, Inc.",
+                                         apacheLicense));
+            notices.addNotice(new Notice("OkHttp",
+                                         "https://github.com/square/okhttp",
+                                         "Copyright 2016 Square, Inc.",
+                                         apacheLicense));
             notices.addNotice(new Notice("Retrofit",
                                          "https://github.com/square/retrofit",
                                          "Copyright 2013 Square, Inc.",
@@ -138,6 +148,13 @@ public class AboutFragment extends Fragment {
             notices.addNotice(new Notice("RoundedImageView",
                                          "https://github.com/vinc3m1/RoundedImageView",
                                          "Copyright 2015 Vincent Mi",
+                                         apacheLicense));
+            notices.addNotice(new Notice("zxing",
+                                         "https://github.com/zxing/zxing",
+                                         "Copyright (c) 2005 Sun Microsystems, Inc.\n" +
+                                         "Copyright (c) 2010-2014 University of Manchester\n" +
+                                         "Copyright (c) 2010-2015 Stian Soiland-Reyes\n" +
+                                         "Copyright (c) 2015 Peter Hull",
                                          apacheLicense));
 
             /* finally build and open the dialog */
