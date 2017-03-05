@@ -27,6 +27,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -140,6 +141,7 @@ public class OrganizationTab extends Fragment implements SwipeRefreshLayout.OnRe
                 content = Html.fromHtml(description);
             }
             contentView.setText(content);
+            contentView.setMovementMethod(LinkMovementMethod.getInstance());
 
             /* set the image if one is available */
             if (!Arrays.equals(item.getImage(), ImageDeserializer.MAGIC_VALUE)) {

@@ -23,6 +23,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -104,6 +105,7 @@ public class NewsViewerFragment extends Fragment implements SwipeRefreshLayout.O
                 content = Html.fromHtml(newsItem.getText());
             }
             newsContent.setText(content);
+            newsContent.setMovementMethod(LinkMovementMethod.getInstance());
         }
 
         /* return the View */
