@@ -34,14 +34,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.ImageDeserializer;
 import eu.olynet.olydorfapp.model.OrganizationItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
 import eu.olynet.olydorfapp.resource.ResourceManager;
+import eu.olynet.olydorfapp.resource.SimpleImageListener;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
@@ -58,6 +63,8 @@ public class OrganizationTab extends Fragment implements SwipeRefreshLayout.OnRe
 
     private TextView contentView;
     private ImageView imageView;
+
+    private final List<SimpleImageListener> listeners = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -84,6 +91,16 @@ public class OrganizationTab extends Fragment implements SwipeRefreshLayout.OnRe
         loadData(false);
 
         return view;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        ResourceManager rm = ProductionResourceManager.getInstance();
+        for (SimpleImageListener listener : this.listeners) {
+            rm.unregisterImageListener(listener, listener.oldItem);
+        }
+        listeners.clear();
     }
 
     @Override
@@ -115,20 +132,28 @@ public class OrganizationTab extends Fragment implements SwipeRefreshLayout.OnRe
      */
     private void onLoadCompleted(OrganizationItem item) {
         if (item != null) {
+            String description = item.getDescription() != null ? item.getDescription() : "";
             Spanned content;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                content = Html.fromHtml(item.getDescription(), Html.FROM_HTML_MODE_COMPACT);
+                content = Html.fromHtml(description, Html.FROM_HTML_MODE_COMPACT);
             } else {
-                content = Html.fromHtml(item.getDescription());
+                content = Html.fromHtml(description);
             }
             contentView.setText(content);
 
             /* set the image if one is available */
-            byte[] image = item.getImage();
-            int screenWidth = UtilsDevice.getScreenWidth(getContext());
-            Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
-            if (bitmap != null) {
-                imageView.setImageBitmap(bitmap);
+            if (!Arrays.equals(item.getImage(), ImageDeserializer.MAGIC_VALUE)) {
+                byte[] image = item.getImage();
+                int screenWidth = UtilsDevice.getScreenWidth(getContext());
+                Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
+                if (bitmap != null) {
+                    imageView.setImageBitmap(bitmap);
+                }
+            } else {
+                SimpleImageListener listener = new SimpleImageListener(getContext(), item,
+                                                                       imageView);
+                listeners.add(listener);
+                ProductionResourceManager.getInstance().registerImageListener(listener, item);
             }
 
             /* link to the organization's website in the ImageView's onClickListener */
@@ -154,7 +179,7 @@ public class OrganizationTab extends Fragment implements SwipeRefreshLayout.OnRe
     /**
      * Queries the ResourceManager for the full OrganizationItem.
      */
-    class OrganizationUpdateTask extends AsyncTask<Void, Void, OrganizationItem> {
+    private class OrganizationUpdateTask extends AsyncTask<Void, Void, OrganizationItem> {
 
         private final OrganizationMetaItem organizationDummyItem;
         private final boolean forceUpdate;

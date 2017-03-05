@@ -52,7 +52,11 @@ import eu.olynet.olydorfapp.model.CategoryItem;
 import eu.olynet.olydorfapp.model.DailyMealItem;
 import eu.olynet.olydorfapp.model.DrinkItem;
 import eu.olynet.olydorfapp.model.FoodItem;
+import eu.olynet.olydorfapp.model.ImageDeserializer;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
+import eu.olynet.olydorfapp.resource.ProductionResourceManager;
+import eu.olynet.olydorfapp.resource.ResourceManager;
+import eu.olynet.olydorfapp.resource.SimpleImageListener;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
@@ -85,12 +89,16 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     private final Context context;
 
+    private final List<SimpleImageListener> listeners;
+
     /**
      * @param context the Context.
      */
     public BierstubeMenuAdapter(Context context) {
         this.context = context;
         setData(null, null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+
+        this.listeners = new ArrayList<>();
     }
 
     @Override
@@ -123,6 +131,16 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
             default:
                 throw new RuntimeException("unknown item view type");
         }
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        ResourceManager rm = ProductionResourceManager.getInstance();
+        for (SimpleImageListener listener : this.listeners) {
+            rm.unregisterImageListener(listener, listener.oldItem);
+        }
+        listeners.clear();
     }
 
     @Override
@@ -252,17 +270,39 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
         holder.vPrice.setText(deDE.format(mealOfTheDayItem.getPrice()));
 
         /* Image */
-        byte[] image = mealOfTheDayItem.getImage();
+        byte[] image;
         int screenWidth = UtilsDevice.getScreenWidth(context);
-        Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
-        if (bitmap == null) { /* fallback to DailyMeal image */
-            image = dailyMealItem.getImage();
+        Bitmap bitmap;
+        if (!Arrays.equals(mealOfTheDayItem.getImage(), ImageDeserializer.MAGIC_VALUE)) {
+            image = mealOfTheDayItem.getImage();
             bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
-        }
-        if (bitmap != null) {
-            holder.vImage.setImageBitmap(bitmap);
+            if (bitmap != null) {
+                holder.vImage.setImageBitmap(bitmap);
+            } else { /* fallback to DailyMeal image  */
+                if (!Arrays.equals(dailyMealItem.getImage(), ImageDeserializer.MAGIC_VALUE)) {
+                    image = dailyMealItem.getImage();
+                    bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
+                    if (bitmap != null) {
+                        holder.vImage.setImageBitmap(bitmap);
+                    } else {
+                        holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+                    }
+                } else {
+                    holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+                    SimpleImageListener listener = new SimpleImageListener(context, dailyMealItem,
+                                                                           holder.vImage);
+                    listeners.add(listener);
+                    ProductionResourceManager.getInstance()
+                                             .registerImageListener(listener, dailyMealItem);
+                }
+            }
         } else {
             holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            SimpleImageListener listener = new SimpleImageListener(context, mealOfTheDayItem,
+                                                                   holder.vImage);
+            listeners.add(listener);
+            ProductionResourceManager.getInstance().registerImageListener(listener,
+                                                                          mealOfTheDayItem);
         }
     }
 
@@ -290,13 +330,22 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
         holder.vPrice.setText(deDE.format(holder.foodItem.getPrice()));
 
         /* Image */
-        byte[] image = holder.foodItem.getImage();
-        int screenWidth = UtilsDevice.getScreenWidth(context);
-        Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
-        if (bitmap != null) {
-            holder.vImage.setImageBitmap(bitmap);
+        if (!Arrays.equals(holder.foodItem.getImage(), ImageDeserializer.MAGIC_VALUE)) {
+            byte[] image = holder.foodItem.getImage();
+            int screenWidth = UtilsDevice.getScreenWidth(context);
+            Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
+            if (bitmap != null) {
+                holder.vImage.setImageBitmap(bitmap);
+            } else {
+                holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            }
         } else {
             holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            SimpleImageListener listener = new SimpleImageListener(context, holder.foodItem,
+                                                                   holder.vImage);
+            listeners.add(listener);
+            ProductionResourceManager.getInstance()
+                                     .registerImageListener(listener, holder.foodItem);
         }
     }
 
@@ -326,14 +375,24 @@ public class BierstubeMenuAdapter extends RecyclerView.Adapter<RecyclerView.View
 //                                                              "" + drinkSize.getSize()));
 
         /* Image */
-        byte[] image = drinkItem.getImage();
-        int screenWidth = UtilsDevice.getScreenWidth(context);
-        Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
-        if (bitmap != null) {
-            holder.vImage.setImageBitmap(bitmap);
+        if (!Arrays.equals(drinkItem.getImage(), ImageDeserializer.MAGIC_VALUE)) {
+            byte[] image = drinkItem.getImage();
+            int screenWidth = UtilsDevice.getScreenWidth(context);
+            Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
+            if (bitmap != null) {
+                holder.vImage.setImageBitmap(bitmap);
+            } else {
+                holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            }
         } else {
             holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            SimpleImageListener listener = new SimpleImageListener(context, drinkItem,
+                                                                   holder.vImage);
+            listeners.add(listener);
+            ProductionResourceManager.getInstance()
+                                     .registerImageListener(listener, drinkItem);
         }
+
     }
 
     /**

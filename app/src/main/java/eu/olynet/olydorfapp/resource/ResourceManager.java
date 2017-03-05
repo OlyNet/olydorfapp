@@ -19,6 +19,10 @@ package eu.olynet.olydorfapp.resource;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualLinkedHashBidiMap;
+import org.apache.commons.collections4.bidimap.UnmodifiableBidiMap;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,18 +34,27 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.CategoryItem;
 import eu.olynet.olydorfapp.model.CategoryMetaItem;
+import eu.olynet.olydorfapp.model.DailyMealItem;
 import eu.olynet.olydorfapp.model.DailyMealMetaItem;
+import eu.olynet.olydorfapp.model.DrinkItem;
 import eu.olynet.olydorfapp.model.DrinkMetaItem;
+import eu.olynet.olydorfapp.model.DrinkSizeItem;
 import eu.olynet.olydorfapp.model.DrinkSizeMetaItem;
+import eu.olynet.olydorfapp.model.FoodItem;
 import eu.olynet.olydorfapp.model.FoodMetaItem;
+import eu.olynet.olydorfapp.model.MealOfTheDayItem;
 import eu.olynet.olydorfapp.model.MealOfTheDayMetaItem;
+import eu.olynet.olydorfapp.model.NewsItem;
 import eu.olynet.olydorfapp.model.NewsMetaItem;
+import eu.olynet.olydorfapp.model.OrganizationItem;
 import eu.olynet.olydorfapp.model.OrganizationMetaItem;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
+@SuppressWarnings("unused")
 public abstract class ResourceManager {
 
     /**
@@ -50,10 +63,15 @@ public abstract class ResourceManager {
      * All items that need to be available via this Class have to be added in the static{...}
      * section below.
      *
-     * @see eu.olynet.olydorfapp.resource.OlyNetClient
+     * @see eu.olynet.olydorfapp.resource.OlyNetService
      * @see eu.olynet.olydorfapp.model.AbstractMetaItemMixIn
      */
-    static final Map<Class, String> treeCaches;
+    static final BidiMap<Class, String> treeCaches;
+
+    /**
+     * The static Map mapping MetaItems to their full items.
+     */
+    static final BidiMap<Class, Class> metaToFullClassMap;
 
     /**
      * A static Map mapping the valid Classes to their corresponding locking Objects. Locking on the
@@ -69,7 +87,7 @@ public abstract class ResourceManager {
 
     /* statically fill the Map and the Set */
     static {
-        Map<Class, String> initTreeCaches = new LinkedHashMap<>();
+        BidiMap<Class, String> initTreeCaches = new DualLinkedHashBidiMap<>();
         initTreeCaches.put(NewsMetaItem.class, "news");
         initTreeCaches.put(FoodMetaItem.class, "food");
         initTreeCaches.put(CategoryMetaItem.class, "category");
@@ -79,6 +97,16 @@ public abstract class ResourceManager {
         initTreeCaches.put(OrganizationMetaItem.class, "organization");
         initTreeCaches.put(MealOfTheDayMetaItem.class, "mealoftheday");
 
+        BidiMap<Class, Class> initMetaToFullClassMap = new DualLinkedHashBidiMap<>();
+        initMetaToFullClassMap.put(NewsMetaItem.class, NewsItem.class);
+        initMetaToFullClassMap.put(FoodMetaItem.class, FoodItem.class);
+        initMetaToFullClassMap.put(CategoryMetaItem.class, CategoryItem.class);
+        initMetaToFullClassMap.put(DrinkMetaItem.class, DrinkItem.class);
+        initMetaToFullClassMap.put(DrinkSizeMetaItem.class, DrinkSizeItem.class);
+        initMetaToFullClassMap.put(DailyMealMetaItem.class, DailyMealItem.class);
+        initMetaToFullClassMap.put(OrganizationMetaItem.class, OrganizationItem.class);
+        initMetaToFullClassMap.put(MealOfTheDayMetaItem.class, MealOfTheDayItem.class);
+
         Set<Class> initSkipDuringCleanup = new LinkedHashSet<>();
         initSkipDuringCleanup.add(FoodMetaItem.class);
         initSkipDuringCleanup.add(CategoryMetaItem.class);
@@ -87,7 +115,8 @@ public abstract class ResourceManager {
         initSkipDuringCleanup.add(DailyMealMetaItem.class);
         initSkipDuringCleanup.add(OrganizationMetaItem.class);
 
-        treeCaches = Collections.unmodifiableMap(initTreeCaches);
+        treeCaches = UnmodifiableBidiMap.unmodifiableBidiMap(initTreeCaches);
+        metaToFullClassMap = UnmodifiableBidiMap.unmodifiableBidiMap(initMetaToFullClassMap);
         skipDuringCleanup = Collections.unmodifiableSet(initSkipDuringCleanup);
 
         /* automatically generate lockMap */
@@ -105,7 +134,7 @@ public abstract class ResourceManager {
      * @return the identifying String.
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      */
-    public static String getResourceString(Class clazz) {
+    static String getResourceString(Class clazz) {
         String type = treeCaches.get(clazz);
         if (type == null || type.equals("")) {
             throw new IllegalArgumentException(
@@ -152,6 +181,44 @@ public abstract class ResourceManager {
      * @throws RuntimeException         if some weird Reflection error occurs.
      */
     public abstract byte[] getImage(String type, int id, String field) throws NoConnectionException;
+
+    /**
+     * Prepare an asynchronous image fetch.
+     *
+     * @param type  the type in String form.
+     * @param id    the id.
+     * @param field the field name.
+     * @throws IllegalStateException if the ResourceManager has not been initialized correctly.
+     */
+    public abstract void getImageAsync(String type, int id, String field);
+
+    /**
+     * The hook to be called whenever an image has been successfully fetched asynchronously.
+     *
+     * @param type  the type-String of the resource for which the image has been fetched.
+     * @param id    the id of the resource for which the image has been fetched.
+     * @param image the fetched image.
+     */
+    abstract void asyncReceptionHook(String type, int id, byte[] image);
+
+    /**
+     * Registers an ImageListener with the ResourceManager. ImageListeners <b>must be</b>
+     * unregistered by calling
+     * {@link #unregisterImageListener(ImageListener, AbstractMetaItem) unregisterImageListener}
+     * method when the Activity, Fragment or Adapter is destroyed.
+     *
+     * @param listener the ImageListener to be registered.
+     * @param item     the AbstractMetaItem to notify the ImageListener of.
+     */
+    public abstract void registerImageListener(ImageListener listener, AbstractMetaItem<?> item);
+
+    /**
+     * Unregisters a previously registered ImageListener.
+     *
+     * @param listener the ImageListener to be unregistered.
+     * @param item     the AbstractMetaItem of which the ImageListener was to be notified.
+     */
+    public abstract void unregisterImageListener(ImageListener listener, AbstractMetaItem<?> item);
 
     /**
      * Get a specific item from the server (preferably) or the cache.

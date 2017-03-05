@@ -100,6 +100,7 @@ dependencies {
     compile('de.psdev.licensesdialog:licensesdialog:1.8.1')
     // Apache Commons
     compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'org.apache.commons:commons-collections4:4.1'
     // Jackson for (de)serialization of JSON
     compile 'com.fasterxml.jackson.core:jackson-core:2.8.6'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.8.6'

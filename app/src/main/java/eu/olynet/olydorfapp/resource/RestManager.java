@@ -27,7 +27,7 @@ import eu.olynet.olydorfapp.model.AbstractMetaItem;
  */
 abstract class RestManager {
 
-    static final int DEFAULT_RETRY_COUNT = 3;
+    private static final int DEFAULT_RETRY_COUNT = 3;
 
     final Context context;
 
@@ -54,7 +54,6 @@ abstract class RestManager {
      */
     protected abstract void init();
 
-
     /**
      * Tries to fetch the image of a specific item from the server. Defaults to 3 retries.
      *
@@ -62,11 +61,12 @@ abstract class RestManager {
      * @param id    the id.
      * @param field the field name.
      * @return the fetched image or <b>null</b> if this operation was not successful.
-     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
      */
-    public abstract byte[] fetchImage(String type, int id, String field)
-            throws NoConnectionException, ClientCertificateInvalidException;
+    public byte[] fetchImage(String type, int id, String field)
+            throws NoConnectionException, ClientCertificateInvalidException {
+        return fetchImage(type, id, field, RestManager.DEFAULT_RETRY_COUNT);
+    }
 
     /**
      * Tries to fetch the image of a specific item from the server.
@@ -76,11 +76,33 @@ abstract class RestManager {
      * @param field      the field name.
      * @param retryCount how many times a fetch should be retried if it failed.
      * @return the fetched image or <b>null</b> if this operation was not successful.
-     * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
      */
     public abstract byte[] fetchImage(String type, int id, String field, int retryCount)
             throws NoConnectionException, ClientCertificateInvalidException;
+
+    /**
+     * Tries to initiate an asynchronous fetch the image of a specific item from the server.
+     * Defaults to 3 retries.
+     *
+     * @param type  the type in String form.
+     * @param id    the id.
+     * @param field the field name.
+     */
+    public void fetchImageAsync(String type, int id, String field) {
+        fetchImageAsync(type, id, field, RestManager.DEFAULT_RETRY_COUNT);
+    }
+
+    /**
+     * Tries to initiate an asynchronous fetch the image of a specific item from the server.
+     *
+     * @param type       the type in String form.
+     * @param id         the id.
+     * @param field      the field name.
+     * @param retryCount how many times a fetch should be retried if it failed.
+     */
+    public abstract void fetchImageAsync(String type, int id, String field,
+                                         int retryCount);
 
     /**
      * Tries to fetch a specific item from the server. Defaults to 3 retries.
@@ -93,8 +115,10 @@ abstract class RestManager {
      * @throws NoConnectionException    if no internet connection is available.
      * @throws Http404Exception         if a HTTP 404 (Not Found) was received.
      */
-    public abstract AbstractMetaItem<?> fetchItem(Class clazz, int id)
-            throws NoConnectionException, ClientCertificateInvalidException, Http404Exception;
+    public AbstractMetaItem<?> fetchItem(Class clazz, int id)
+            throws NoConnectionException, ClientCertificateInvalidException, Http404Exception {
+        return fetchItem(clazz, id, RestManager.DEFAULT_RETRY_COUNT);
+    }
 
     /**
      * Tries to fetch a specific item from the server.
@@ -120,8 +144,10 @@ abstract class RestManager {
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
      */
-    public abstract List<AbstractMetaItem<?>> fetchItems(Class clazz)
-            throws NoConnectionException, ClientCertificateInvalidException;
+    public List<AbstractMetaItem<?>> fetchItems(Class clazz)
+            throws NoConnectionException, ClientCertificateInvalidException {
+        return fetchItems(clazz, RestManager.DEFAULT_RETRY_COUNT);
+    }
 
     /**
      * Tries to fetch all items of a specific type from the server.
@@ -147,8 +173,10 @@ abstract class RestManager {
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
      */
-    public abstract List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids)
-            throws NoConnectionException, ClientCertificateInvalidException;
+    public List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids)
+            throws NoConnectionException, ClientCertificateInvalidException {
+        return fetchItems(clazz, ids, RestManager.DEFAULT_RETRY_COUNT);
+    }
 
     /**
      * Tries to fetch all items of a specific type from the server.
@@ -178,8 +206,10 @@ abstract class RestManager {
      * @throws NoConnectionException    if no internet connection is available.
      * @throws Http404Exception         if a HTTP 404 (Not Found) was received.
      */
-    public abstract AbstractMetaItem<?> fetchMetaItem(Class clazz, int id)
-            throws NoConnectionException, ClientCertificateInvalidException, Http404Exception;
+    public AbstractMetaItem<?> fetchMetaItem(Class clazz, int id)
+            throws NoConnectionException, ClientCertificateInvalidException, Http404Exception {
+        return fetchMetaItem(clazz, id, RestManager.DEFAULT_RETRY_COUNT);
+    }
 
     /**
      * Tries to fetch the up-to-createDate meta-data information for one specific item from the
@@ -207,8 +237,11 @@ abstract class RestManager {
      * @throws IllegalArgumentException if clazz is not a valid Class for this operation.
      * @throws NoConnectionException    if no internet connection is available.
      */
-    public abstract List<AbstractMetaItem<?>> fetchMetaItems(Class clazz)
-            throws NoConnectionException, ClientCertificateInvalidException;
+    @SuppressWarnings("unchecked")
+    public List<AbstractMetaItem<?>> fetchMetaItems(Class clazz)
+            throws NoConnectionException, ClientCertificateInvalidException {
+        return fetchMetaItems(clazz, RestManager.DEFAULT_RETRY_COUNT);
+    }
 
     /**
      * Tries to fetch the up-to-createDate meta-data information from the server.

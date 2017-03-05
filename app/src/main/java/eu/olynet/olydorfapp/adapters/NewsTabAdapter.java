@@ -28,6 +28,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -35,8 +37,12 @@ import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.activities.NewsViewerActivity;
 import eu.olynet.olydorfapp.fragments.NewsViewerFragment;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.ImageDeserializer;
 import eu.olynet.olydorfapp.model.NewsItem;
 import eu.olynet.olydorfapp.model.OrganizationItem;
+import eu.olynet.olydorfapp.resource.SimpleImageListener;
+import eu.olynet.olydorfapp.resource.ProductionResourceManager;
+import eu.olynet.olydorfapp.resource.ResourceManager;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
@@ -46,6 +52,7 @@ import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHolder> {
 
     private final List<AbstractMetaItem<?>> items;
+    private final List<SimpleImageListener> listeners;
     private final Map<Integer, OrganizationItem> organizationMap;
     private final Context context;
 
@@ -63,12 +70,14 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
         this.context = context;
         this.items = newsItems;
         this.organizationMap = organizationMap;
+
+        this.listeners = new ArrayList<>();
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.card_news, parent, false);
+                                  .inflate(R.layout.card_news, parent, false);
 
         registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -79,6 +88,16 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
         });
 
         return new ViewHolder(view);
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        ResourceManager rm = ProductionResourceManager.getInstance();
+        for (SimpleImageListener listener : this.listeners) {
+            rm.unregisterImageListener(listener, listener.oldItem);
+        }
+        listeners.clear();
     }
 
     /**
@@ -116,13 +135,13 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
         if (!(items.get(position) instanceof NewsItem)) {
             throw new IllegalArgumentException(
                     "the List of AbstractMetaItem<?>s provided does not" +
-                            " seem to only contain NewsItems");
+                    " seem to only contain NewsItems");
         }
         NewsItem newsItem = (NewsItem) items.get(position);
         OrganizationItem organizationItem = organizationMap.get(newsItem.getOrganization());
         if (organizationItem == null) {
             throw new IllegalArgumentException("OrganizationItem missing for id "
-                    + newsItem.getId());
+                                               + newsItem.getId());
         }
 
         /* set the correct item in the ViewHolder for the OnClickListener */
@@ -141,13 +160,22 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
         holder.vOrganization.setText(organizationItem.getName());
 
         /* Image */
-        byte[] image = newsItem.getImage();
-        int screenWidth = UtilsDevice.getScreenWidth(context);
-        Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
-        if (bitmap != null) {
-            holder.vImage.setImageBitmap(bitmap);
+        if (!Arrays.equals(newsItem.getImage(), ImageDeserializer.MAGIC_VALUE)) {
+            byte[] image = newsItem.getImage();
+            int screenWidth = UtilsDevice.getScreenWidth(context);
+            Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
+            if (bitmap != null) {
+                holder.vImage.setImageBitmap(bitmap);
+            } else {
+                holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            }
         } else {
             holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            SimpleImageListener listener = new SimpleImageListener(context, newsItem,
+                                                                   holder.vImage);
+            listeners.add(listener);
+            ProductionResourceManager.getInstance()
+                                     .registerImageListener(listener, newsItem);
         }
     }
 
@@ -199,7 +227,7 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
         this.organizationMap.putAll(organizationMap);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         NewsItem newsItem;
         OrganizationItem organizationItem;
@@ -209,7 +237,7 @@ public class NewsTabAdapter extends RecyclerView.Adapter<NewsTabAdapter.ViewHold
         final TextView vOrganization;
         final ImageView vImage;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
 
             view.setOnClickListener(v -> {

@@ -46,7 +46,6 @@ import static android.R.attr.value;
  */
 interface OlyNetService {
 
-    @Streaming
     @GET("{type}/{id}/{field}")
     Call<ResponseBody> getImage(@Header("User-Agent") String userAgent,
                                 @Path("type") String type,

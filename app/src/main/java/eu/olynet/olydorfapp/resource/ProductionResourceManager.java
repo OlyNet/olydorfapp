@@ -17,6 +17,7 @@
 package eu.olynet.olydorfapp.resource;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -30,6 +31,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +40,7 @@ import java.util.TreeSet;
 
 import eu.olynet.olydorfapp.R;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
+import eu.olynet.olydorfapp.model.ImageDeserializer;
 
 /**
  * The ResourceManager is the Singleton interface for accessing data on the OlyNet servers.
@@ -76,6 +79,11 @@ public class ProductionResourceManager extends ResourceManager {
      * The last time the user has been notified by calling informUser().
      */
     private Date lastNotifiedDate = null;
+
+    /**
+     *
+     */
+    private final Map<AbstractMetaItem<?>, List<ImageListener>> listenerMap = new LinkedHashMap<>();
 
     /**
      * Empty constructor. The real work is done by the init() method.
@@ -240,6 +248,8 @@ public class ProductionResourceManager extends ResourceManager {
 
     @Override
     public byte[] getImage(String type, int id, String field) throws NoConnectionException {
+        abortIfNotInitialized();
+
         byte[] image = null;
         try {
             image = this.rest.fetchImage(type, id, field);
@@ -248,6 +258,115 @@ public class ProductionResourceManager extends ResourceManager {
             handleClientCertError(e);
         }
         return image;
+    }
+
+    @Override
+    public void getImageAsync(String type, int id, String field) {
+        abortIfNotInitialized();
+
+        this.rest.fetchImageAsync(type, id, field);
+    }
+
+    @Override
+    void asyncReceptionHook(String type, int id, byte[] image) {
+        /* get the necessary classes */
+        Class<?> clazz = treeCaches.getKey(type);
+        Class<?> fullClazz = metaToFullClassMap.get(clazz);
+
+        /* get the correct item form the cache */
+        AbstractMetaItem<?> item = this.cache.getCachedItem(clazz, id);
+
+        /* update the image of the item via Reflection magic */
+        try {
+            Method method = fullClazz.getMethod("setImage", byte[].class);
+            method.invoke(item, image);
+        } catch (Exception e) { /* pray that nothing goes wrong */
+            throw new RuntimeException(e);
+        }
+
+        /* update lastUseDate */
+        item.setLastUsedDate();
+
+        /* write updated item back to cache */
+        this.cache.putCachedItem(clazz, item);
+
+        /* notify */
+        notifyListeners(item);
+    }
+
+    /**
+     * Notifies all registered ImageListeners for a specified AbstractMetaItem.
+     *
+     * @param item the AbstractMetaItem for which the ImageListeners are to be notified.
+     */
+    private void notifyListeners(AbstractMetaItem<?> item) {
+        synchronized (this.listenerMap) {
+            /* get all ImageListeners for this item and notify them */
+            List<ImageListener> listeners = this.listenerMap.get(item);
+            if (listeners != null) {
+                for (ImageListener listener : listeners) {
+                    listener.onImageLoad(item);
+                }
+
+                /* remove all listeners */
+                this.listenerMap.remove(item);
+            } else {
+                Log.w("ResourceManager", "listeners is null");
+            }
+        }
+    }
+
+    @Override
+    public void registerImageListener(ImageListener listener, AbstractMetaItem<?> item) {
+        synchronized (this.listenerMap) {
+            List<ImageListener> listeners = this.listenerMap.get(item);
+
+            if (listeners == null) {
+                listeners = new ArrayList<>();
+            }
+            listeners.add(listener);
+
+            this.listenerMap.put(item, listeners);
+        }
+
+        /* asynchronously check if the fetch already went through */
+        new AsyncTask<Void, Void, AbstractMetaItem<?>>() {
+            protected AbstractMetaItem<?> doInBackground(Void... params) {
+                AbstractMetaItem<?> cacheItem = cache.getCachedItem(
+                        metaToFullClassMap.getKey(item.getClass()), item.getId());
+                byte[] image;
+                try {
+                    Method method = item.getClass().getMethod("getImage");
+                    image = (byte[]) method.invoke(cacheItem);
+                } catch (Exception e) { /* pray that nothing goes wrong */
+                    throw new RuntimeException(e);
+                }
+
+                return !Arrays.equals(image, ImageDeserializer.MAGIC_VALUE) ? cacheItem : null;
+            }
+
+            protected void onPostExecute(AbstractMetaItem<?> item) {
+                if (item != null) {
+                    notifyListeners(item);
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void unregisterImageListener(ImageListener listener, AbstractMetaItem<?> item) {
+        synchronized (this.listenerMap) {
+            List<ImageListener> listeners = this.listenerMap.get(item);
+            if (listeners != null) {
+                listeners.remove(listener);
+
+                if (listeners.isEmpty()) {
+                    this.listenerMap.remove(item);
+                } else {
+                    this.listenerMap.put(item, listeners);
+                }
+            }
+        }
     }
 
     @Override

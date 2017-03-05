@@ -26,16 +26,22 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import eu.olynet.olydorfapp.resource.ProductionResourceManager;
+import eu.olynet.olydorfapp.resource.ResourceManager;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 
 /**
  * @author Martin Herrmann <a href="mailto:martin.herrmann@olynet.eu">martin.herrmann@olynet.eu</a>
  */
 @SuppressWarnings("unused")
 public class ImageDeserializer extends JsonDeserializer<byte[]> {
+
+    public static final byte[] MAGIC_VALUE = {14, 5, 2}; /* OlyNet's date of incorporation */
 
     private static final Pattern urlPattern = Pattern.compile("http://.+api/(\\w+)/(\\d+)/(\\w+)$");
 
@@ -108,7 +114,9 @@ public class ImageDeserializer extends JsonDeserializer<byte[]> {
                     int id = Integer.parseInt(matcher.group(2));
                     String field = matcher.group(3);
 
-                    image = ProductionResourceManager.getInstance().getImage(type, id, field);
+//                    image = ProductionResourceManager.getInstance().getImage(type, id, field);
+                    image = MAGIC_VALUE;
+                    ProductionResourceManager.getInstance().getImageAsync(type, id, field);
                 } else {
                     throw new IOException("could not match url: " + content);
                 }

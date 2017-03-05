@@ -87,6 +87,10 @@ public class AboutFragment extends Fragment {
                                          "Copyright 2014 - 2016 Xiaoke Zhang\n" +
                                          "Copyright 2011 The Android Open Source Project",
                                          apacheLicense));
+            notices.addNotice(new Notice("Apache Commons Collections",
+                                         "https://commons.apache.org/",
+                                         "Copyright 2002-2011 The Apache Software Foundation",
+                                         apacheLicense));
             notices.addNotice(new Notice("Apache Commons IO",
                                          "https://commons.apache.org/",
                                          "Copyright 2002-2011 The Apache Software Foundation",

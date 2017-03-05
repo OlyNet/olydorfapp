@@ -171,12 +171,6 @@ class RetrofitRestManager extends RestManager {
     }
 
     @Override
-    public byte[] fetchImage(String type, int id, String field)
-            throws NoConnectionException, ClientCertificateInvalidException {
-        return fetchImage(type, id, field, 3);
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public byte[] fetchImage(String type, int id, String field, int retryCount)
             throws NoConnectionException, ClientCertificateInvalidException {
@@ -186,7 +180,7 @@ class RetrofitRestManager extends RestManager {
         byte[] image = null;
         for (int i = 1; i <= retryCount; i++) {
             try {
-                Call call = this.ons.getImage(getUserAgent(), type, id, field);
+                Call<ResponseBody> call = this.ons.getImage(getUserAgent(), type, id, field);
 
                 Response<ResponseBody> response = call.execute();
                 int code = response.code();
@@ -223,9 +217,9 @@ class RetrofitRestManager extends RestManager {
     }
 
     @Override
-    public AbstractMetaItem<?> fetchItem(Class clazz, int id)
-            throws NoConnectionException, ClientCertificateInvalidException, Http404Exception {
-        return fetchItem(clazz, id, RestManager.DEFAULT_RETRY_COUNT);
+    public void fetchImageAsync(String type, int id, String field, int retryCount) {
+        Call<ResponseBody> call = this.ons.getImage(getUserAgent(), type, id, field);
+        call.enqueue(new ImageCallback(type, id, field));
     }
 
     @Override
@@ -284,12 +278,6 @@ class RetrofitRestManager extends RestManager {
     }
 
     @Override
-    public List<AbstractMetaItem<?>> fetchItems(Class clazz)
-            throws NoConnectionException, ClientCertificateInvalidException {
-        return fetchItems(clazz, RestManager.DEFAULT_RETRY_COUNT);
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public List<AbstractMetaItem<?>> fetchItems(Class clazz, int retryCount)
             throws NoConnectionException, ClientCertificateInvalidException {
@@ -339,12 +327,6 @@ class RetrofitRestManager extends RestManager {
 
         /* return the result that may still be null */
         return result;
-    }
-
-    @Override
-    public List<AbstractMetaItem<?>> fetchItems(Class clazz, List<Integer> ids)
-            throws NoConnectionException, ClientCertificateInvalidException {
-        return fetchItems(clazz, ids, RestManager.DEFAULT_RETRY_COUNT);
     }
 
     @Override
@@ -406,13 +388,6 @@ class RetrofitRestManager extends RestManager {
 
     @Override
     @SuppressWarnings("unchecked")
-    public AbstractMetaItem<?> fetchMetaItem(Class clazz, int id)
-            throws NoConnectionException, ClientCertificateInvalidException, Http404Exception {
-        return fetchMetaItem(clazz, id, RestManager.DEFAULT_RETRY_COUNT);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
     public AbstractMetaItem<?> fetchMetaItem(Class clazz, int id, int retryCount)
             throws NoConnectionException, ClientCertificateInvalidException, Http404Exception {
         /* terminate if we do not have an internet connection */
@@ -464,13 +439,6 @@ class RetrofitRestManager extends RestManager {
 
         /* return the result that may still be null */
         return result;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<AbstractMetaItem<?>> fetchMetaItems(Class clazz)
-            throws NoConnectionException, ClientCertificateInvalidException {
-        return fetchMetaItems(clazz, RestManager.DEFAULT_RETRY_COUNT);
     }
 
     @Override

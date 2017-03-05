@@ -29,6 +29,8 @@ import android.widget.TextView;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -38,7 +40,11 @@ import eu.olynet.olydorfapp.activities.MealOfTheDayViewerActivity;
 import eu.olynet.olydorfapp.fragments.MealOfTheDayViewerFragment;
 import eu.olynet.olydorfapp.model.AbstractMetaItem;
 import eu.olynet.olydorfapp.model.DailyMealItem;
+import eu.olynet.olydorfapp.model.ImageDeserializer;
 import eu.olynet.olydorfapp.model.MealOfTheDayItem;
+import eu.olynet.olydorfapp.resource.ProductionResourceManager;
+import eu.olynet.olydorfapp.resource.ResourceManager;
+import eu.olynet.olydorfapp.resource.SimpleImageListener;
 import eu.olynet.olydorfapp.utils.UtilsDevice;
 import eu.olynet.olydorfapp.utils.UtilsMiscellaneous;
 
@@ -53,26 +59,30 @@ public class MealOfTheDayListAdapter
     private RecyclerView mRecyclerView = null;
     private View mEmptyView = null;
 
-    private final List<AbstractMetaItem<?>> items;
+    private final List<AbstractMetaItem<?>> mealOfTheDayItems;
     private final Map<Integer, DailyMealItem> dailyMealMap;
 
+    private final List<SimpleImageListener> listeners;
+
     /**
-     * @param context      the Context.
-     * @param newsItems    the List containing the NewsItems.
-     * @param dailyMealMap the data structure that maps integers to their corresponding
-     *                     DailyMealItems.
+     * @param context           the Context.
+     * @param mealOfTheDayItems the List containing the MealOfTheDayItems.
+     * @param dailyMealMap      the data structure that maps integers to their corresponding
+     *                          DailyMealItems.
      */
-    public MealOfTheDayListAdapter(Context context, List<AbstractMetaItem<?>> newsItems,
+    public MealOfTheDayListAdapter(Context context, List<AbstractMetaItem<?>> mealOfTheDayItems,
                                    Map<Integer, DailyMealItem> dailyMealMap) {
         this.context = context;
-        this.items = newsItems;
+        this.mealOfTheDayItems = mealOfTheDayItems;
         this.dailyMealMap = dailyMealMap;
+
+        this.listeners = new ArrayList<>();
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.card_meal_of_the_day, parent, false);
+                                  .inflate(R.layout.card_meal_of_the_day, parent, false);
 
         registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -83,6 +93,16 @@ public class MealOfTheDayListAdapter
         });
 
         return new ViewHolder(view);
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        ResourceManager rm = ProductionResourceManager.getInstance();
+        for (SimpleImageListener listener : this.listeners) {
+            rm.unregisterImageListener(listener, listener.oldItem);
+        }
+        listeners.clear();
     }
 
     /**
@@ -117,16 +137,16 @@ public class MealOfTheDayListAdapter
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (!(items.get(position) instanceof MealOfTheDayItem)) {
+        if (!(mealOfTheDayItems.get(position) instanceof MealOfTheDayItem)) {
             throw new IllegalArgumentException(
                     "the List of AbstractMetaItem<?>s provided does not" +
-                            " seem to only contain MealOfTheDayItems");
+                    " seem to only contain MealOfTheDayItems");
         }
-        MealOfTheDayItem mealOfTheDayItem = (MealOfTheDayItem) items.get(position);
+        MealOfTheDayItem mealOfTheDayItem = (MealOfTheDayItem) mealOfTheDayItems.get(position);
         DailyMealItem dailyMealItem = dailyMealMap.get(mealOfTheDayItem.getDailyMeal());
         if (dailyMealItem == null) {
             throw new IllegalArgumentException("DailyMealItem missing for id "
-                    + mealOfTheDayItem.getId());
+                                               + mealOfTheDayItem.getId());
         }
 
         /* set the correct item in the ViewHolder for the OnClickListener */
@@ -139,7 +159,7 @@ public class MealOfTheDayListAdapter
 
         /* Icon */
         holder.vIcon.setImageResource(dailyMealItem.isVegetarian() ? R.drawable.carrot
-                : R.drawable.meat);
+                                                                   : R.drawable.meat);
 
         /* Name */
         holder.vName.setText(dailyMealItem.getName());
@@ -152,18 +172,42 @@ public class MealOfTheDayListAdapter
         holder.vPrice.setText(deDE.format(mealOfTheDayItem.getPrice()));
 
         /* Image */
-        byte[] image = mealOfTheDayItem.getImage();
+        byte[] image;
         int screenWidth = UtilsDevice.getScreenWidth(context);
-        Bitmap bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
-        if (bitmap == null) { /* fallback to DailyMeal image  */
-            image = dailyMealItem.getImage();
+        Bitmap bitmap;
+        if (!Arrays.equals(mealOfTheDayItem.getImage(), ImageDeserializer.MAGIC_VALUE)) {
+            image = mealOfTheDayItem.getImage();
             bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
-        }
-        if (bitmap != null) {
-            holder.vImage.setImageBitmap(bitmap);
+            if (bitmap != null) {
+                holder.vImage.setImageBitmap(bitmap);
+            } else { /* fallback to DailyMeal image  */
+                if (!Arrays.equals(dailyMealItem.getImage(), ImageDeserializer.MAGIC_VALUE)) {
+                    image = dailyMealItem.getImage();
+                    bitmap = UtilsMiscellaneous.getOptimallyScaledBitmap(image, screenWidth);
+                    if (bitmap != null) {
+                        holder.vImage.setImageBitmap(bitmap);
+                    } else {
+                        holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+                    }
+                } else {
+                    holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+                    SimpleImageListener listener = new SimpleImageListener(context, dailyMealItem,
+                                                                           holder.vImage);
+                    listeners.add(listener);
+                    ProductionResourceManager.getInstance()
+                                             .registerImageListener(listener, dailyMealItem);
+                }
+            }
         } else {
             holder.vImage.setImageResource(R.drawable.ic_account_circle_white_64dp);
+            SimpleImageListener listener = new SimpleImageListener(context, mealOfTheDayItem,
+                                                                   holder.vImage);
+            listeners.add(listener);
+            ProductionResourceManager.getInstance().registerImageListener(listener,
+                                                                          mealOfTheDayItem);
         }
+
+
     }
 
     /**
@@ -173,7 +217,7 @@ public class MealOfTheDayListAdapter
      */
     @Override
     public int getItemCount() {
-        return items.size();
+        return mealOfTheDayItems.size();
     }
 
     /**
@@ -185,7 +229,7 @@ public class MealOfTheDayListAdapter
      * @return the MealOfTheDayItem
      */
     public AbstractMetaItem<?> getAbstractMetaItem(int position) {
-        return items.get(position);
+        return mealOfTheDayItems.get(position);
     }
 
     /**
@@ -196,7 +240,7 @@ public class MealOfTheDayListAdapter
      */
     public void addAbstractMetaItems(List<AbstractMetaItem<?>> items,
                                      Map<Integer, DailyMealItem> dailyMealMap) {
-        this.items.addAll(items);
+        this.mealOfTheDayItems.addAll(items);
         this.dailyMealMap.putAll(dailyMealMap);
     }
 
@@ -209,8 +253,8 @@ public class MealOfTheDayListAdapter
      */
     public void replaceAbstractMetaItems(List<AbstractMetaItem<?>> items,
                                          Map<Integer, DailyMealItem> dailyMealMap) {
-        this.items.clear();
-        this.items.addAll(items);
+        this.mealOfTheDayItems.clear();
+        this.mealOfTheDayItems.addAll(items);
         this.dailyMealMap.clear();
         this.dailyMealMap.putAll(dailyMealMap);
     }
@@ -234,7 +278,7 @@ public class MealOfTheDayListAdapter
                 Intent newsViewerIntent = new Intent(context, MealOfTheDayViewerActivity.class);
                 newsViewerIntent.setAction(Intent.ACTION_VIEW);
                 newsViewerIntent.putExtra(MealOfTheDayViewerFragment.MEAL_OF_THE_DAY_ITEM_KEY,
-                        mealOfTheDayItem);
+                                          mealOfTheDayItem);
                 newsViewerIntent.putExtra(MealOfTheDayViewerFragment.DAILY_MEAL_KEY, dailyMealItem);
                 context.startActivity(newsViewerIntent);
             });
