@@ -5,7 +5,7 @@ import 'package:olydorf/views/events/events_view.dart';
 import 'package:olydorf/views/info/info_view.dart';
 import 'package:olydorf/views/map/map_view.dart';
 
-import 'bottom_navigation_bar_provider.dart';
+import '../../providers/bottom_navigation_bar_provider.dart';
 
 class BottomNavigationBarView extends HookConsumerWidget {
   const BottomNavigationBarView({Key? key}) : super(key: key);
