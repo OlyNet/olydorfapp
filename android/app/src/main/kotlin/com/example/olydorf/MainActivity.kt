@@ -1,4 +1,4 @@
-package com.example.olydorf
+package eu.olynet.olydorf
 
 import io.flutter.embedding.android.FlutterActivity
 
