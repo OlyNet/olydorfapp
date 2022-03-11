@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:olydorf/api/auth.dart';
-import 'package:olydorf/api/user_data.dart';
 import 'package:olydorf/global/consts.dart';
 import 'package:olydorf/providers/auth_provider.dart';
 
@@ -18,10 +16,6 @@ class SignUpView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final Auth auth = ref.watch(authProvider);
-
-    final UserData _userData = ref.watch(userDataClassProvider);
-
     return Scaffold(
       appBar: AppBar(toolbarHeight: 0),
       body: Form(
@@ -74,13 +68,12 @@ class SignUpView extends HookConsumerWidget {
                           return;
                         }
                         _loading = true;
-                        await auth.signUp(
-                          _emailController.text,
-                          _passwordController.text,
-                          _nameController.text,
-                          _userData,
-                          context,
-                        );
+                        await ref.read(authProvider.notifier).signUp(
+                              _emailController.text,
+                              _passwordController.text,
+                              _nameController.text,
+                              context,
+                            );
                         _loading = false;
                       }),
                       child: const Text("sign up")),

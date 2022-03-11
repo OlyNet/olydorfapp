@@ -21,15 +21,7 @@ class _AppState extends ConsumerState<App> {
 
   Future<void> _init(WidgetRef ref) async {
     // load auth state
-    final user = ref.read(userProvider);
-    if (user != null) {
-      final userData = await ref.read(userDataProvider).getCurrentUser();
-      ref.read(currentUserProvider.state).update((user) => user = userData);
-
-      ref.read(userLoggedInProvider.state).state = true;
-    } else {
-      ref.read(userLoggedInProvider.state).state = false;
-    }
+    ref.read(authProvider.notifier).getCurrentUser();
 
     // load events
     ref.read(eventsListProvider.notifier).getEvents();

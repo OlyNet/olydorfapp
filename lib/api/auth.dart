@@ -1,26 +1,29 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:flutter/material.dart';
-import 'package:olydorf/api/user_data.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:olydorf/global/consts.dart';
+import 'package:olydorf/models/user_model.dart';
+import 'package:olydorf/providers/auth_provider.dart';
 
-class Auth {
+class AuthState extends StateNotifier<AppUser?> {
   final Client client;
   late Account account;
   late Database database;
 
-  Auth(this.client) {
+  AuthState(this.client) : super(null) {
     account = Account(client);
     database = Database(client);
   }
 
-  // get User from appwrite
-  Future<User?> getAccount() async {
+  // get user and userdata from appwrite
+  Future<void> getCurrentUser() async {
     try {
-      return await account.get();
-    } on AppwriteException catch (e) {
-      return null;
-    }
+      final user = await account.get();
+      final data = await database.getDocument(
+          collectionId: 'users', documentId: user.$id);
+      state = AppUser.fromMap(data.data);
+    } catch (_) {}
   }
 
   // login email
@@ -28,6 +31,7 @@ class Auth {
       String email, String password, BuildContext context) async {
     try {
       await account.createSession(email: email, password: password);
+      await getCurrentUser();
       await Navigator.pushReplacementNamed(context, Routes.bottomNavigationBar);
     } catch (e) {
       showErrorDialog(context, e);
@@ -35,8 +39,8 @@ class Auth {
   }
 
   // sign up email
-  Future<void> signUp(String email, String password, String name,
-      UserData userData, BuildContext context) async {
+  Future<void> signUp(
+      String email, String password, String name, BuildContext context) async {
     try {
       await account.create(
         userId: 'unique()',
@@ -48,6 +52,8 @@ class Auth {
       await account.createSession(email: email, password: password);
 
       await addUser();
+
+      await getCurrentUser();
 
       await Navigator.pushReplacementNamed(context, Routes.bottomNavigationBar);
     } catch (e) {
@@ -77,6 +83,7 @@ class Auth {
   Future<void> logout(BuildContext context) async {
     try {
       await account.deleteSession(sessionId: 'current');
+      state = null;
       await Navigator.of(context)
           .pushReplacementNamed(Routes.bottomNavigationBar);
     } catch (e) {

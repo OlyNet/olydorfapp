@@ -16,8 +16,6 @@ class LoginView extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final Auth auth = ref.watch(authProvider);
-
     return Scaffold(
       appBar: AppBar(toolbarHeight: 0),
       body: Form(
@@ -52,8 +50,10 @@ class LoginView extends HookConsumerWidget {
                           return;
                         }
                         _loading = true;
-                        await auth.login(_emailController.text,
-                            _passwordController.text, context);
+                        await ref.read(authProvider.notifier).login(
+                            _emailController.text,
+                            _passwordController.text,
+                            context);
                         _loading = false;
                       }),
                       child: const Text("login")),
