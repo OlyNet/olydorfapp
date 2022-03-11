@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:olydorf/api/events.dart';
+import 'package:olydorf/providers/auth_provider.dart';
 import 'package:olydorf/providers/events_provider.dart';
 
 class EventsView extends HookConsumerWidget {
   const EventsView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final eventsProv = ref.watch(eventsListProvider);
+    final events = ref.watch(eventsListProvider);
     return Scaffold(
-        body: eventsProv.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, stack) => Text('Error: $err'),
-            data: (events) {
-              return ListView.builder(
-                  itemCount: events.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                      title: Text(events[index].name),
-                    );
-                  });
-            }));
+      body: RefreshIndicator(
+        onRefresh: () => ref.read(eventsListProvider.notifier).getEvents(),
+        child: ListView(children: [
+          for (var i = 0; i < events.length; i++) ...[
+            ListTile(
+              title: Text(events[i].name),
+            ),
+          ],
+        ]),
+      ),
+    );
   }
 }
