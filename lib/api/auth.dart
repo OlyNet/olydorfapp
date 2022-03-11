@@ -61,10 +61,21 @@ class AuthState extends StateNotifier<AppUser?> {
     }
   }
 
+  // login google oauth
+  Future<void> loginGoogle(BuildContext context) async {
+    try {
+      await account.createOAuth2Session(
+        provider: 'google',
+      );
+      await getCurrentUser();
+      await Navigator.pushReplacementNamed(context, Routes.bottomNavigationBar);
+    } catch (e) {
+      showErrorDialog(context, e);
+    }
+  }
+
   Future<void> addUser() async {
     User res = await account.get();
-
-    print(res.$id);
 
     try {
       await database

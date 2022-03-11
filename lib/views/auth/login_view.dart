@@ -57,6 +57,10 @@ class LoginView extends HookConsumerWidget {
                         _loading = false;
                       }),
                       child: const Text("login")),
+              ElevatedButton(
+                  onPressed: () =>
+                      ref.read(authProvider.notifier).loginGoogle(context),
+                  child: const Text("login google")),
               TextButton(
                   onPressed: () =>
                       Navigator.of(context).pushReplacementNamed(Routes.signUp),
