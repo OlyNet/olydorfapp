@@ -37,6 +37,8 @@ class CustomPolygon {
   final Color borderColor;
   final bool disableHolesBorder;
   final bool isDotted;
+  final String? label;
+  final TextStyle labelStyle;
   late final LatLngBounds boundingBox;
 
   CustomPolygon({
@@ -47,6 +49,8 @@ class CustomPolygon {
     this.borderColor = const Color(0xFFFFFF00),
     this.disableHolesBorder = false,
     this.isDotted = false,
+    this.label,
+    this.labelStyle = const TextStyle(),
   }) : holeOffsetsList = null == holePointsList || holePointsList.isEmpty
             ? null
             : List.generate(holePointsList.length, (_) => []);
@@ -238,30 +242,60 @@ class CustomPolygonPainter extends CustomPainter {
       paint
         ..color = polygonOpt.color
         ..blendMode = BlendMode.srcOut;
-
-      var path = Path();
-      path.addPolygon(polygonOpt.offsets, true);
-      canvas.drawPath(path, paint);
-
-      _paintBorder(canvas);
-
-      canvas.restore();
     } else {
       canvas.clipRect(rect);
       paint
         ..style = PaintingStyle.fill
         ..color = polygonOpt.color;
+    }
 
-      var path = Path();
-      path.addPolygon(polygonOpt.offsets, true);
-      canvas.drawPath(path, paint);
+    var path = Path();
+    path.addPolygon(polygonOpt.offsets, true);
+    canvas.drawPath(path, paint);
 
-      _paintBorder(canvas);
+    _paintBorder(canvas);
+
+    if (polygonOpt.label != null) {
+      _paintLabel(canvas);
+    }
+
+    if (polygonOpt.holeOffsetsList != null) {
+      canvas.restore();
     }
   }
 
+  void _paintLabel(Canvas canvas) {
+    // get sorted list of offsets
+    List listX = polygonOpt.offsets.map((e) => e.dx).toList();
+    listX.sort();
+    List listY = polygonOpt.offsets.map((e) => e.dy).toList();
+    listY.sort();
+
+    final textSpan = TextSpan(
+        text: polygonOpt.label,
+        style: polygonOpt.labelStyle.copyWith(
+            fontSize: (listX.last - listX.first) / polygonOpt.label!.length));
+    final textPainter = TextPainter(
+      text: textSpan,
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout(minWidth: 0, maxWidth: listX.last - listX.first);
+
+    // calculate center of polygon - text width and height
+    double centerX =
+        listX.first + (listX.last - listX.first - textPainter.width) / 2;
+    double centerY =
+        listY.first + (listY.last - listY.first - textPainter.height) / 2;
+
+    textPainter.paint(
+      canvas,
+      Offset(centerX, centerY),
+    );
+  }
+
   @override
-  bool shouldRepaint(CustomPolygonPainter other) => false;
+  bool shouldRepaint(CustomPolygonPainter oldDelegate) => false;
 
   double _dist(Offset v, Offset w) {
     return sqrt(_dist2(v, w));
