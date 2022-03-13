@@ -6,8 +6,8 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/src/map/map.dart';
-import 'package:latlong2/latlong.dart' hide Path;
-import 'package:olydorf/views/map/point_in_polygon.dart'; // conflict with Path from UI
+import 'package:latlong2/latlong.dart' hide Path; // conflict with Path from UI
+import 'package:olydorf/views/map/polygon_helper.dart';
 
 class CustomPolygonLayerOptions extends LayerOptions {
   final List<CustomPolygon> polygons;
@@ -162,7 +162,7 @@ class CustomPolygonPainter extends CustomPainter {
 
   @override
   bool? hitTest(Offset position) {
-    return isOffsetInPolygon(position, polygonOpt.offsets);
+    return isPointInRect(position, polygonOpt.offsets);
   }
 
   @override
