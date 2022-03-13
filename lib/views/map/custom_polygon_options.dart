@@ -6,7 +6,8 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/src/map/map.dart';
-import 'package:latlong2/latlong.dart' hide Path; // conflict with Path from UI
+import 'package:latlong2/latlong.dart' hide Path;
+import 'package:olydorf/views/map/point_in_polygon.dart'; // conflict with Path from UI
 
 class CustomPolygonLayerOptions extends LayerOptions {
   final List<CustomPolygon> polygons;
@@ -40,6 +41,7 @@ class CustomPolygon {
   final String? label;
   final TextStyle labelStyle;
   late final LatLngBounds boundingBox;
+  final void Function()? onTap;
 
   CustomPolygon({
     required this.points,
@@ -51,6 +53,7 @@ class CustomPolygon {
     this.isDotted = false,
     this.label,
     this.labelStyle = const TextStyle(),
+    this.onTap,
   }) : holeOffsetsList = null == holePointsList || holePointsList.isEmpty
             ? null
             : List.generate(holePointsList.length, (_) => []);
@@ -118,9 +121,12 @@ class CustomPolygonLayer extends StatelessWidget {
           }
 
           polygons.add(
-            CustomPaint(
-              painter: CustomPolygonPainter(polygon),
-              size: size,
+            GestureDetector(
+              onTap: polygon.onTap ?? () {},
+              child: CustomPaint(
+                painter: CustomPolygonPainter(polygon),
+                size: size,
+              ),
             ),
           );
         }
@@ -153,6 +159,11 @@ class CustomPolygonPainter extends CustomPainter {
   final CustomPolygon polygonOpt;
 
   CustomPolygonPainter(this.polygonOpt);
+
+  @override
+  bool? hitTest(Offset position) {
+    return isOffsetInPolygon(position, polygonOpt.offsets);
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
