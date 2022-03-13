@@ -265,28 +265,34 @@ class CustomPolygonPainter extends CustomPainter {
   }
 
   void _paintLabel(Canvas canvas) {
-    // get sorted list of offsets
-    List listX = polygonOpt.offsets.map((e) => e.dx).toList();
-    listX.sort();
-    List listY = polygonOpt.offsets.map((e) => e.dy).toList();
-    listY.sort();
+    double maxX = polygonOpt.offsets
+        .reduce((curr, next) => curr.dx > next.dx ? curr : next)
+        .dx;
+    double minX = polygonOpt.offsets
+        .reduce((curr, next) => curr.dx < next.dx ? curr : next)
+        .dx;
+    double maxWidth = maxX - minX;
+    double maxY = polygonOpt.offsets
+        .reduce((curr, next) => curr.dy > next.dy ? curr : next)
+        .dy;
+    double minY = polygonOpt.offsets
+        .reduce((curr, next) => curr.dy < next.dy ? curr : next)
+        .dy;
 
     final textSpan = TextSpan(
         text: polygonOpt.label,
-        style: polygonOpt.labelStyle.copyWith(
-            fontSize: (listX.last - listX.first) / polygonOpt.label!.length));
+        style: polygonOpt.labelStyle
+            .copyWith(fontSize: (maxWidth) / polygonOpt.label!.length));
     final textPainter = TextPainter(
       text: textSpan,
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
     );
-    textPainter.layout(minWidth: 0, maxWidth: listX.last - listX.first);
+    textPainter.layout(minWidth: 0, maxWidth: maxWidth);
 
     // calculate center of polygon - text width and height
-    double centerX =
-        listX.first + (listX.last - listX.first - textPainter.width) / 2;
-    double centerY =
-        listY.first + (listY.last - listY.first - textPainter.height) / 2;
+    double centerX = minX + (maxWidth - textPainter.width) / 2;
+    double centerY = minY + (maxY - minY - textPainter.height) / 2;
 
     textPainter.paint(
       canvas,
