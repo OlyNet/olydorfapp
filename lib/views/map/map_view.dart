@@ -3,6 +3,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:olydorf/api/profile_helper.dart';
+import 'package:olydorf/models/user_model.dart';
 import 'package:olydorf/views/map/custom_polygon_plugin.dart';
 import 'package:olydorf/views/map/map_data.dart';
 
@@ -102,11 +104,14 @@ class _MapViewState extends ConsumerState<MapView> {
       label: building.label,
       labelStyle: TextStyle(
           color: currentBaseMap == MapType.earth ? Colors.white : Colors.black),
-      onTap: () {
+      onTap: () async {
+        AppUser? user = await ProfileHelper.getBungalow(ref, building.label);
         showDialog(
             context: context,
             builder: (_) => AlertDialog(
                   title: Text(building.label),
+                  content:
+                      Column(children: [Text(user != null ? user.name : "")]),
                 ));
       },
       points: building.points,

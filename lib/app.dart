@@ -6,7 +6,7 @@ import 'package:olydorf/providers/events_provider.dart';
 import 'package:olydorf/views/auth/login_view.dart';
 import 'package:olydorf/views/auth/sign_up_view.dart';
 import 'package:olydorf/views/bottom_navigation_bar/bottom_navigation_bar_view.dart';
-import 'package:olydorf/views/chat/chat_view.dart';
+import 'package:olydorf/views/profile/edit_profile_view.dart';
 import 'package:olydorf/views/welcome/welcome_view.dart';
 
 class App extends StatefulHookConsumerWidget {
@@ -42,6 +42,7 @@ class _AppState extends ConsumerState<App> {
       routes: {
         Routes.login: (context) => LoginView(),
         Routes.signUp: (context) => SignUpView(),
+        Routes.editProfile: (context) => EditProfileView(),
         Routes.bottomNavigationBar: (context) =>
             const BottomNavigationBarView(),
       },
