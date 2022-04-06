@@ -22,8 +22,19 @@ class InfoView extends HookConsumerWidget {
                 onPressed: () => Navigator.of(context).pushNamed(Routes.login),
                 child: const Text("login"))
           ] else ...[
-            Text(currentUser.name),
-            Text(currentUser.email),
+            Card(
+              child: ListTile(
+                title: Text("Hello ${currentUser.name}!"),
+                subtitle: Text(currentUser.email),
+                leading: const Icon(Icons.person),
+                trailing: IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(Routes.editProfile);
+                  },
+                ),
+              ),
+            ),
             ElevatedButton(
                 onPressed: () =>
                     ref.read(authProvider.notifier).logout(context),
