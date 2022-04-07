@@ -10,7 +10,5 @@ final authProvider = StateNotifierProvider<AuthState, AppUser?>(
 final clientProvider = Provider<Client>((ref) {
   return Client()
       .setEndpoint(AppwriteConfig.endpointUrl)
-      .setProject(AppwriteConfig.projectId)
-      .setSelfSigned(
-          status: true); // TODO only in development (self signed certificate)
+      .setProject(AppwriteConfig.projectId);
 });

@@ -1,5 +1,5 @@
 class AppwriteConfig {
-  static const endpointUrl = "http://appwrite.960.eu:5500/v1";
+  static const endpointUrl = "https://appwrite.960.eu/v1";
   static const projectId = "61f3034d10e3bbe97441";
 }
 
