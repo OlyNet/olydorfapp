@@ -5,7 +5,7 @@ import 'package:olydorf/views/map/custom_polygon_options.dart';
 class CustomPolygonPlugin extends MapPlugin {
   @override
   Widget createLayer(
-      LayerOptions options, MapState mapState, Stream<Null> stream) {
+      LayerOptions options, MapState mapState, Stream<void> stream) {
     return CustomPolygonLayer(
         options as CustomPolygonLayerOptions, mapState, stream);
   }

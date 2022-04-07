@@ -4,10 +4,9 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map/src/map/map.dart';
-import 'package:latlong2/latlong.dart' hide Path; // conflict with Path from UI
-import 'package:olydorf/views/map/polygon_helper.dart';
+import 'package:flutter_map/plugin_api.dart';
+import 'package:latlong2/latlong.dart' hide Path;
+import 'package:olydorf/views/map/polygon_helper.dart'; // conflict with Path from UI
 
 class CustomPolygonLayerOptions extends LayerOptions {
   final List<CustomPolygon> polygons;
@@ -18,8 +17,7 @@ class CustomPolygonLayerOptions extends LayerOptions {
     Key? key,
     this.polygons = const [],
     this.polygonCulling = false,
-    Stream<Null>? rebuild,
-  }) : super(key: key, rebuild: rebuild) {
+  }) : super(key: key) {
     if (polygonCulling) {
       for (var polygon in polygons) {
         polygon.boundingBox = LatLngBounds.fromPoints(polygon.points);
@@ -61,7 +59,8 @@ class CustomPolygon {
 
 class CustomPolygonLayerWidget extends StatelessWidget {
   final CustomPolygonLayerOptions options;
-  CustomPolygonLayerWidget({Key? key, required this.options}) : super(key: key);
+  const CustomPolygonLayerWidget({Key? key, required this.options})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +72,7 @@ class CustomPolygonLayerWidget extends StatelessWidget {
 class CustomPolygonLayer extends StatelessWidget {
   final CustomPolygonLayerOptions polygonOpts;
   final MapState map;
-  final Stream<Null>? stream;
+  final Stream<void>? stream;
 
   CustomPolygonLayer(this.polygonOpts, this.map, this.stream)
       : super(key: polygonOpts.key);
@@ -131,10 +130,8 @@ class CustomPolygonLayer extends StatelessWidget {
           );
         }
 
-        return Container(
-          child: Stack(
-            children: polygons,
-          ),
+        return Stack(
+          children: polygons,
         );
       },
     );

@@ -61,11 +61,14 @@ class _MapViewState extends ConsumerState<MapView> {
           ] else ...[
             TileLayerOptions(urlTemplate: ""),
           ],
-          CustomPolygonLayerOptions(polygons: [
-            for (Building building in map_data) ...[
-              _customPolygon(context, building)
-            ]
-          ]),
+          CustomPolygonLayerOptions(
+            polygons: [
+              for (Building building in map_data) ...[
+                _customPolygon(context, building)
+              ]
+            ],
+            polygonCulling: true,
+          ),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
@@ -106,6 +109,7 @@ class _MapViewState extends ConsumerState<MapView> {
           color: currentBaseMap == MapType.earth ? Colors.white : Colors.black),
       onTap: () async {
         AppUser? user = await ProfileHelper.getBungalow(ref, building.label);
+        FocusScope.of(context).unfocus();
         showDialog(
             context: context,
             builder: (_) => AlertDialog(
