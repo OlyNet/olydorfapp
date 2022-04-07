@@ -61,11 +61,14 @@ class _MapViewState extends ConsumerState<MapView> {
           ] else ...[
             TileLayerOptions(urlTemplate: ""),
           ],
-          CustomPolygonLayerOptions(polygons: [
-            for (Building building in map_data) ...[
-              _customPolygon(context, building)
-            ]
-          ]),
+          CustomPolygonLayerOptions(
+            polygons: [
+              for (Building building in map_data) ...[
+                _customPolygon(context, building)
+              ]
+            ],
+            polygonCulling: true,
+          ),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
