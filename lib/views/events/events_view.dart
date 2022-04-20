@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:olydorf/api/events.dart';
-import 'package:olydorf/providers/auth_provider.dart';
 import 'package:olydorf/providers/events_provider.dart';
+import 'package:olydorf/views/events/event_card.dart';
 
 class EventsView extends HookConsumerWidget {
   const EventsView({Key? key}) : super(key: key);
@@ -14,9 +13,7 @@ class EventsView extends HookConsumerWidget {
         onRefresh: () => ref.read(eventsListProvider.notifier).getEvents(),
         child: ListView(children: [
           for (var i = 0; i < events.length; i++) ...[
-            ListTile(
-              title: Text(events[i].name),
-            ),
+            EventCard(event: events[i]),
           ],
         ]),
       ),
