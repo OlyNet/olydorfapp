@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:olydorf/global/consts.dart';
 import 'package:olydorf/models/user_model.dart';
-import 'package:olydorf/providers/auth_provider.dart';
 
 class AuthState extends StateNotifier<AppUser?> {
   final Client client;
@@ -22,7 +21,9 @@ class AuthState extends StateNotifier<AppUser?> {
       final user = await account.get();
       final data = await database.getDocument(
           collectionId: 'users', documentId: user.$id);
-      state = AppUser.fromMap(data.data);
+      Teams teams = Teams(client);
+      TeamList teamsList = await teams.list();
+      state = AppUser.fromMap(data.data, teamsList.teams);
     } catch (_) {}
   }
 
