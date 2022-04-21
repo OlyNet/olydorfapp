@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:olydorf/views/chat/chat_view.dart';
 import 'package:olydorf/views/events/events_view.dart';
 import 'package:olydorf/views/info/info_view.dart';
 import 'package:olydorf/views/map/map_view.dart';
@@ -24,7 +23,6 @@ class BottomNavigationBarView extends HookConsumerWidget {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Events'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
           BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
         ],
       ),
@@ -33,7 +31,6 @@ class BottomNavigationBarView extends HookConsumerWidget {
         children: const [
           InfoView(),
           EventsView(),
-          ChatView(),
           MapView(),
         ],
       ),
