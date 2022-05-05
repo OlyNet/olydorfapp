@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:olydorf/global/consts.dart';
 import 'package:olydorf/models/user_model.dart';
 import 'package:olydorf/providers/auth_provider.dart';
+import 'package:olydorf/views/settings/settings_view.dart';
 
 class InfoView extends HookConsumerWidget {
   const InfoView({Key? key}) : super(key: key);
@@ -12,11 +13,22 @@ class InfoView extends HookConsumerWidget {
     final AppUser? currentUser = ref.watch(authProvider);
 
     return Scaffold(
-      appBar: AppBar(toolbarHeight: 0),
+      appBar: AppBar(
+        title: const Text("Home"),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => const SettingsView()));
+              },
+              icon: const Icon(Icons.settings))
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(children: [
-          const Text("Home"),
           if (currentUser == null) ...[
             ElevatedButton(
                 onPressed: () => Navigator.of(context).pushNamed(Routes.login),
