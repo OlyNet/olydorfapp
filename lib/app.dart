@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:olydorf/global/consts.dart';
+import 'package:olydorf/global/themes.dart';
 import 'package:olydorf/providers/auth_provider.dart';
 import 'package:olydorf/providers/events_provider.dart';
+import 'package:olydorf/providers/theme_provider.dart';
 import 'package:olydorf/views/auth/login_view.dart';
 import 'package:olydorf/views/auth/sign_up_view.dart';
 import 'package:olydorf/views/bottom_navigation_bar/bottom_navigation_bar_view.dart';
@@ -35,8 +37,12 @@ class _AppState extends ConsumerState<App> {
 
   @override
   Widget build(BuildContext context) {
+    final themeState = ref.watch(themeStateNotifier);
     return MaterialApp(
       home: const WelcomeView(),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: themeState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
       navigatorKey: _navigatorKey,
       debugShowCheckedModeBanner: false,
       routes: {
