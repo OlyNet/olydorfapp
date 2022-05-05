@@ -6,6 +6,14 @@ const Color altColor = Color.fromRGBO(197, 219, 203, 1); // #c5dbcb
 
 ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
+  appBarTheme: const AppBarTheme(
+    color: Colors.transparent,
+    elevation: 0,
+    iconTheme: IconThemeData(color: Colors.black),
+    titleTextStyle: TextStyle(
+        color: Colors.black, fontWeight: FontWeight.bold, fontSize: 21),
+    actionsIconTheme: IconThemeData(color: Colors.black),
+  ),
   scaffoldBackgroundColor: altColor,
   toggleableActiveColor: accentColor,
   colorScheme: const ColorScheme.light()
