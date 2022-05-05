@@ -33,7 +33,8 @@ class AuthState extends StateNotifier<AppUser?> {
     try {
       await account.createSession(email: email, password: password);
       await getCurrentUser();
-      await Navigator.pushReplacementNamed(context, Routes.bottomNavigationBar);
+      Navigator.pushNamedAndRemoveUntil(
+          context, Routes.bottomNavigationBar, (route) => false);
     } catch (e) {
       showErrorDialog(context, e);
     }
@@ -56,7 +57,8 @@ class AuthState extends StateNotifier<AppUser?> {
 
       await getCurrentUser();
 
-      await Navigator.pushReplacementNamed(context, Routes.bottomNavigationBar);
+      Navigator.pushNamedAndRemoveUntil(
+          context, Routes.bottomNavigationBar, (route) => false);
     } catch (e) {
       showErrorDialog(context, e);
     }
@@ -69,7 +71,8 @@ class AuthState extends StateNotifier<AppUser?> {
         provider: 'google',
       );
       await getCurrentUser();
-      await Navigator.pushReplacementNamed(context, Routes.bottomNavigationBar);
+      Navigator.pushNamedAndRemoveUntil(
+          context, Routes.bottomNavigationBar, (route) => false);
     } catch (e) {
       showErrorDialog(context, e);
     }
