@@ -37,6 +37,7 @@ dependencies:
   flutter_speed_dial: ^5.0.0+1
   hooks_riverpod: ^1.0.3
   introduction_screen: ^3.0.0
+  shared_preferences: ^2.0.13
 
 dev_dependencies:
   flutter_lints: ^1.0.0
