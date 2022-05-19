@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:olydorf/api/auth.dart';
 import 'package:olydorf/global/consts.dart';
 import 'package:olydorf/providers/auth_provider.dart';
 
@@ -48,6 +47,7 @@ class LoginView extends HookConsumerWidget {
                         if (text!.isEmpty || !text.contains('@')) {
                           return "Invalid email";
                         }
+                        return null;
                       },
                     ),
                     const SizedBox(
@@ -65,6 +65,7 @@ class LoginView extends HookConsumerWidget {
                         if (text!.isEmpty || text.length < 8) {
                           return "Passwort too short";
                         }
+                        return null;
                       },
                     ),
                     const SizedBox(
