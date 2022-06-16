@@ -40,4 +40,20 @@ class EventsState extends StateNotifier<List<Event>> {
       rethrow;
     }
   }
+
+  Future<void> createEvent(Event event) async {
+    try {
+      await database.createDocument(
+          collectionId: 'events',
+          documentId: "unique()",
+          data: {
+            'name': event.name,
+          },
+          read: [
+            'role:all',
+          ]);
+    } on AppwriteException catch (e) {
+      print(e.message);
+    }
+  }
 }
