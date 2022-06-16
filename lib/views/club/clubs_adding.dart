@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:olydorf/common/club.dart';
+import 'package:olydorf/views/club/club.dart';
 
 import 'drop_down_workdays.dart';
 
@@ -52,7 +52,8 @@ class _ClubsAddingStatefulWidgetState extends State<ClubsAddingStatefulWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(child: _build()),
+      body: SingleChildScrollView(
+          controller: ScrollController(), child: _build()),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Add',
         child: const Icon(Icons.add),
@@ -98,18 +99,26 @@ class _ClubsAddingStatefulWidgetState extends State<ClubsAddingStatefulWidget> {
                   const DropdownItem(),
                   ElevatedButton(
                       onPressed: () async {
-                        pickedTimeOpen = (await showTimePicker(
+                        TimeOfDay? tmp = await showTimePicker(
                           context: context,
                           initialTime: initialTime,
-                        ))!;
+                        );
+                        //cancel
+                        if (tmp == null) return;
+                        //ok
+                        setState(() => pickedTimeOpen = tmp);
                       },
                       child: const Text('Opening hours')),
                   ElevatedButton(
                       onPressed: () async {
-                        pickedTimeClose = (await showTimePicker(
+                        TimeOfDay? tmp = await showTimePicker(
                           context: context,
                           initialTime: initialTime,
-                        ))!;
+                        );
+                        //cancel
+                        if (tmp == null) return;
+                        //ok
+                        setState(() => pickedTimeClose = tmp);
                       },
                       child: const Text('Closing hours'))
                 ]))),
@@ -122,6 +131,7 @@ class _ClubsAddingStatefulWidgetState extends State<ClubsAddingStatefulWidget> {
         SizedBox(
             height: 75,
             child: ListView.builder(
+                controller: ScrollController(),
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.all(8),
                 itemCount: workingHours.length,
@@ -167,6 +177,7 @@ class _ClubsAddingStatefulWidgetState extends State<ClubsAddingStatefulWidget> {
         SizedBox(
             height: 75,
             child: ListView.builder(
+                controller: ScrollController(),
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.all(8),
                 itemCount: contacts.length,

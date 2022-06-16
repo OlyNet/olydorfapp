@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_new
-
 import 'package:flutter/material.dart';
 
 const double _kPanelHeaderCollapsedHeight = 48.0;
@@ -33,23 +31,23 @@ class ClubsExpansionPanelList extends StatelessWidget {
       if (_isChildExpanded(index) &&
           index != 0 &&
           !_isChildExpanded(index - 1)) {
-        items.add(new Divider(
-          key: new _SaltedKey<BuildContext, int>(context, index * 2 - 1),
+        items.add(Divider(
+          key: _SaltedKey<BuildContext, int>(context, index * 2 - 1),
           height: 15.0,
           color: Colors.transparent,
         ));
       }
 
-      final Row header = new Row(
+      final Row header = Row(
         children: <Widget>[
-          new Expanded(
-            child: new AnimatedContainer(
+          Expanded(
+            child: AnimatedContainer(
               duration: animationDuration,
               curve: Curves.fastOutSlowIn,
               margin: _isChildExpanded(index)
                   ? kExpandedEdgeInsets
                   : EdgeInsets.zero,
-              child: new SizedBox(
+              child: SizedBox(
                 height: _kPanelHeaderCollapsedHeight,
                 child: children[index].headerBuilder(
                   context,
@@ -58,9 +56,9 @@ class ClubsExpansionPanelList extends StatelessWidget {
               ),
             ),
           ),
-          new Container(
+          Container(
             margin: const EdgeInsetsDirectional.only(end: 8.0),
-            child: new ExpandIcon(
+            child: ExpandIcon(
               isExpanded: _isChildExpanded(index),
               padding: const EdgeInsets.all(16.0),
               onPressed: (bool isExpanded) {
@@ -73,13 +71,12 @@ class ClubsExpansionPanelList extends StatelessWidget {
 
       double _radiusValue = _isChildExpanded(index) ? 8.0 : 0.0;
       items.add(
-        new Container(
-          key: new _SaltedKey<BuildContext, int>(context, index * 2),
-          child: new Material(
+        Container(
+          key: _SaltedKey<BuildContext, int>(context, index * 2),
+          child: Material(
             elevation: 2.0,
-            borderRadius:
-                new BorderRadius.all(new Radius.circular(_radiusValue)),
-            child: new Column(
+            borderRadius: BorderRadius.all(Radius.circular(_radiusValue)),
+            child: Column(
               children: <Widget>[
                 Container(
                   decoration: BoxDecoration(
@@ -94,8 +91,8 @@ class ClubsExpansionPanelList extends StatelessWidget {
                   ),
                   child: header,
                 ),
-                new AnimatedCrossFade(
-                  firstChild: new Container(height: 0.0),
+                AnimatedCrossFade(
+                  firstChild: Container(height: 0.0),
                   /*** START - NEW CODE ***/
                   secondChild: Container(
                     decoration: const BoxDecoration(
@@ -124,14 +121,14 @@ class ClubsExpansionPanelList extends StatelessWidget {
       );
 
       if (_isChildExpanded(index) && index != children.length - 1) {
-        items.add(new Divider(
-          key: new _SaltedKey<BuildContext, int>(context, index * 2 + 1),
+        items.add(Divider(
+          key: _SaltedKey<BuildContext, int>(context, index * 2 + 1),
           height: 15.0,
         ));
       }
     }
 
-    return new Column(
+    return Column(
       children: items,
     );
   }

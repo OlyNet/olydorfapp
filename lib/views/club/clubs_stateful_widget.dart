@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../common/club.dart';
+import 'club.dart';
 import 'clubs_expantion_panel_list.dart';
 
 //Item for showing in the list
