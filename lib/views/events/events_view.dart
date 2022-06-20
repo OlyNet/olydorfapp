@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:olydorf/models/user_model.dart';
 import 'package:olydorf/providers/auth_provider.dart';
 import 'package:olydorf/providers/events_provider.dart';
+import 'package:olydorf/views/events/create_event_view.dart';
 import 'package:olydorf/views/events/event_card.dart';
 
 class EventsView extends HookConsumerWidget {
@@ -24,13 +25,16 @@ class EventsView extends HookConsumerWidget {
           ],
         ]),
       ),
-      floatingActionButton:
-          currentUser?.teams.map(((e) => e.$id)).contains('admin') ?? false
-              ? FloatingActionButton(
-                  onPressed: () {},
-                  child: const Icon(Icons.add),
-                )
-              : Container(),
+      floatingActionButton: currentUser?.teams
+                  .map(((e) => e.$id))
+                  .contains('admin') ??
+              false
+          ? FloatingActionButton(
+              onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => CreateEventView())),
+              child: const Icon(Icons.add),
+            )
+          : Container(),
     );
   }
 }
