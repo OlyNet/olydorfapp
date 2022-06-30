@@ -1,5 +1,4 @@
 # OlydorfApp
-===========================
 
 In this repository a Flutter application for the students living in the dormitory "Olympisches Dorf" is being developed.
 
