@@ -1,8 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:olydorf/api/events.dart';
-import 'package:olydorf/global/consts.dart';
 import 'package:olydorf/models/event_model.dart';
-import 'package:appwrite/appwrite.dart';
 import 'package:olydorf/providers/auth_provider.dart';
 
 final eventsListProvider = StateNotifierProvider<EventsState, List<Event>>(

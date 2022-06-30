@@ -47,6 +47,7 @@ class SignUpView extends HookConsumerWidget {
                         if (text!.isEmpty || !text.contains('@')) {
                           return "Invalid email";
                         }
+                        return null;
                       },
                     ),
                     const SizedBox(
@@ -63,6 +64,7 @@ class SignUpView extends HookConsumerWidget {
                         if (text!.isEmpty || text.length < 3) {
                           return "name too short (min 3)";
                         }
+                        return null;
                       },
                     ),
                     const SizedBox(
@@ -80,6 +82,7 @@ class SignUpView extends HookConsumerWidget {
                         if (text!.isEmpty || text.length < 8) {
                           return "Passwort too short (min 8)";
                         }
+                        return null;
                       },
                     ),
                     const SizedBox(
@@ -96,6 +99,7 @@ class SignUpView extends HookConsumerWidget {
                         if (text != _passwordController.text) {
                           return "Passwords don't match";
                         }
+                        return null;
                       },
                     ),
                     const SizedBox(
