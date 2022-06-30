@@ -1,5 +1,9 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:olydorf/models/event_model.dart';
 import 'package:intl/intl.dart';
 
@@ -24,6 +28,9 @@ class _CreateEventViewState extends ConsumerState<CreateEventView> {
   DateTime date = DateTime.now();
   TimeOfDay time = TimeOfDay.now();
 
+  final ImagePicker _picker = ImagePicker();
+  XFile? _image;
+
   void pickDate(BuildContext context) async {
     date = await showDatePicker(
             context: context,
@@ -40,6 +47,16 @@ class _CreateEventViewState extends ConsumerState<CreateEventView> {
         await showTimePicker(context: context, initialTime: TimeOfDay.now()) ??
             TimeOfDay.now();
     setState(() {});
+  }
+
+  Future<void> pickImage(ImagePicker picker) async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _image = image;
+      });
+      log(_image!.path);
+    }
   }
 
   @override
@@ -121,16 +138,37 @@ class _CreateEventViewState extends ConsumerState<CreateEventView> {
                   )
                 ],
               ),
+              InkWell(
+                  borderRadius: BorderRadius.circular(50),
+                  enableFeedback: true,
+                  onTap: () => pickImage(_picker),
+                  child: CircleAvatar(
+                      radius: 56,
+                      child: CircleAvatar(
+                        radius: 52,
+                        backgroundImage: _image == null
+                            ? null
+                            : FileImage(File(_image!.path)),
+                      ))),
               ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (!_formKey.currentState!.validate()) {
                       return;
                     }
+                    String? imgId;
+                    log(_image.toString());
+                    if (_image != null) {
+                      imgId = await ref
+                          .read(eventsListProvider.notifier)
+                          .uploadEventPicture(_image!.path, _image!.name);
+                    }
+                    log(imgId.toString());
                     Event event = Event(
                         name: eventNameController.text,
                         location: locationController.text,
                         description: descriptionController.text,
-                        date: date);
+                        date: date,
+                        imgId: imgId);
                     ref.read(eventsListProvider.notifier).createEvent(event);
                     Navigator.of(context).pop();
                   },

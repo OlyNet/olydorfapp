@@ -1,6 +1,8 @@
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:olydorf/models/event_model.dart';
 
@@ -41,19 +43,31 @@ class EventsState extends StateNotifier<List<Event>> {
     }
   }
 
+  Future<String?> uploadEventPicture(String filePath, String imgName) async {
+    try {
+      File? result = await storage.createFile(
+        file: await MultipartFile.fromPath('file', filePath, filename: imgName),
+        fileId: 'unique()',
+        read: ['role:all'],
+      );
+      return result.$id;
+    } catch (e) {
+      log('$e');
+      rethrow;
+    }
+  }
+
   Future<void> createEvent(Event event) async {
     try {
       await database.createDocument(
           collectionId: 'events',
           documentId: "unique()",
-          data: {
-            'name': event.name,
-          },
+          data: event.toMap(),
           read: [
             'role:all',
           ]);
     } on AppwriteException catch (e) {
-      print(e.message);
+      log(e.message.toString());
     }
   }
 }
