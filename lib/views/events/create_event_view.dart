@@ -142,14 +142,26 @@ class _CreateEventViewState extends ConsumerState<CreateEventView> {
                   borderRadius: BorderRadius.circular(50),
                   enableFeedback: true,
                   onTap: () => pickImage(_picker),
-                  child: CircleAvatar(
-                      radius: 56,
-                      child: CircleAvatar(
-                        radius: 52,
-                        backgroundImage: _image == null
-                            ? null
-                            : FileImage(File(_image!.path)),
-                      ))),
+                  child: Card(
+                      clipBehavior: Clip.antiAlias,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: _image == null
+                          ? Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: const [
+                                  Text("Select Image"),
+                                  Icon(Icons.image),
+                                ],
+                              ),
+                            )
+                          : Image(
+                              image: FileImage(File(_image!.path)),
+                            ))),
               ElevatedButton(
                   onPressed: () async {
                     if (!_formKey.currentState!.validate()) {
