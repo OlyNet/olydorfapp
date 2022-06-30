@@ -1,8 +1,9 @@
-# olydorf
+# OlydorfApp
+===========================
 
-A new Flutter project.
+In this repository a Flutter application for the students living in the dormitory "Olympisches Dorf" is being developed.
 
-## Getting Started
+## Getting Started with Flutter
 
 This project is a starting point for a Flutter application.
 
@@ -14,3 +15,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter, view our
 [online documentation](https://flutter.dev/docs), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+License
+-------
+This project is released under version 3 of the GNU General Public License.
