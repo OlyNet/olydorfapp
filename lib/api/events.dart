@@ -22,16 +22,16 @@ class EventsState extends StateNotifier<List<Event>> {
 
       List<Event> events =
           res.documents.map((doc) => Event.fromMap(doc.data)).toList();
-      print(events);
+      log(events.toString());
       for (Event event in events) {
         if (event.imgId != null) {
           event.image = await _getEventImage(event.imgId!);
         }
       }
-      print(events);
+      log(events.toString());
       state = events;
     } on AppwriteException catch (e) {
-      print(e.message);
+      log(e.message.toString());
     }
   }
 

@@ -25,16 +25,14 @@ class EventsView extends HookConsumerWidget {
           ],
         ]),
       ),
-      floatingActionButton: currentUser?.teams
-                  .map(((e) => e.$id))
-                  .contains('admin') ??
-              false
-          ? FloatingActionButton(
-              onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => CreateEventView())),
-              child: const Icon(Icons.add),
-            )
-          : Container(),
+      floatingActionButton:
+          currentUser?.teams.map(((e) => e.$id)).contains('admin') ?? false
+              ? FloatingActionButton(
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const CreateEventView())),
+                  child: const Icon(Icons.add),
+                )
+              : Container(),
     );
   }
 }

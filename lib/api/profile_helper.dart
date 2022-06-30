@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -18,7 +20,7 @@ class ProfileHelper {
         'role:all',
       ]);
     } on AppwriteException catch (e) {
-      print(e.message);
+      log(e.message.toString());
     }
   }
 
@@ -36,7 +38,7 @@ class ProfileHelper {
 
       return AppUser.fromMap(userResult.data);
     } on AppwriteException catch (e) {
-      print(e.message);
+      log(e.message.toString());
     }
     return null;
   }

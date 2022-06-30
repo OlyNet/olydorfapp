@@ -21,7 +21,7 @@ class ChatView extends StatefulHookConsumerWidget {
 }
 
 class _ChatViewState extends ConsumerState<ChatView> {
-  List<types.Message> _messages = [];
+  final List<types.Message> _messages = [];
 
   final _user = const types.User(id: '123');
 
