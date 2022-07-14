@@ -14,7 +14,7 @@ class InfoView extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Home"),
+        title: const Text("Info"),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
