@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -159,9 +160,9 @@ class _CreateEventViewState extends ConsumerState<CreateEventView> {
                                 ],
                               ),
                             )
-                          : Image(
-                              image: FileImage(File(_image!.path)),
-                            ))),
+                          : kIsWeb
+                              ? Image.network(_image!.path)
+                              : Image.file(File(_image!.path)))),
               ElevatedButton(
                   onPressed: () async {
                     if (!_formKey.currentState!.validate()) {
@@ -172,7 +173,7 @@ class _CreateEventViewState extends ConsumerState<CreateEventView> {
                     if (_image != null) {
                       imgId = await ref
                           .read(eventsListProvider.notifier)
-                          .uploadEventPicture(_image!.path, _image!.name);
+                          .uploadEventPicture(_image!, _image!.name);
                     }
                     log(imgId.toString());
                     Event event = Event(
