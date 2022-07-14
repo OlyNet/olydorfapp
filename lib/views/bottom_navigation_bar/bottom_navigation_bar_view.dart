@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:olydorf/views/events/events_view.dart';
 import 'package:olydorf/views/info/info_view.dart';
-import 'package:olydorf/views/map/map_view.dart';
 
 import '../../providers/bottom_navigation_bar_provider.dart';
 
@@ -21,9 +20,9 @@ class BottomNavigationBarView extends HookConsumerWidget {
           ref.read(pageIndexProvider.state).state = index;
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.info), label: 'Info'),
           BottomNavigationBarItem(icon: Icon(Icons.event), label: 'Events'),
-          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
+          // BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
         ],
       ),
       body: IndexedStack(
@@ -31,7 +30,7 @@ class BottomNavigationBarView extends HookConsumerWidget {
         children: const [
           InfoView(),
           EventsView(),
-          MapView(),
+          // MapView(),
         ],
       ),
     );
