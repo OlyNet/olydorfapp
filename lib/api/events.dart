@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:olydorf/models/event_model.dart';
 
 class EventsState extends StateNotifier<List<Event>> {
@@ -43,10 +44,11 @@ class EventsState extends StateNotifier<List<Event>> {
     }
   }
 
-  Future<String?> uploadEventPicture(String filePath, String imgName) async {
+  Future<String?> uploadEventPicture(XFile file, String imgName) async {
     try {
       File? result = await storage.createFile(
-        file: await MultipartFile.fromPath('file', filePath, filename: imgName),
+        file: MultipartFile.fromBytes('file', await file.readAsBytes(),
+            filename: imgName),
         fileId: 'unique()',
         read: ['role:all'],
       );
