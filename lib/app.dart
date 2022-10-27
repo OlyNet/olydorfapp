@@ -9,7 +9,6 @@ import 'package:olydorf/views/auth/login_view.dart';
 import 'package:olydorf/views/auth/sign_up_view.dart';
 import 'package:olydorf/views/bottom_navigation_bar/bottom_navigation_bar_view.dart';
 import 'package:olydorf/views/profile/edit_profile_view.dart';
-import 'package:olydorf/views/welcome/welcome_view.dart';
 
 class App extends StatefulHookConsumerWidget {
   const App({Key? key}) : super(key: key);
@@ -39,7 +38,7 @@ class _AppState extends ConsumerState<App> {
   Widget build(BuildContext context) {
     final themeState = ref.watch(themeStateNotifier);
     return MaterialApp(
-      home: const WelcomeView(),
+      home: const BottomNavigationBarView(),
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeState.isDarkMode ? ThemeMode.dark : ThemeMode.light,
