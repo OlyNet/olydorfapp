@@ -16,4 +16,3 @@ jobs:
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
           targetBranch: gh-pages-dev
-          baseHref: /app-dev/
