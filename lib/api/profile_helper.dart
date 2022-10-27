@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:appwrite/appwrite.dart';
-import 'package:appwrite/models.dart';
+import 'package:appwrite/models.dart' as appwriteModels;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:olydorf/models/user_model.dart';
 import 'package:olydorf/providers/auth_provider.dart';
@@ -9,16 +9,20 @@ import 'package:olydorf/providers/auth_provider.dart';
 class ProfileHelper {
   static void saveBungalow(WidgetRef ref, String id) async {
     Client client = ref.watch(clientProvider);
-    Database database = Database(client);
+    Databases databases = Databases(client);
     Account account = Account(client);
-    User res = await account.get();
+    appwriteModels.Account res = await account.get();
     try {
-      await database
-          .createDocument(collectionId: 'bungalows', documentId: id, data: {
-        'current': res.$id,
-      }, read: [
-        'role:all',
-      ]);
+      await databases.createDocument(
+          databaseId: 'olydorf',
+          collectionId: 'bungalows',
+          documentId: id,
+          data: {
+            'current': res.$id,
+          },
+          permissions: [
+            Permission.read(Role.any()),
+          ]);
     } on AppwriteException catch (e) {
       log(e.message.toString());
     }
@@ -26,15 +30,16 @@ class ProfileHelper {
 
   static Future<AppUser?> getBungalow(WidgetRef ref, String id) async {
     Client client = ref.watch(clientProvider);
-    Database database = Database(client);
+    Databases database = Databases(client);
     try {
-      Document result = await database.getDocument(
+      appwriteModels.Document result = await database.getDocument(
+        databaseId: 'olydorf',
         collectionId: 'bungalows',
         documentId: id,
       );
       String userId = result.data['current'];
-      Document userResult =
-          await database.getDocument(collectionId: 'users', documentId: userId);
+      appwriteModels.Document userResult = await database.getDocument(
+          databaseId: 'olydorf', collectionId: 'users', documentId: userId);
 
       return AppUser.fromMap(userResult.data);
     } on AppwriteException catch (e) {
