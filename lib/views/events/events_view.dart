@@ -4,7 +4,7 @@ import 'package:olydorf/models/user_model.dart';
 import 'package:olydorf/providers/auth_provider.dart';
 import 'package:olydorf/providers/events_provider.dart';
 import 'package:olydorf/views/events/create_event_view.dart';
-import 'package:olydorf/views/events/event_card.dart';
+import 'package:olydorf/views/events/events_calendar.dart';
 
 class EventsView extends HookConsumerWidget {
   const EventsView({Key? key}) : super(key: key);
@@ -16,14 +16,7 @@ class EventsView extends HookConsumerWidget {
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () => ref.read(eventsListProvider.notifier).getEvents(),
-        child: ListView(children: [
-          for (var i = 0; i < events.length; i++) ...[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: EventCard(event: events[i]),
-            ),
-          ],
-        ]),
+        child: EventsCalendar(events: events),
       ),
       floatingActionButton:
           currentUser?.teams.map(((e) => e.$id)).contains('admin') ?? false
