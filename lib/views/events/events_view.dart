@@ -14,6 +14,11 @@ class EventsView extends HookConsumerWidget {
     final events = ref.watch(eventsListProvider);
     final AppUser? currentUser = ref.watch(authProvider);
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Events"),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: RefreshIndicator(
         onRefresh: () => ref.read(eventsListProvider.notifier).getEvents(),
         child: EventsCalendar(events: events),
