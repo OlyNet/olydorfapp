@@ -48,9 +48,6 @@ class EventCard extends StatelessWidget {
                       ),
                     ),
                   ],
-                  if (event.description != null) ...[
-                    Text(event.description!),
-                  ],
                   if (event.date != null) ...[
                     Text(event.date!.toString()),
                   ],
