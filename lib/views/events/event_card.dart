@@ -49,7 +49,10 @@ class EventCard extends StatelessWidget {
                     ),
                   ],
                   if (event.date != null) ...[
-                    Text(event.date!.toString()),
+                    Center(
+                      child: Text(
+                          "${event.date!.day.toString().padLeft(2, '0')} / ${event.date!.month.toString().padLeft(2, '0')} / ${event.date!.year.toString()}"),
+                    )
                   ],
                 ],
               ),
